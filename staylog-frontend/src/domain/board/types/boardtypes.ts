@@ -1,5 +1,7 @@
 // src/domain/board/types/boardtypes.ts
 
+
+
 export type BoardDto = {
 
    boardType: string;

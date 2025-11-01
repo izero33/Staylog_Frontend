@@ -1,6 +1,6 @@
 // src/domain/board/types/boardtypes.tsx
 
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../global/api";
 import type { BoardDto } from "../types/boardtypes";
@@ -12,9 +12,12 @@ import QuillEditor from "../components/QuillEditor";
 
 function BoardForm() {
 
-    
+    // USER 상태값 관리
+    const [userId, setUserId] = useState<number | null>(null);
 
-    // DTO 관리
+
+
+    // DTO 상태값 관리
     const [dto, setDto] = useState<Partial<BoardDto>>({
         boardType: "review",    // 임시 카테고리 리뷰
         regionCode: 333,    // 임시 서울 

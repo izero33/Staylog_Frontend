@@ -17,6 +17,6 @@ export interface RoomDetailDto {
   kingBed: number;
   checkInTime: string;
   checkOutTime: string;
-
+  description: string;
 }
 

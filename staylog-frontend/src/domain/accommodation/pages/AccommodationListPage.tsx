@@ -8,6 +8,7 @@ import { searchAccommodations } from '../../search/api';
 import type { AccommodationListItem } from '../types';
 import type { SearchAccommodationsRequest } from '../../search/types';
 import useCommonCodeSelector from '../../common/hooks/useCommonCodeSelector';
+import useInfiniteScroll from '../hooks/useInfiniteScroll';
 
 function AccommodationListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,7 +38,10 @@ function AccommodationListPage() {
   // 상태
   const [accommodations, setAccommodations] = useState<AccommodationListItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [lastAccomId, setLastAccomId] = useState<number | undefined>(undefined);
 
   // 정렬 모달
   const [isSortModalOpen, setIsSortModalOpen] = useState<boolean>(false);
@@ -60,20 +64,65 @@ function AccommodationListPage() {
     };
   };
 
-  // 숙소 검색 API 호출
+  // 초기 숙소 검색 (검색 조건 변경 시)
   const fetchAccommodations = async () => {
     try {
       setLoading(true);
       setError(null);
+      setAccommodations([]); // 기존 데이터 초기화
+      setLastAccomId(undefined);
+      setHasMore(true);
 
       const params = getSearchParamsFromUrl();
       const data = await searchAccommodations(params);
+
       setAccommodations(data);
+
+      // 받아온 데이터가 20개 미만이면 더 이상 없음
+      setHasMore(data.length >= 20);
+
+      // 마지막 숙소 ID 저장
+      if (data.length > 0) {
+        setLastAccomId(data[data.length - 1].accommodationId);
+      }
     } catch (err: any) {
       console.error('숙소 검색 실패:', err);
       setError(err.message || '숙소 목록을 불러오는데 실패했습니다.');
+      setHasMore(false);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 추가 숙소 로드 (무한 스크롤)
+  const loadMoreAccommodations = async () => {
+    if (loadingMore || !hasMore) return;
+
+    try {
+      setLoadingMore(true);
+
+      const params = getSearchParamsFromUrl();
+      // lastAccomId 추가
+      const data = await searchAccommodations({
+        ...params,
+        lastAccomId,
+      });
+
+      // 기존 데이터에 추가
+      setAccommodations((prev) => [...prev, ...data]);
+
+      // 받아온 데이터가 20개 미만이면 더 이상 없음
+      setHasMore(data.length >= 20);
+
+      // 마지막 숙소 ID 업데이트
+      if (data.length > 0) {
+        setLastAccomId(data[data.length - 1].accommodationId);
+      }
+    } catch (err: any) {
+      console.error('추가 숙소 로드 실패:', err);
+      setHasMore(false);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -81,6 +130,14 @@ function AccommodationListPage() {
   useEffect(() => {
     fetchAccommodations();
   }, [searchParams]);
+
+  // 무한 스크롤 훅
+  const observerTarget = useInfiniteScroll({
+    loading: loadingMore,
+    hasMore,
+    onLoadMore: loadMoreAccommodations,
+    threshold: 0.5, // 타겟의 50%가 보이면 트리거
+  });
 
   // 정렬 변경
   const handleSortChange = (newSort: 'popular' | 'new' | 'lowPrice' | 'highPrice') => {
@@ -164,13 +221,32 @@ function AccommodationListPage() {
                 <p className="mt-3 text-muted">검색 결과가 없습니다.</p>
               </div>
             ) : (
-              <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-                {accommodations.map((accommodation) => (
-                  <Col key={accommodation.accommodationId}>
-                    <AccommodationCard accommodation={accommodation} />
-                  </Col>
-                ))}
-              </Row>
+              <>
+                <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+                  {accommodations.map((accommodation) => (
+                    <Col key={accommodation.accommodationId}>
+                      <AccommodationCard accommodation={accommodation} />
+                    </Col>
+                  ))}
+                </Row>
+
+                {/* 무한 스크롤 트리거 타겟 */}
+                <div ref={observerTarget} style={{ height: '20px', margin: '40px 0' }}>
+                  {loadingMore && (
+                    <div className="text-center">
+                      <Spinner animation="border" role="status" size="sm" variant="primary">
+                        <span className="visually-hidden">Loading...</span>
+                      </Spinner>
+                      <p className="mt-2 text-muted small">더 많은 숙소를 불러오는 중...</p>
+                    </div>
+                  )}
+                  {!hasMore && accommodations.length > 0 && (
+                    <div className="text-center text-muted small">
+                      <p>모든 숙소를 불러왔습니다.</p>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </>
         )}

@@ -5,7 +5,7 @@ import type { ModalMode } from "../types/ModalMode";
 import NotiCanvas from "../../domain/notification/pages/NotiCanvas";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/types";
-
+import MypageDropdown from "./MypageDropdown"; // 마이페이지 사람아이콘 드롭다운 컴포넌트
 
 function Navbar() {
 
@@ -45,6 +45,20 @@ function Navbar() {
    }
 
 
+      // 마이페이지 아이콘 드롭다운 표시 여부
+   const [isMypageOpen, setIsMypageOpen] = useState<boolean>(false);
+
+   // 클릭 시 동작
+   const handleProfileClick = () => {
+      if (nickname) {
+         // 로그인 되어 있으면 드롭다운 토글
+         setIsMypageOpen(!isMypageOpen);
+      } else {
+         // 로그인 안 되어 있으면 로그인 모달 오픈
+         openModal("login");
+      }
+   };
+
    return (
       <>
          <nav className="navbar fixed-top navbar-expand-lg border-bottom border-1 border-secondary shadow-sm" style={{ backgroundColor: '#ebebebff' }}>
@@ -78,7 +92,22 @@ function Navbar() {
                   <ul className="navbar-nav flex-fill justify-content-end mb-2 mb-lg-0 gap-4 align-items-center">
                      
                      {nickname && <span>{nickname}</span>}
-                     <li onClick={() => openModal("login")} className="nav-item"><i className="bi bi-person-circle" style={{ fontSize: '32px', cursor: 'pointer' }}></i></li>
+
+                     {/* 아이콘 + 마이페이지 드롭다운 통합 */}
+                     {nickname ? (
+                        <li className="nav-item">
+                           <MypageDropdown onClose={() => {}} />
+                        </li>
+                     ) : (
+                        <li className="nav-item">
+                           <i
+                              className="bi bi-person-circle"
+                              style={{ fontSize: "32px", cursor: "pointer" }}
+                              onClick={() => openModal("login")}
+                           ></i>
+                        </li>
+                     )}
+                     
                      <li onClick={() => openNoti()} className="nav-item"><i className="bi bi-bell-fill" style={{ fontSize: '32px', cursor: 'pointer' }}></i></li>
                   </ul>
                </div>

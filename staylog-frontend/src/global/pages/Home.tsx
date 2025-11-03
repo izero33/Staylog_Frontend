@@ -35,8 +35,8 @@ function Home() {
         숙소 상세 페이지 테스트 (ID:2)
       </button>
       <button onClick={()=>navigate("/admin")}>관리자 페이지</button>
-      <button onClick={()=>navigate("/test-form")}>Test Form으로 이동</button>
-      <button onClick={()=>navigate("/test-load")}>Test Load으로 이동</button>
+      <button onClick={()=>navigate("/test-form")}>이미지 업로드 폼으로 이동</button>
+      <button onClick={()=>navigate("/test-load")}>이미지 로드 페이지로 이동</button>
       <br />
     </>
   );

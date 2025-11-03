@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 
-/** Bootstrap lg 미만을 모바일로 취급 */
-export default function useIsMobile(breakpoint = 992) {
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.innerWidth < breakpoint;
-  });
+// lg 미만일 때(992px 미만) 모바일 환경으로 간주
+export default function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
   useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < breakpoint);
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
-  }, [breakpoint]);
+    const handleResize = () => setIsMobile(window.innerWidth < 992);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return isMobile;
 }

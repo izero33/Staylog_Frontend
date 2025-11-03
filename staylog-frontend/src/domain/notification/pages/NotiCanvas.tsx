@@ -2,10 +2,12 @@
 import { Button, Offcanvas } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import NotificationCard from "../components/NotificationCard";
-import type { responseNotificationType } from '../types/NotificationCardType';
+import type { responseNotificationsType } from '../types/NotificationCardType';
 import useGetLoginIdFromToken from '../../auth/hooks/useGetLoginIdFromToken';
 import api from '../../../global/api';
 import useGetUserIdFromToken from '../../auth/hooks/useGetUserIdFromToken';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '../../../global/store/types';
 
 export interface NotiCanvasProps {
    isOpen: boolean;
@@ -21,8 +23,12 @@ export interface NotiCanvasProps {
 function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
 
+
+   const dispatch = useDispatch();
+
+
    // 알림 카드 리스트
-   const [notiList, setNotiList] = useState<responseNotificationType[]>([])
+   const notiList = useSelector((state: RootState) => state.notiList);
 
    const userId: number | undefined = useGetUserIdFromToken();
    const loginId = useGetLoginIdFromToken();
@@ -36,23 +42,12 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
             return
          }
          try {
-            const response: responseNotificationType[] = await api.get(`/v1/notification/${userId}`)
+            const response: responseNotificationsType[] = await api.get(`/v1/notification/${userId}`)
 
-            // // 알림 리스트에 업데이트할 변수
-            // const processedList: NotificationCardState[] = response.map((rawItem) => {
-
-            //    // JSON 파싱 후 알림 카드에서 사용할 수 있는 데이터로 가공
-            //    let details: any = {};
-            //    try {
-            //       details = JSON.parse(rawItem.details)
-            //    } catch (err) {
-            //       console.error("JSON parse error:", rawItem.details, err);
-            //    }
-            //    return notificationFormatter({ rawItem, details });
-            // })
-
-            // 완성된 데이터로 상태값 변경
-            setNotiList(response)
+            dispatch({
+               type: "SET_NOTIFICATION_LIST",
+               payload: response
+            })
 
          } catch (err) {
             console.log(err);
@@ -67,10 +62,16 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
          try {
             await api.delete(`/v1/notification/${notiId}/delete`)
 
-            // 상태값에 반영하여 화면 렌더링
-            setNotiList((prevNotiList) =>
-               prevNotiList.filter((noti) => noti.notiId !== notiId)
-            );
+            // // 상태값에 반영하여 화면 렌더링
+            // setNotiList((prevNotiList) =>
+            //    prevNotiList.filter((noti) => noti.notiId !== notiId)
+            // );
+
+            dispatch({
+               type: "DELETE_NOTIFICATION",
+               payload: notiId
+            })
+
          } catch (err) {
             console.log(err);
          }
@@ -79,18 +80,17 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
       }
    }
 
+
    // 단일 알림 읽음 처리
    async function handleReadOne(notiId: number) {
-
       try {
          await api.patch("/v1/notification/read-one", { "notiId": notiId })
 
-         // 상태값에 반영하여 화면 렌더링
-         setNotiList((prevNotiList) =>
-            prevNotiList.map((noti) =>
-               noti.notiId === notiId ? { ...noti, isRead: 'Y' } : noti
-            )
-         );
+         // API 성공 시, Redux 스토어에 반영
+         dispatch({
+            type: 'MARK_ONE_AS_READ',
+            payload: notiId
+         });
 
       } catch (err) {
          console.log(err);
@@ -100,17 +100,13 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
    // 모든 알림 읽음 처리
    async function handleReadAll(userId: number | undefined) {
-
       try {
          await api.patch("/v1/notification/read-all", { "userId": userId })
 
-         // 상태값에 반영하여 화면 렌더링
-         setNotiList((prevNotiList) =>
-            prevNotiList.map((noti) => ({
-               ...noti,
-               isRead: 'Y'
-            }))
-         );
+         // API 성공 시, Redux 스토어에 반영
+         dispatch({
+            type: 'MARK_ALL_AS_READ'
+         });
 
       } catch (err) {
          console.log(err);

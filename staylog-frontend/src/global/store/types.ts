@@ -1,4 +1,5 @@
 import type { CommonCodeGroupResponse } from '../../domain/common/types';
+import type { responseNotificationsType } from '../../domain/notification/types/NotificationCardType';
 
 // 로그인한 유저의 정보 설계도
 export interface UserInfo {
@@ -15,6 +16,8 @@ export interface RootState {
    logoutTimer: NodeJS.Timeout | null; // 자동 로그아웃 타이머의 ID를 저장
    token: string | null;
    commonCodes: CommonCodeGroupResponse | null; // 공통코드 전역 상태
+   notiList: responseNotificationsType[]; // 알림 목록
+   notiUnreadCount: number; // 안읽은 알림 수
 }
 
 // 로그인 시 유저 정보를 store에 저장하는 용도의 액션
@@ -40,5 +43,58 @@ export interface SetCommonCodesAction {
    payload: CommonCodeGroupResponse | null;
 }
 
+// ==================================
+
+// 알림 리스트 조회
+export interface SetNotiListAction {
+   type: 'SET_NOTIFICATION_LIST';
+   payload: responseNotificationsType[];
+}
+
+// 새 알림 1개를 목록에 추가
+export interface PushNotificationAction {
+   type: 'PUSH_NOTIFICATION';
+   payload: responseNotificationsType;
+}
+
+// 안읽은 알림 개수 가져오기
+export interface SetUnreadCountAction {
+   type: 'SET_UNREAD_COUNT';
+   payload: number;
+}
+
+// (SSE용) 안 읽은 개수 1 증가
+export interface IncrementUnreadCountAction {
+   type: 'INCREMENT_UNREAD_COUNT';
+}
+
+// (Thunk + 컴포넌트용) '모두 읽음' 처리
+export interface MarkAllAsReadAction {
+   type: 'MARK_ALL_AS_READ';
+}
+
+// 알림 삭제
+export interface DeleteNotificationAction {
+   type: 'DELETE_NOTIFICATION'
+   payload: number
+}
+
+// (컴포넌트용) '단일 알림' 읽음 처리
+export interface MarkOneAsReadAction {
+   type: 'MARK_ONE_AS_READ';
+   payload: number; // 읽음 처리할 notiId
+}
+
 // 하나로 통합해서 export
-export type AppAction = SetUserInfoAction | LogoutAction | SetTokenAction | SetCommonCodesAction;
+export type AppAction =
+   SetUserInfoAction
+   | LogoutAction
+   | SetTokenAction
+   | SetCommonCodesAction
+   | SetNotiListAction
+   | PushNotificationAction
+   | SetUnreadCountAction
+   | IncrementUnreadCountAction
+   | MarkAllAsReadAction
+   | DeleteNotificationAction
+   | MarkOneAsReadAction

@@ -4,7 +4,7 @@
  * 응답으로 받는 순수한 알림데이터(여러개라면 배열)
  * @author 이준혁
  */
-export interface responseNotificationType {
+export interface responseNotificationsType {
   notiId: number
   targetId: number
   details: responseDetailsType
@@ -57,7 +57,7 @@ interface responseDetailsType {
  * @author 이준혁
  * @param handleDelete 알림 삭제 handler
  */
-export interface NotificationCardProps extends responseNotificationType {
+export interface NotificationCardProps extends responseNotificationsType {
   handleDelete: (notiId: number) => void
   handleReadOne: (notiId: number) => void
 }

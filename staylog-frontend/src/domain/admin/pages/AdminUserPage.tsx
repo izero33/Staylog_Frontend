@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import api from "../../../global/api";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { formatKST } from "../../../global/utils/date";
-import type { AdminUserDto, AdminUser, Role, MemberStatus } from "../types/AdminTypes";
-import { roleOptions, statusOptions, mapDtoToAdminUser } from "../types/AdminTypes";
+import type { AdminUserDto, AdminUser, Role, MemberStatus } from "../types/AdminUserTypes";
+import { roleOptions, statusOptions, mapDtoToAdminUser } from "../types/AdminUserTypes";
 import AdminUserDetailModal from "../components/AdminUserDetailModal";
 
 const STATUS_COLORS: Record<MemberStatus, string> = {
@@ -98,6 +98,7 @@ function AdminUserPage() {
 
   return (
     <div className="container-fluid py-3">
+      <h1>회원 관리 페이지</h1>
       <div className="d-flex align-items-center justify-content-between mb-3">
       </div>
 

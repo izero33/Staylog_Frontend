@@ -2,11 +2,10 @@
 import { Button, Offcanvas } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import NotificationCard from "../components/NotificationCard";
-import type { NotificationCardState, responseNotification } from '../types/NotificationCardType';
+import type { responseNotificationType } from '../types/NotificationCardType';
 import useGetLoginIdFromToken from '../../auth/hooks/useGetLoginIdFromToken';
 import api from '../../../global/api';
 import useGetUserIdFromToken from '../../auth/hooks/useGetUserIdFromToken';
-import notificationFormatter from '../utils/notificationFormatter';
 
 export interface NotiCanvasProps {
    isOpen: boolean;
@@ -23,7 +22,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
 
    // 알림 카드 리스트
-   const [notiList, setNotiList] = useState<NotificationCardState[]>([])
+   const [notiList, setNotiList] = useState<responseNotificationType[]>([])
 
    const userId: number | undefined = useGetUserIdFromToken();
    const loginId = useGetLoginIdFromToken();
@@ -37,23 +36,23 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
             return
          }
          try {
-            const response: responseNotification[] = await api.get(`/v1/notification/${userId}`)
+            const response: responseNotificationType[] = await api.get(`/v1/notification/${userId}`)
 
-            // 알림 리스트에 업데이트할 변수
-            const processedList: NotificationCardState[] = response.map((rawItem) => {
+            // // 알림 리스트에 업데이트할 변수
+            // const processedList: NotificationCardState[] = response.map((rawItem) => {
 
-               // JSON 파싱 후 알림 카드에서 사용할 수 있는 데이터로 가공
-               let details: any = {};
-               try {
-                  details = JSON.parse(rawItem.details)
-               } catch (err) {
-                  console.error("JSON parse error:", rawItem.details, err);
-               }
-               return notificationFormatter({ rawItem, details });
-            })
+            //    // JSON 파싱 후 알림 카드에서 사용할 수 있는 데이터로 가공
+            //    let details: any = {};
+            //    try {
+            //       details = JSON.parse(rawItem.details)
+            //    } catch (err) {
+            //       console.error("JSON parse error:", rawItem.details, err);
+            //    }
+            //    return notificationFormatter({ rawItem, details });
+            // })
 
             // 완성된 데이터로 상태값 변경
-            setNotiList(processedList)
+            setNotiList(response)
 
          } catch (err) {
             console.log(err);

@@ -2,6 +2,7 @@ import { Card, CloseButton, Image } from "react-bootstrap";
 import '../../../global/css/BootstrapCustomCss.css';
 import { useState } from "react";
 import type { NotificationCardProps } from '../types/NotificationCardType';
+import dayjs from "dayjs";
 
 
 /**
@@ -15,7 +16,7 @@ import type { NotificationCardProps } from '../types/NotificationCardType';
  * @param timeAgo 알림 생성일로부터 얼마나 지났는지
  * @param isRead 알림 읽음 여부
  */
-function NotificationCard({ notiId, imageUrl, date, title, typeName, message, timeAgo, isRead, handleDelete, handleReadOne }: NotificationCardProps) {
+function NotificationCard({ notiId, targetId, details, isRead, createdAt, handleDelete, handleReadOne }: NotificationCardProps) {
 
   // 알림 카드에 마우스가 올라갔는지 여부 (delete 버튼을 활성화시킬 용도)
   const [mouseOver, setMouseOver] = useState(false);
@@ -43,19 +44,19 @@ function NotificationCard({ notiId, imageUrl, date, title, typeName, message, ti
         <CloseButton onClick={() => handleDelete(notiId)} aria-label="알림 닫기" style={{ position: 'absolute', top: '2px', right: '2px', fontSize: '0.5rem', opacity: mouseOver ? 1 : 0, pointerEvents: mouseOver ? 'auto' : 'none' }} />
 
         <Card.Body className="d-flex align-items-center p-3">
-          <Image src={imageUrl} style={{ width: '85px', height: '85px', objectFit: 'cover', }} className="rounded-3" />
+          <Image src={details.imageUrl} style={{ width: '85px', height: '85px', objectFit: 'cover', }} className="rounded-3" />
           <div className="flex-grow-1">
-            <Card.Text as="small" className="text-muted mb-1 d-block ms-3 fs-8">{date}</Card.Text>
+            <Card.Text as="small" className="text-muted mb-1 d-block ms-3 fs-8">{details.date}</Card.Text>
             <div className="d-flex justify-content-between align-items-baseline mb-1">
-              <Card.Title as="h6" className="fw-bold mb-0 ms-3 text-semiblack">{title}</Card.Title>
-              <Card.Text as="small" className="mb-0 text-secondary fs-9">{typeName}</Card.Text>
+              <Card.Title as="h6" className="fw-bold mb-0 ms-3 text-semiblack">{details.title}</Card.Title>
+              <Card.Text as="small" className="mb-0 text-secondary fs-9">{details.typeName}</Card.Text>
             </div>
 
             <hr className="my-2 border-secondary opacity-50" />
 
             <div className="d-flex justify-content-between align-items-baseline">
-              <Card.Text className="mb-0 fw-medium ms-3 fs-8 text-semiblack">{message}</Card.Text>
-              <Card.Text as="small" className="mb-0 text-muted fs-10">{timeAgo}</Card.Text>
+              <Card.Text className="mb-0 fw-medium ms-3 fs-8 text-semiblack">{details.message}</Card.Text>
+              <Card.Text as="small" className="mb-0 text-muted fs-10">{dayjs(createdAt).fromNow()}</Card.Text>
             </div>
           </div>
         </Card.Body>

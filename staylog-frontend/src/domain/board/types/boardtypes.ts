@@ -4,27 +4,21 @@
 
 export type BoardDto = {
 
-   boardType: string;
-   regionCode: number;
-   regionName: string;
-
-
-   boardId: number;
-   userId: number;
-   userName: string;
-   accommodationId: number;
-   accommodationName: string;
-   bookingId: number;
-
-   rating: number;
-   title: string;
-   content: string;
-   viewCount?: number;
-   likes: number;
-
-   createdAt?: string;
-   updatedAt?: string;
-   deleted: string;
+   userId: number;            // 로그인된 사용자 ID
+   userNickName?: string;     // 작성자 닉네임
+   userName?: string;         // 작성자 닉네임
+   accommodationId?: number;  // 숙소 ID
+   accommodationName?: string;// 숙소 이름
+   bookingId: number;         // 예약 ID
+   checkIn?: string;          // 체크인 날짜
+   checkOut?: string;         // 체크아웃 날짜
+   regionCode: string;        // 지역 코드 (예: 'SEOUL')
+   boardType: string;         // 게시판 타입 (예: 'REVIEW')
+   title: string;             // 제목
+   content: string;           // 내용
+   rating?: number;           // 평점
+   likes?: number;            // 좋아요 수
+   createdAt?: string;        // 작성일
 
 
 }

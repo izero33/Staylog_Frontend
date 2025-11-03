@@ -11,10 +11,14 @@ import AdminReservationPage from "../../domain/admin/pages/AdminReservationPage"
 import AdminRoomPage from "../../domain/admin/pages/AdminRoomPage";
 // import { ReservationProvider } from "../../domain/accommodation/hooks/useReservation"; // 사용되지 않아 주석 유지
 import AccommodationDetail from "../../domain/accommodation/pages/AccommodationDetail";
+
+import AccommodationListPage from "../../domain/accommodation/pages/AccommodationListPage";
+
+// 게시판 관련 페이지
 import Journal from "../../domain/board/pages/Journal";
 import Review from "../../domain/board/pages/Review";
+import ReviewDetail from "../../domain/board/pages/ReviewDetail";
 import BoardForm from "../../domain/board/pages/BoardForm";
-import AccommodationListPage from "../../domain/accommodation/pages/AccommodationListPage";
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin 라우트 객체는 분리)
@@ -25,6 +29,7 @@ const routes: RouteObject[] = [
   { path: "/review", element: <Review /> },
   { path: "/journal", element: <Journal /> },
   { path: "/boardForm", element: <BoardForm /> },
+  { path: "/review/:num", element: <ReviewDetail /> },
   { path: "/signup", element: <SignupForm /> },
   { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지
   { path: "/accommodations/:id", element:<AccommodationDetail />},

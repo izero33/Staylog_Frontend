@@ -6,6 +6,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import type { BoardDto } from "../types/boardtypes";
 import api from "../../../global/api";
 
+import "./Board.css";
+import { getCommonCodes, type CommonCode } from "../../../global/utils/CommonCodes";
+
 
 
 
@@ -16,6 +19,22 @@ function Review() {
     // 게시글 목록 상태값 관리
     const [boards, setBoards] = useState<BoardDto[]>([]);
     const navigate = useNavigate();
+    const [regions, setRegions] = useState<CommonCode[]>([]);
+
+    // 지역 태그 - 공통 코드 조회
+    useEffect(() => {
+      const fetchRegions = async () => {
+        try {
+          const regionsList = await getCommonCodes("REGION_TYPE");
+          console.log("📌 불러온 지역 코드:", regionsList);
+          setRegions(regionsList);
+        } catch (err) {
+          console.error("지역 코드 조회 실패:", err);
+        }
+      };
+      fetchRegions();
+    }, []);
+
 
     useEffect(()=>{
         const fetchBoards = async () =>{
@@ -37,9 +56,7 @@ function Review() {
 
             }catch(err) {
                 console.error("게시글 목록 조회 불가:", err);
-
-            } 
-        
+            }         
         };
         fetchBoards();
     },[]);
@@ -54,13 +71,28 @@ function Review() {
           {/* 좌측 지역 코드 */}
           <Col md={2}>
           <ListGroup className="region-sidebar"> 
-            {["전체", "서울", "제주", "강원", "경기", "양평", "충청도", "전라도", "경상도", "부산"].map((region) => (
-              <ListGroup.Item key={region} action className="region-item">
-                {region}
+
+            {/* '전체' 항목 고정 */}
+            <ListGroup.Item action className = "region-item active">
+              전체 지역
+            </ListGroup.Item>
+
+            {/* 지역 목록 - 공통코드에서 조회 */}
+            {regions.map((region) => (
+              <ListGroup.Item
+                key={region.codeId}
+                action
+                className="region-item"
+              >
+                {region.codeName}
               </ListGroup.Item>
+
             ))}
-          </ListGroup>
-        </Col>
+            </ListGroup>
+          </Col>
+
+
+
 
           {/* 메인 게시글 목록 영역 */}
           <Col md={10}>
@@ -93,7 +125,9 @@ function Review() {
                       <td>{board.boardId}</td>
                       <td>{board.regionName}</td>
                       <td>{board.accommodationName}</td>
-                      <td className="text-start">{board.title}</td>
+                      <td>
+                        <NavLink to={`/review/${board.boardId}`} className="board-link">{board.title}</NavLink>
+                      </td>
                       <td>{board.userId}</td>
                       <td>{board.viewCount || 0}</td>
                       <td>{board.likes || 0}</td>

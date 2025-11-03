@@ -1,7 +1,7 @@
 
 import { Container, Row, Col, Carousel, Nav, Button, Image, Accordion, Card,} from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
-import type { AccommodationDetail, AccommodationRoomList } from '../types/accommodation';
+import type { AccommodationDetailType, AccommodationRoomList } from '../types/accommodation';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
@@ -25,7 +25,7 @@ function AccommodationDetail() {
     const accommodationId = idString ? parseInt(idString):undefined;
 
     // 숙소 상세 데이터
-    const [data, setData] = useState<AccommodationDetail|null>(null);
+    const [data, setData] = useState<AccommodationDetailType|null>(null);
     // 로딩 상태
     const [loading, setLoading] = useState(true);
     // 에러 메세지

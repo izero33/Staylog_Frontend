@@ -15,6 +15,8 @@ import Journal from "../../domain/board/pages/Journal";
 import Review from "../../domain/board/pages/Review";
 import BoardForm from "../../domain/board/pages/BoardForm";
 import AccommodationListPage from "../../domain/accommodation/pages/AccommodationListPage";
+import TestForm from "../pages/TestForm"; // Import TestForm
+import TestLoadImage from "../pages/TestLoadImage";
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin 라우트 객체는 분리)
@@ -29,6 +31,8 @@ const routes: RouteObject[] = [
   { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지
   { path: "/accommodations/:id", element:<AccommodationDetail />},
   { path: "/room/:roomId", element: <RoomDetail />},
+  { path: "/test-form", element: <TestForm /> },
+  { path: "/test-load", element: <TestLoadImage /> },
 ];
 
 // Admin 중첩 라우트 객체를 별도로 정의
@@ -37,12 +41,12 @@ const adminRoute: RouteObject = {
     element: <AdminLayout />,
     children: [
       { index: true, element: <AdminUserPage /> },  // /admin 기본 페이지
-      { path: "user", element: <AdminUserPage /> },  // /admin/user
-      { path: "accommodations", element: <AdminAccommodationPage /> },  // /admin/accommodations
-      { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },  // /admin/accommodations/:accommodationId/rooms
-      { path: "reservations", element: <AdminReservationPage /> },  // /admin/reservations
-      { path: "reviews", element: <div>리뷰 게시판 관리 페이지</div> },  // /admin/reviews
-      { path: "journals", element: <div>저널 게시판 관리 페이지</div> },  // /admin/journals
+      { path: "user", element: <AdminUserPage /> },
+      { path: "accommodations", element: <AdminAccommodationPage /> },
+      { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },
+      { path: "reservations", element: <AdminReservationPage /> },
+      { path: "reviews", element: <div>리뷰 게시판 관리 페이지</div> },
+      { path: "journals", element: <div>저널 게시판 관리 페이지</div> },
     ],
 };
 

@@ -1,10 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import api from '../api';
 import { Flipper, Flipped } from 'react-flip-toolkit';
-import '../css/ImageUploaderCustom.css'; // Custom CSS for dropzone
+import '../css/ImageUploaderCustom.css'; // 드롭존을 위한 커스텀 CSS
 
 // 파일 객체 구조 정의
-interface DroppedFile {
+export interface DroppedFile {
   id: string;
   file: File;
   preview: string;
@@ -12,12 +12,16 @@ interface DroppedFile {
 
 // 메인 컴포넌트의 Props 인터페이스
 export interface ImageUploaderProps {
-  targetType: string;
-  targetId: number | string;
-  onUploadComplete: (uploadedImages: any) => void;
+  onFilesChange: (files: DroppedFile[]) => void; // 파일 변경 사항을 부모에게 알리는 콜백
+  clearTrigger?: number; // 부모로부터 초기화 트리거를 받음
+  targetType: string; // 대상 타입 (예: 'post', 'product')
+  targetId: string;   // 대상 ID
+  uploadTrigger?: number; // 부모로부터 업로드 트리거를 받음
+  onUploadComplete?: (uploadedImages: any[]) => void; // 업로드 완료 시 호출될 콜백
+  onUploadError?: (error: string) => void; // 업로드 실패 시 호출될 콜백
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ targetType, targetId, onUploadComplete }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ onFilesChange, clearTrigger, targetType, targetId, uploadTrigger, onUploadComplete, onUploadError }) => {
   const [selectedFiles, setSelectedFiles] = useState<DroppedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,10 +52,25 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ targetType, targetId, onU
   };
 
   // --- 모든 파일 삭제 --- //
-  const clearAllFiles = () => {
-    selectedFiles.forEach(file => URL.revokeObjectURL(file.preview));
-    setSelectedFiles([]);
-  };
+  const clearAllFiles = useCallback(() => {
+    setSelectedFiles(prevFiles => {
+      prevFiles.forEach(file => URL.revokeObjectURL(file.preview));
+      return [];
+    });
+    // 파일 입력 필드의 값 초기화
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  }, []); // inputRef는 useRef로 생성되므로 의존성 배열에 포함할 필요 없음
+
+  // 부모로부터 clearTrigger가 변경되면 상태 초기화
+  useEffect(() => {
+    // clearTrigger의 값이 변경될 때마다 clearAllFiles를 호출하여 내부 상태를 초기화
+    // clearTrigger가 0이 아닌 양수 값으로 변경될 때만 초기화되도록 함
+    if (clearTrigger !== undefined && clearTrigger > 0) {
+      clearAllFiles();
+    }
+  }, [clearTrigger, clearAllFiles]);
 
   // --- 버튼 기반 순서 변경 --- //
   const moveFile = (index: number, direction: 'up' | 'down') => {
@@ -78,40 +97,58 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ targetType, targetId, onU
   // --- 입력 클릭 --- //
   const onDropzoneClick = () => { if (!isUploading) inputRef.current?.click(); };
 
-  // 언마운트 시 Blob URL 정리
+  // 언마운트 시 Blob URL 정리 및 파일 변경 알림
   useEffect(() => {
+    onFilesChange(selectedFiles);
     return () => { selectedFiles.forEach(file => URL.revokeObjectURL(file.preview)); };
-  }, [selectedFiles]);
+  }, [selectedFiles, onFilesChange]);
 
-  // --- 업로드 로직 --- //
-  const handleUpload = async () => {
-    if (selectedFiles.length === 0) return;
+  const handleUpload = useCallback(async () => {
+    if (selectedFiles.length === 0) {
+      setError('업로드할 파일이 없습니다.');
+      return;
+    }
+    if (!targetType || !targetId) {
+      setError('Target Type 또는 Target ID가 지정되지 않았습니다.');
+      return;
+    }
 
     setIsUploading(true);
     setError(null);
 
     const formData = new FormData();
-    formData.append('targetType', targetType);
-    formData.append('targetId', String(targetId));
-    selectedFiles.forEach(item => {
-      formData.append('files', item.file);
+    selectedFiles.forEach((file, index) => {
+      formData.append('files', file.file);
+      formData.append(`imageOrder[${index}]`, (index + 1).toString()); // 1부터 시작하는 순서
     });
+    formData.append('targetType', targetType);
+    formData.append('targetId', targetId);
 
     try {
-      const response = await api.post('/v1/images/upload', formData, {
+      const res = await api.post('/v1/images/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      onUploadComplete(response);
-      setSelectedFiles([]);
-    } catch (err) {
-      console.error('업로드 실패:', err);
-      setError('업로드 실패. 다시 시도해주세요.');
+      console.log('Upload successful:', res);
+      onUploadComplete?.(res); // 응답 데이터에 업로드된 이미지 정보가 포함되어 있다고 가정
+      clearAllFiles(); // 업로드 성공 후 파일 목록 초기화
+    } catch (err: any) {
+      console.error('Upload failed:', err);
+      const errorMessage = err.response?.message || '이미지 업로드에 실패했습니다.';
+      setError(errorMessage);
+      onUploadError?.(errorMessage);
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [selectedFiles, targetType, targetId, onUploadComplete, onUploadError, clearAllFiles]);
+
+  // 부모로부터 uploadTrigger가 변경되면 업로드 시작
+  useEffect(() => {
+    if (uploadTrigger !== undefined && uploadTrigger > 0) { // 양수 변경 시에만 트리거
+      handleUpload();
+    }
+  }, [uploadTrigger, handleUpload]);
 
   return (
     <div
@@ -134,54 +171,57 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ targetType, targetId, onU
           onChange={e => handleFileSelection(e.target.files)}
           disabled={isUploading}
         />
-        <p className="mb-0">Drag & drop images here, or click to select files</p>
+        <p className="mb-0">여기로 이미지를 드래그하거나 클릭하여 파일을 선택하세요</p>
       </div>
 
       {selectedFiles.length > 0 && (
         <div className="mt-4">
-          <div className="d-flex justify-content-end mb-2">
-            <button type="button" className="btn btn-sm btn-outline-danger" onClick={clearAllFiles}>
-              모두 삭제
-            </button>
-          </div>
           <Flipper flipKey={selectedFiles.map(item => item.id).join('-')}> {/* Flipper 렌더링을 위해 flipKey 사용 */}
             <ul className="list-group">
               {selectedFiles.map((item, index) => (
                 <Flipped key={item.id} flipId={item.id}>
                   <li
-                    className="list-group-item d-flex justify-content-between align-items-center"
+                    className="list-group-item d-flex justify-content-between"
+                    style={{ position: 'relative' }}
                   >
                     <div className="d-flex align-items-center">
-                      <span className="me-3 fw-bold">{index + 1}</span> {/* 순서 번호 */}
-                      <img src={item.preview} alt={item.file.name} className="img-thumbnail me-3" style={{ width: '100px', height: 'auto' }} />
-                      <span className="text-truncate" style={{ maxWidth: '300px' }}>{item.file.name}</span>
-                    </div>
-                    <div className="d-flex align-items-center">
-                      <div className="btn-group-vertical me-2" role="group">
-                        <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => moveFile(index, 'up')} disabled={index === 0}>
+                      {/* 순서 변경 버튼 및 순서 번호 */}
+                      <div className="d-flex flex-column align-items-center me-3">
+                        <button type="button" className="btn btn-sm btn-outline-secondary mb-1 mt-1" onClick={() => moveFile(index, 'up')} disabled={index === 0}>
                           ▲
                         </button>
-                        <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => moveFile(index, 'down')} disabled={index === selectedFiles.length - 1}>
+                        <span className="fw-bold">{index + 1}</span> {/* 순서 번호 */}
+                        <button type="button" className="btn btn-sm btn-outline-secondary mb-1 mt-1" onClick={() => moveFile(index, 'down')} disabled={index === selectedFiles.length - 1}>
                           ▼
                         </button>
                       </div>
-                      <button type="button" className="btn btn-sm btn-danger" onClick={() => removeFile(item.id)}>X</button>
+                      <img src={item.preview} alt={item.file.name} className="img-thumbnail me-3" style={{ width: '100px', height: 'auto' }} />
+                      <span className="text-truncate" style={{ maxWidth: '300px' }}>{item.file.name}</span>
                     </div>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => removeFile(item.id)}
+                      style={{ position: 'absolute', top: '5px', right: '5px' }}
+                    >
+                      X
+                    </button>
                   </li>
                 </Flipped>
               ))}
             </ul>
           </Flipper>
+          <div className="d-flex justify-content-end mt-2">
+            <button type="button" className="btn btn-sm btn-danger" onClick={clearAllFiles}>
+              모두 삭제
+            </button>
+          </div>
         </div>
       )}
 
       {error && <p className="text-danger mt-2">{error}</p>}
 
-      {selectedFiles.length > 0 && (
-        <button onClick={handleUpload} className="btn btn-primary mt-3 w-100" disabled={isUploading}>
-          {isUploading ? 'Processing...' : `Upload ${selectedFiles.length} image(s)`}
-        </button>
-      )}
+      
     </div>
   );
 };

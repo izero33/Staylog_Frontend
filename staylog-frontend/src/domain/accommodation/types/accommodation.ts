@@ -20,7 +20,7 @@ export interface AccommodationRoomList {
     price : number;
 }
 
-export interface AccommodationDetail {
+export interface AccommodationDetailType {
     readonly accommodationId?: number;
     name : string;
     typeNameEn : string;

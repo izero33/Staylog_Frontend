@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import api from "../api";
-import ImageUploader from "../components/ImageUploader";
+// import ImageUploader from "../components/ImageUploader"; // ImageUploader moved to TestForm
 
 
 function Home() {
@@ -21,11 +21,11 @@ function Home() {
     navigate("/accommodations/1");
   };
 
-  // 업로드가 완료된 후 실행될 함수
-  const handleUploadComplete = () => {
-    alert('업로드 완료!');
-    // 이 데이터를 사용하여 페이지 상태를 업데이트하거나, 사용자에게 피드백을 줄 수 있습니다.
-  };
+  // 업로드가 완료된 후 실행될 함수 (이제 TestForm에서 처리)
+  // const handleUploadComplete = () => {
+  //   alert('업로드 완료!');
+  //   // 이 데이터를 사용하여 페이지 상태를 업데이트하거나, 사용자에게 피드백을 줄 수 있습니다.
+  // };
 
   return (
     <>
@@ -35,8 +35,9 @@ function Home() {
         숙소 상세 페이지 테스트 (ID:2)
       </button>
       <button onClick={()=>navigate("/admin")}>관리자 페이지</button>
+      <button onClick={()=>navigate("/test-form")}>Test Form으로 이동</button>
+      <button onClick={()=>navigate("/test-load")}>Test Load으로 이동</button>
       <br />
-      <ImageUploader targetId={1} targetType="test2" onUploadComplete={handleUploadComplete}></ImageUploader>
     </>
   );
 }

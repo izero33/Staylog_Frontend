@@ -8,6 +8,7 @@ import axios from 'axios';
 import RoomList from '../components/RoomList';
 import ReviewList from '../components/ReviewList';
 import '../css/Accommodation.css';
+import { loadKakaoSdk } from '../../../global/utils/kakaoLoader';
 /*
     Carousel : 숙소 대표 이미지
     Accordion : 클릭 시 펼쳐지는 기능
@@ -19,6 +20,7 @@ declare global {
     kakao: any;
   }
 }
+const KAKAO_JS_KEY = "ba55e0b19d51c59e9860418eebdb1a9f";
 
 function AccommodationDetail() {
   // 예비용 이미지
@@ -79,31 +81,30 @@ function AccommodationDetail() {
   }, [accommodationId]);
 
   const mapRef = useRef<HTMLDivElement | null>(null);
-
-  //[정나영] 지도표시
+  //지도
   useEffect(() => {
-    if (!data || !window.kakao || !mapRef.current) return;
+    if (!data?.latitude || !data?.longitude){
+      //console.log("!data?.latitude || !data?.longitude")
+      return;
+    }
+    if (!mapRef.current) {
+      //console.log("!mapRef.current")
+      return;
+    };
 
-    const { latitude, longitude, name } = data;
-
-    // 지도 로드
-    window.kakao.maps.load(() => {
-      const map = new window.kakao.maps.Map(mapRef.current, {
-        center: new window.kakao.maps.LatLng(latitude, longitude),
-        level: 3,
+    loadKakaoSdk(KAKAO_JS_KEY)
+      .then(() => {
+        const { kakao } = window as any;
+        const center = new kakao.maps.LatLng(data.latitude, data.longitude);
+        const map = new kakao.maps.Map(mapRef.current, { center, level: 3 });
+        new kakao.maps.Marker({ map, position: center });
+      })
+      .catch((e) => {
+        console.error("Kakao init failed:", e);
       });
-
-      const marker = new window.kakao.maps.Marker({
-        position: new window.kakao.maps.LatLng(latitude, longitude),
-      });
-      marker.setMap(map);
-
-      const infoWindow = new window.kakao.maps.InfoWindow({
-        content: `<div style="padding:5px;font-size:13px;">${name}</div>`,
-      });
-      infoWindow.open(map, marker);
-    });
   }, [data]);
+
+
 
 
 
@@ -142,9 +143,8 @@ function AccommodationDetail() {
 
   // 데이터가 없다면 표시
   if (!data) {
-    return <div style={{ padding: "40px", textAlign: "center" }}>t숙소 정보를 찾을 수 없습니다</div>;
+    return <div style={{ padding: "40px", textAlign: "center" }}>숙소 정보를 찾을 수 없습니다</div>;
   }
-
 
 
 
@@ -242,20 +242,15 @@ function AccommodationDetail() {
               <div className="mb-5" id="locationMap"> {/* ID 추가: Nav Link 연결용 */}
                 <h4 className="mb-3">위치</h4>
                 <p>{data.address}</p>
-                <div
-                  id="map"
-                  ref={mapRef}
-                  style={{
-                    width: "100%",
-                    height: "400px",
-                    borderRadius: "10px",
-                    marginTop: "20px",
-                  }}
-                ></div>
-                <div className="mapApi border bg-light" style={{ height: "400px" }}>
-                  <p className="text-center p-5 text-muted">지도 API 영역</p>
-                </div>
               </div>
+              <div
+                ref={mapRef}
+                id="map"
+                style={{
+                  width: '100%',
+                  height: '500px',
+                }}
+              ></div>
 
               {/* 안내 사항 */}
               <div className="info mb-5" id="infoAccordion">

@@ -1,13 +1,16 @@
 
-import { Container, Row, Col, Carousel, Nav, Button, Image, Accordion, Card,} from 'react-bootstrap';
+import { Container, Row, Col, Carousel, Nav, Button, Image, Accordion, Card, Offcanvas,} from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
-import type { AccommodationDetail, AccommodationRoomList } from '../types/accommodation';
+import type { AccommodationDetailType, AccommodationRoomListType } from '../types/AccommodationType';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
 import RoomList from '../components/RoomList';
 import ReviewList from '../components/ReviewList';
 import '../css/Accommodation.css';
+import BookingPanel from '../components/BookingPanel';
+import useIsMobile from '../hooks/useIsMobile';
+import FloatingReserveBubble from '../components/FloatingReserveBubble';
 /*
     Carousel : 숙소 대표 이미지
     Accordion : 클릭 시 펼쳐지는 기능
@@ -22,20 +25,25 @@ function AccommodationDetail() {
 
     // URL 파라미터에서 숙소 ID 추출
     const { id: idString } = useParams<{id:string}>();
+    console.log("useParams 결과:", useParams()); // 무엇이 찍히는지 확인
+    console.log("idString 값:", idString);      // idString이 무엇인지 확인
     const accommodationId = idString ? parseInt(idString):undefined;
 
     // 숙소 상세 데이터
-    const [data, setData] = useState<AccommodationDetail|null>(null);
+    const [data, setData] = useState<AccommodationDetailType|null>(null);
     // 로딩 상태
     const [loading, setLoading] = useState(true);
     // 에러 메세지
     const [error, setError] = useState<string|null>(null);
     // 선택된 객실
-    const [selectedRoom, setSelectedRoom] = useState<AccommodationRoomList|null>(null);
+    const [selectedRoom, setSelectedRoom] = useState<AccommodationRoomListType|null>(null);
     // 페이지 이동
     const navigate = useNavigate();
     // 메뉴 탭 기본값을 summary 로 설정
     const [activeTab, setActiveTab] = useState("summary");
+    // 모바일 체크
+    const isMobile = useIsMobile(); // hook으로 모바일 체크
+    const [openReserve, setOpenReserve] = useState(false);
 
     // 숙소 상세데이터를 가져오는 API 호출
     useEffect(() => {
@@ -75,15 +83,24 @@ function AccommodationDetail() {
     const scrollToSection = (id: string) => {
         const element = document.getElementById(id);
         if (element) {
-            // 부드러운 스크롤 이동
-            element.scrollIntoView({ behavior:"smooth", block:"start" }); 
+            // 기본 여백값
+            const offset = 84; 
+            // 해당 요소의 상단 위치
+            const elementPosition = element.getBoundingClientRect().top;
+            // 현재 스크롤 위치에 상단 위치를 더하고, 기본 여백 값만큼 뺴서 최종 스크롤 위치를 계산
+            const offsetPosition = elementPosition + window.scrollY - offset;
+            // 계산된 위치로 부드럽게 자동 스크롤
+            window.scrollTo({
+                top : offsetPosition,
+                behavior : "smooth"
+            });      
             // 해당 메뉴 클릭 시 상태 업데이트
             setActiveTab(id); 
         }
     };
     
     // 객실 선택 시 상태 업데이트와 페이지 이동
-    const selectRoom = (room:AccommodationRoomList) => {
+    const selectRoom = (room:AccommodationRoomListType) => {
         setSelectedRoom(room);
         navigate(`/room/${room.roomId}`)
 
@@ -266,15 +283,53 @@ function AccommodationDetail() {
                     </Col>
 
                     {/* 오른쪽 : 예약폼 영역 */}
-                    <Col lg={4}>
-                        <div className="right sticky-top pt-lg-0 pt-4">
-                            {/* ReservationForm으로 선택된 객실 ID/정보 전달 */}
-                            
+                    <Col lg={4} className="d-none d-lg-block pt-lg-4">
+                        <div className="right sticky-top panelTop">
+                            <BookingPanel
+                                name={data.name}
+                                rooms={data.rooms || []}
+                                onReserve={() => alert("예약 완료!")}
+                                onClickGuests={() => alert("인원 선택창 열림")}
+                                showRoomSelect={true}  // 객실 목록 나오게 하기
+                                disabledDates={data.rooms?.[0]?.disabledDates || []}
+                                onSelectRoom={(room) => console.log("선택된 객실:", room)}
+                            />
                         </div>
                     </Col>
                 </Row>
             </Container>
         </Container>
+
+        {/* 모바일 : 말풍선 버튼 */}
+        {isMobile && (
+            <FloatingReserveBubble onClick={() => setOpenReserve(true)} />
+        )}
+        {/* 모바일 : 예약폼 */}
+        {isMobile && (
+            <Offcanvas
+                show={openReserve}
+                onHide={() => setOpenReserve(false)}
+                placement="bottom"
+                className="d-lg-none"
+                style={{ height: "75vh" }}
+                aria-labelledby="reserve-panel-title"
+            >
+                <Offcanvas.Header closeButton>
+                    <Offcanvas.Title id="reserve-panel-title">예약</Offcanvas.Title>
+                </Offcanvas.Header>
+                <Offcanvas.Body>
+                    <BookingPanel
+                        name={data.name}
+                        rooms={data.rooms}
+                        onReserve={() => {
+                            setOpenReserve(false);
+                            alert("예약 완료!");
+                        }}
+                        onClickGuests={() => alert("인원 선택창 열림")}
+                    />
+                </Offcanvas.Body>
+            </Offcanvas>
+        )}
     </>
 }
 

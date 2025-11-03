@@ -153,7 +153,9 @@ function RoomDetail() {
     </Container>
 
     {/* 모바일: 말풍선 버튼 */}
-    {isMobile && <FloatingReserveBubble onClick={() => setOpenReserve(true)} />}
+                        {isMobile && (
+                            <FloatingReserveBubble onClick={() => setOpenReserve(true)} />
+                        )}
 
     {/* 모바일: 바텀시트 Offcanvas */}
     <Offcanvas

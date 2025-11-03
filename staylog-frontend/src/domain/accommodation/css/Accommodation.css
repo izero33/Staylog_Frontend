@@ -1,4 +1,4 @@
-/* CustomNav.css (예시) */
+/*메뉴 탭 커스텀*/
 .menuTab {
     display : flex;
     justify-content : space-between; /* 탭 넓게 펼치기 */
@@ -9,7 +9,6 @@
     font-size : 1.1rem;
     font-weight : 500;
 }
-
 
 .menuTab .navItem {
     flex-grow : 1;
@@ -62,4 +61,28 @@
     padding : 1rem 0 1rem;   /* 위쪽 살짝, 아래쪽 넉넉한 여백 */
     color : #282828;              /* 본문 글씨 색 살짝 흐린 검정 */
     font-size : 0.97rem;       /* 글씨 크기 약간 작게 */
+}
+
+/* 오른쪽 예약폼 높이 84px 여유 공간*/
+.panelTop {
+    /* !important를 사용해 Bootstrap 기본 top:0을 강제로 덮어쓰기 */
+    top : 84px !important; 
+}
+
+/* 데스크톱 화면 크기 버전 고정 크기 */
+.right.sticky-top {
+    position: sticky;
+    top: 84px;
+    width: 100%; /* Col 폭에 맞게 */
+    max-width: 100%;
+}
+
+/* 화면이 줄어드는 반응형 */
+@media (max-width: 1199px) {
+    .right.sticky-top {
+        position : static; /* sticky 해제 */
+        width : 100%;      /* 부모 폭에 맞춤 */
+        max-width : 100%;
+        margin-top : 20px; /* 버튼 아래로 내려가도록 여백 */
+    }
 }

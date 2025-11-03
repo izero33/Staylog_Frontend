@@ -36,5 +36,14 @@ export type AdminReservation = {
   statusColor?: string;  // COMMON_CODE.ATTR1
 };
 
-/** 목록 응답 */
-export type ReservationListResponse = SuccessResponse<AdminReservation[]>;
+// BE 응답 (권장)
+type ReservationListPayload = {
+  items: AdminReservation[];
+  totalCount: number;
+};
+
+type ReservationListResponse = SuccessResponse<ReservationListPayload>;
+
+
+
+

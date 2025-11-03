@@ -1,5 +1,5 @@
 
-import { Offcanvas } from 'react-bootstrap';
+import { Button, Offcanvas } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import NotificationCard from "../components/NotificationCard";
 import type { NotificationCardState, responseNotification } from '../types/NotificationCardType';
@@ -80,11 +80,11 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
       }
    }
 
-   // 알림 읽음 처리
-   async function handleRead(notiId: number) {
-      
+   // 단일 알림 읽음 처리
+   async function handleReadOne(notiId: number) {
+
       try {
-         await api.patch("/v1/notification/read", { "notiId": notiId })
+         await api.patch("/v1/notification/read-one", { "notiId": notiId })
 
          // 상태값에 반영하여 화면 렌더링
          setNotiList((prevNotiList) =>
@@ -99,11 +99,32 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
    }
 
 
+   // 모든 알림 읽음 처리
+   async function handleReadAll(userId: number | undefined) {
+
+      try {
+         await api.patch("/v1/notification/read-all", { "userId": userId })
+
+         // 상태값에 반영하여 화면 렌더링
+         setNotiList((prevNotiList) =>
+            prevNotiList.map((noti) => ({
+               ...noti,
+               isRead: 'Y'
+            }))
+         );
+
+      } catch (err) {
+         console.log(err);
+      }
+   }
+
+
 
    return (
       <Offcanvas show={isOpen} onHide={onClose} placement="end" scroll={true} style={{ "--bs-offcanvas-width": "450px" } as React.CSSProperties} id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
          <Offcanvas.Header closeButton>
             <Offcanvas.Title id="offcanvasWithBothOptionsLabel">{loginId}</Offcanvas.Title>
+            <Button onClick={() => handleReadAll(userId)}>모든 알림 읽기 처리</Button>
          </Offcanvas.Header>
 
          <Offcanvas.Body>
@@ -111,7 +132,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
                notiList.length > 0
                   ? (
                      notiList.map((noti) => (
-                        <NotificationCard key={noti.notiId} {...noti} handleDelete={() => handleDelete(noti.notiId)} handleRead={() => { handleRead(noti.notiId) }} />
+                        <NotificationCard key={noti.notiId} {...noti} handleDelete={() => handleDelete(noti.notiId)} handleReadOne={() => { handleReadOne(noti.notiId) }} />
                      ))
                   )
                   : ("")

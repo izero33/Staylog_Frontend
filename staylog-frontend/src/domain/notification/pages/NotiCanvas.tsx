@@ -1,6 +1,6 @@
 
 import { Button, Offcanvas } from 'react-bootstrap';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import NotificationCard from "../components/NotificationCard";
 import type { responseNotificationsType } from '../types/NotificationCardType';
 import useGetLoginIdFromToken from '../../auth/hooks/useGetLoginIdFromToken';
@@ -37,6 +37,9 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
    // 알림 리스트 요청
    useEffect(() => {
+      
+      // TODO: 이미 notiList가 있다면 요청하지 않기
+      
       (async () => {
          if (!userId) {
             return
@@ -88,7 +91,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
          // API 성공 시, Redux 스토어에 반영
          dispatch({
-            type: 'MARK_ONE_AS_READ',
+            type: 'READ_ONE',
             payload: notiId
          });
 
@@ -105,7 +108,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
          // API 성공 시, Redux 스토어에 반영
          dispatch({
-            type: 'MARK_ALL_AS_READ'
+            type: 'READ_ALL'
          });
 
       } catch (err) {

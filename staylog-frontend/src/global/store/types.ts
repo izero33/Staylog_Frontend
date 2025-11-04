@@ -44,6 +44,7 @@ export interface SetCommonCodesAction {
 }
 
 // ==================================
+// 알림 액션
 
 // 알림 리스트 조회
 export interface SetNotiListAction {
@@ -63,14 +64,20 @@ export interface SetUnreadCountAction {
    payload: number;
 }
 
-// (SSE용) 안 읽은 개수 1 증가
+// 안 읽은 개수 1 증가
 export interface IncrementUnreadCountAction {
    type: 'INCREMENT_UNREAD_COUNT';
 }
 
-// (Thunk + 컴포넌트용) '모두 읽음' 처리
+// 단일 알림 읽음 처리
+export interface MarkOneAsReadAction {
+   type: 'READ_ONE';
+   payload: number; // 읽음 처리할 notiId
+}
+
+// 모두 읽음 처리
 export interface MarkAllAsReadAction {
-   type: 'MARK_ALL_AS_READ';
+   type: 'READ_ALL';
 }
 
 // 알림 삭제
@@ -79,13 +86,8 @@ export interface DeleteNotificationAction {
    payload: number
 }
 
-// (컴포넌트용) '단일 알림' 읽음 처리
-export interface MarkOneAsReadAction {
-   type: 'MARK_ONE_AS_READ';
-   payload: number; // 읽음 처리할 notiId
-}
 
-// 하나로 통합해서 export
+
 export type AppAction =
    SetUserInfoAction
    | LogoutAction

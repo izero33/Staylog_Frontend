@@ -34,41 +34,70 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
          }
          localStorage.removeItem("token");
          return { ...initState };
-      // --- [신규 추가] 알림 리듀서 로직 ---
+
+      
+      // ==================================
+      // 알림 로직
+      
+      // 알림 리스트 조회
       case 'SET_NOTIFICATION_LIST':
          return {
             ...state,
             notiList: action.payload,
          };
 
+      // 새 알림 1개를 목록에 추가
       case 'PUSH_NOTIFICATION':
-         // [중요] 불변성을 지키며 새 알림을 '맨 앞'에 추가
+         // 맨 앞에 추가
          return {
             ...state,
             notiList: [action.payload, ...state.notiList],
          };
 
+      // 안읽은 알림 개수 가져오기
       case 'SET_UNREAD_COUNT':
          return {
             ...state,
             notiUnreadCount: action.payload,
          };
 
+      // 안 읽은 개수 1 증가
       case 'INCREMENT_UNREAD_COUNT':
          return {
             ...state,
             notiUnreadCount: state.notiUnreadCount + 1,
          };
 
-      case 'MARK_ALL_AS_READ':
-         // 불변성을 지키며 모두 읽음 처리
+      // 단일 알림 읽음 처리 및 안 읽은 개수 1 감소
+      case 'READ_ONE': {
+         const notiIdToMark = action.payload;
+
+         // 읽음 처리하려는 알림이 안 읽은 상태였는지 확인
+         const targetNoti = state.notiList.find(noti => noti.notiId === notiIdToMark);
+         const wasUnread = targetNoti && targetNoti.isRead === 'N';
+
+         return {
+            ...state,
+            // 안 읽은 알림을 읽음 처리한 거라면 카운트 1 감소
+            notiUnreadCount: wasUnread ? state.notiUnreadCount - 1 : state.notiUnreadCount,
+
+            // map을 돌려서 해당 notiId의 isRead만 Y로 변경
+            notiList: state.notiList.map(noti =>
+               noti.notiId === notiIdToMark ? { ...noti, isRead: 'Y' } : noti
+            ),
+         };
+      }
+
+      // 모두 읽음 처리
+      case 'READ_ALL':
          return {
             ...state,
             notiUnreadCount: 0,
             notiList: state.notiList.map(noti => ({ ...noti, isRead: 'Y' })),
          };
 
-      case 'DELETE_NOTIFICATION': { // (case를 {}로 감싸서 변수 스코프 분리)
+      // 알림 삭제
+      case 'DELETE_NOTIFICATION': { // 변수 스코프 분리
          const notiIdToDelete = action.payload;
 
          // 삭제하려는 알림이 안 읽은 상태였는지 확인
@@ -80,29 +109,12 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
             // 안 읽은 알림을 삭제했다면 카운트 1 감소
             notiUnreadCount: wasUnread ? state.notiUnreadCount - 1 : state.notiUnreadCount,
 
-            // filter로 해당 notiId를 제외한 새 배열을 생성 (불변성)
+            // filter로 해당 notiId를 제외한 새 배열을 생성
             notiList: state.notiList.filter(noti => noti.notiId !== notiIdToDelete),
          };
       }
 
-      case 'MARK_ONE_AS_READ': {
-         const notiIdToMark = action.payload;
-
-         // 읽음 처리하려는 알림이 '안 읽은' 상태였는지 확인
-         const targetNoti = state.notiList.find(noti => noti.notiId === notiIdToMark);
-         const wasUnread = targetNoti && targetNoti.isRead === 'N';
-
-         return {
-            ...state,
-            // 안 읽은 알림을 읽음 처리한 거라면, 카운트 1 감소
-            notiUnreadCount: wasUnread ? state.notiUnreadCount - 1 : state.notiUnreadCount,
-
-            // map을 돌려서 해당 notiId의 isRead만 'Y'로 변경 (불변성)
-            notiList: state.notiList.map(noti =>
-               noti.notiId === notiIdToMark ? { ...noti, isRead: 'Y' } : noti
-            ),
-         };
-      }
+      
       default:
          return state;
    }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import type { ModalMode } from "../types/ModalMode";
@@ -14,20 +14,23 @@ function Navbar() {
    const navigate = useNavigate();
 
    const nickname = useSelector((state: RootState) => {
-	return state.userInfo?.nickname // 없을 수도 있으니 -> ?.
-})
+	   return state.userInfo?.nickname // 없을 수도 있으니 -> ?.
+   })
+
+   const notiUnreadCount = useSelector((state: RootState) => state.notiUnreadCount);
+
    /** 로그아웃 api 호출 (refreshToken만 삭제됨, dispath LOGOUT (localstorage의 AccessToken삭제)로 프론트 상태 초기화 */
    const handleLogout = async () => {
-    try {
-      await logout(); //  백엔드에서는 refreshToken만 삭제됨
+      try {
+         await logout(); //  백엔드에서는 refreshToken만 삭제됨
 
-      dispatch({ type: 'LOGOUT' }); // 프론트 상태 초기화 
+         dispatch({ type: 'LOGOUT' }); // 프론트 상태 초기화 
 
-      navigate('/'); // 홈으로 리다이렉트
-    } catch (err) {
-      console.error('로그아웃 실패:', err);
-    }
-  };
+         navigate('/'); // 홈으로 리다이렉트
+      } catch (err) {
+         console.error('로그아웃 실패:', err);
+      }
+   };
 
    // 모달 활성화 관리 상태값
    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -72,6 +75,11 @@ function Navbar() {
    function closeNoti() {
       setIsNotiOpen(false);
    }
+
+
+   useEffect(() => {
+      // 안읽은 알림 수를 조회하는 함수 필요
+   })
 
 
    return (
@@ -119,7 +127,8 @@ function Navbar() {
 
                         {/* 알림 아이콘 (로그인 시만 표시하기) */}
                         <li onClick={openNoti} className="nav-item">
-                        <i className="bi bi-bell-fill" style={{ fontSize: '32px', cursor: 'pointer' }}></i>
+                           <i className="bi bi-bell-fill" style={{ fontSize: '32px', cursor: 'pointer' }}></i>
+                           <span>{notiUnreadCount}</span>
                         </li>
 
                         {/* 로그아웃 버튼 */}

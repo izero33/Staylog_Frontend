@@ -37,6 +37,7 @@ useEffect(() => {
                }
             })
 
+            // 토큰 저장 액션
             dispatch({
                type: "SET_TOKEN",
                payload: token
@@ -49,6 +50,7 @@ useEffect(() => {
                alert("세션이 만료되어 자동 로그아웃 되었습니다.")
             }, remainTime)
 
+            // 로그아웃 타이머 저장 액션
             dispatch({
                type: "SET_LOGOUT_TIMER",
                payload: logoutTimer

@@ -37,8 +37,13 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
    // 알림 리스트 요청
    useEffect(() => {
-      
-      // TODO: 이미 notiList가 있다면 요청하지 않기
+
+      // 이미 값을 가져왔다면 리소스 아끼기
+      if(notiList.length != 0) {
+         console.log("이미 값이 있으므로 재요청하지 않고 return");
+         console.log(notiList);
+         return
+      }
       
       (async () => {
          if (!userId) {
@@ -47,6 +52,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
          try {
             const response: responseNotificationsType[] = await api.get(`/v1/notification/${userId}`)
 
+            // 알림 리스트 저장 액션
             dispatch({
                type: "SET_NOTIFICATION_LIST",
                payload: response
@@ -70,6 +76,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
             //    prevNotiList.filter((noti) => noti.notiId !== notiId)
             // );
 
+            // 알림 삭제 액션
             dispatch({
                type: "DELETE_NOTIFICATION",
                payload: notiId
@@ -89,7 +96,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
       try {
          await api.patch("/v1/notification/read-one", { "notiId": notiId })
 
-         // API 성공 시, Redux 스토어에 반영
+         // 단일 읽음 처리 액션
          dispatch({
             type: 'READ_ONE',
             payload: notiId
@@ -106,7 +113,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
       try {
          await api.patch("/v1/notification/read-all", { "userId": userId })
 
-         // API 성공 시, Redux 스토어에 반영
+         // 모든 알림 읽음 처리 액션
          dispatch({
             type: 'READ_ALL'
          });

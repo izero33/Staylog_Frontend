@@ -1,15 +1,20 @@
 /*메뉴 탭 커스텀*/
 .menuTab {
-    display : flex;
-    justify-content : space-between; /* 탭 넓게 펼치기 */
-    border-bottom : 1px solid #ccc;
-    padding-bottom : 10px;
-    margin-bottom : 40px; /* 간격 */
-    cursor : pointer;
-    font-size : 1.1rem;
-    font-weight : 500;
-}
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 40px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 500;
 
+    /* 스크롤 시 상단에 고정 */
+    position : sticky;
+    top : 65px; /* 상단 네비바 높이만큼 */
+    background-color : #fff; /* 뒤에 내용이 겹치지 않도록 */
+    z-index : 100; /* 다른 요소 위로 */
+}
 .menuTab .navItem {
     flex-grow : 1;
     text-align : center;

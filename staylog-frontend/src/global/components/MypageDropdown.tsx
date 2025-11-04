@@ -1,35 +1,55 @@
 // src/global/components/MypageDropdown.tsx
 import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux"; // Redux 디스패치 훅 import
+import { logout } from "../../domain/auth/api"; // 로그아웃 API 함수 import
 
 interface MypageDropdownProps {
   onClose: () => void; // Navbar.tsx 에서 넘겨준 onClose 받는다.
 }
 
 function MypageDropdown({ onClose }: MypageDropdownProps) {
-    const navigate = useNavigate();
+        const navigate = useNavigate();
+        const dispatch = useDispatch(); // Redux 디스패치 훅 사용
 
     // 드롭다운 메뉴 선택 핸들러 (로그아웃)
+    const handleLogout = async () => {
+        try {
+        // 1) 백엔드에 refreshToken 삭제 요청
+        await logout();
+
+        // 2) 프론트 상태 초기화 (redux userInfo, auth 등 비우기)
+        dispatch({ type: "LOGOUT" });
+
+        // 3) 혹시 모를 로컬 스토리지 토큰도 제거
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+
+        // 4) 드롭다운 닫기
+        onClose();
+
+        // 5) 메인 or 로그인으로 이동
+        navigate("/");
+        } catch (err) {
+        console.error("로그아웃 실패:", err);
+        alert("로그아웃에 실패했습니다. 다시 시도해주세요.");
+        }
+    };
+
+    // ✅ 드롭다운 메뉴 선택 핸들러
     const handleSelect = (eventKey: string | null) => {
         if (!eventKey) return;
 
+        // 🔴 로그아웃일 때는 따로 처리
         if (eventKey === "logout") {
-            //localStorage에 저장된 accessToken 제거
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken"); // 혹시 refreshToken도 있으면 같이 삭제
-
-        // 로그아웃 알림
-        alert("로그아웃 완료!");
-        // 로그아웃 로직 (redux 초기화나 localStorage 삭제 등) 드롭다운 닫고, 메인 페이지로 이동
-        onClose(); // 드롭다운 닫기
-        navigate("/login"); // 또는 navigate("/") 로 홈으로
+        void handleLogout();
         return;
         }
 
-        // /mypage/... 로 이동
+        // ✅ 나머지는 /mypage/... 로 이동
         navigate(`/mypage/${eventKey}`);
-        onClose(); // 이동 후 드롭다운 닫기
-    };    
+        onClose();
+    }; 
 
     return (
         <Dropdown align="end" onSelect={handleSelect}>

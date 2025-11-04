@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/types";
 import MypageDropdown from "./MypageDropdown"; // 마이페이지 사람아이콘 드롭다운 컴포넌트
 import { logout } from "../../domain/auth/api";
+import "bootstrap/dist/js/bootstrap.bundle.min.js"; // Bootstrap의 JS 동작 추가
 
 
 function Navbar() {
@@ -93,7 +94,6 @@ function Navbar() {
       <>
          <nav className="navbar fixed-top navbar-expand-lg border-bottom border-1 border-secondary shadow-sm" style={{ backgroundColor: '#ebebebff' }}>
             <div className="container-fluid w-75">
-
                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                   <span className="navbar-toggler-icon"></span>
                </button>
@@ -119,37 +119,28 @@ function Navbar() {
 
                   <ul className="navbar-nav flex-fill justify-content-end mb-2 mb-lg-0 gap-4 align-items-center">
                      
-                     {nickname && <span>{nickname}</span>}
+                     {/* {nickname && <span>{nickname}</span>} */}
 
-                     {/* 아이콘 + 마이페이지 드롭다운 통합 */}
-                     {nickname ? (
-                        <li className="nav-item">
-                           <MypageDropdown onClose={() => {}} />
-                        </li>
-                     ) : (
-                        <li className="nav-item">
-                           <i
-                              className="bi bi-person-circle"
-                              style={{ fontSize: "32px", cursor: "pointer" }}
-                              onClick={() => openModal("login")}
-                           ></i>
-                        </li>
-                     )}
-                     
-                     <li onClick={() => openNoti()} className="nav-item"><i className="bi bi-bell-fill" style={{ fontSize: '32px', cursor: 'pointer' }}></i></li>
                   {/* 로그인 상태 */}
                   {nickname ? (
                      <>
                         {/* 닉네임 표시 */}
                         <span className="fw-semibold">{nickname}</span>
                         {/* 항상 사람 아이콘은 항상 표시 */}
-                        <li
-                        className="nav-item"
-                        onClick={() => openModal("login")}
-                        style={{ cursor: 'pointer' }}
-                        >
-                        <i className="bi bi-person-circle" style={{ fontSize: '32px' }}></i>
-                        </li>
+                        {/* 아이콘 + 마이페이지 드롭다운 통합 */}
+                        {nickname ? (
+                           <li className="nav-item">
+                              <MypageDropdown onClose={() => {}} />
+                           </li>
+                        ) : (
+                           <li className="nav-item">
+                              <i
+                                 className="bi bi-person-circle"
+                                 style={{ fontSize: "32px", cursor: "pointer" }}
+                                 onClick={() => openModal("login")}
+                              ></i>
+                           </li>
+                        )}
 
                         {/* 알림 아이콘 (로그인 시만 표시하기) */}
                         <li onClick={openNoti} className="nav-item">
@@ -161,7 +152,7 @@ function Navbar() {
                         <button
                            className="btn btn-outline-dark px-3 py-1"
                            onClick={handleLogout}
-                         >
+                        >
                            LOGOUT
                         </button>
                         </li>

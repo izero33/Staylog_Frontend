@@ -13,9 +13,9 @@ function MypageSideBar({ activeMenu, setActiveMenu }: SideBarProps) {
 
    const menus = [
       { key: "member", label: "회원 정보" },
-      { key: "reservation", label: "예약 정보" },
-      { key: "review", label: "리뷰 내역" },
-      { key: "inquiry", label: "문의 내역" },
+      { key: "reservations", label: "예약 정보" },
+      { key: "reviews", label: "리뷰 내역" },
+      { key: "inquiries", label: "문의 내역" },
    ];
 
    const handleClick = (key: string) => {

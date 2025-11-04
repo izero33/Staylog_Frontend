@@ -18,6 +18,9 @@ import Review from "../../domain/board/pages/Review";
 import ReviewDetail from "../../domain/board/pages/ReviewDetail";
 import BoardForm from "../../domain/board/pages/BoardForm";
 import AccommodationListPage from "../../domain/accommodation/pages/AccommodationListPage";
+import AdminAccommodationDetail from "../../domain/admin/pages/AdminAccommodationDetail";
+import AdminRoomDetail from "../../domain/admin/pages/AdminRoomDetail";
+import AdminAccommodationUpdate from "../../domain/admin/pages/AdminAccommodationUpdate";
 import MyPage from "../../domain/mypage/pages";
 import MemberInfoSection from "../../domain/mypage/pages/MemberInfoSection";
 import ReservationSection from "../../domain/mypage/pages/ReservationSection";
@@ -50,12 +53,15 @@ const adminRoute: RouteObject = {
     element: <AdminLayout />,
     children: [
       { index: true, element: <AdminUserPage /> },  // /admin 기본 페이지
-      { path: "user", element: <AdminUserPage /> },
-      { path: "accommodations", element: <AdminAccommodationPage /> },
-      { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },
-      { path: "reservations", element: <AdminReservationPage /> },
-      { path: "reviews", element: <div>리뷰 게시판 관리 페이지</div> },
-      { path: "journals", element: <div>저널 게시판 관리 페이지</div> },
+      { path: "user", element: <AdminUserPage /> },  // /admin/user
+      { path: "accommodations", element: <AdminAccommodationPage /> },  // /admin/accommodations
+      { path: "accommodations/:accommodationId", element: <AdminAccommodationDetail /> },  // /admin/accommodations/:accommodationId
+      { path: "accommodations/:accommodationId/update", element: <AdminAccommodationUpdate /> },  // /admin/accommodations/:accommodationId/update
+      { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },  // /admin/accommodations/:accommodationId/rooms
+      { path: "accommodations/:accommodationId/rooms/:roomId", element: <AdminRoomDetail /> },  // /admin/accommodations/:accommodationId/rooms/:roomId
+      { path: "reservations", element: <AdminReservationPage /> },  // /admin/reservations
+      { path: "reviews", element: <div>리뷰 게시판 관리 페이지</div> },  // /admin/reviews
+      { path: "journals", element: <div>저널 게시판 관리 페이지</div> },  // /admin/journals
     ],
 };
 

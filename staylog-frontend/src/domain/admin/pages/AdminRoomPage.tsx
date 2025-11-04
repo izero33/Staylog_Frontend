@@ -8,14 +8,10 @@ import type { AdminRoomListData } from "../types/AdminRoomTypes";
 
 // 상태 업데이트 API 호출 함수 (컴포넌트 외부에 정의하여 재사용)
 const updateAccommodationStatus = async (accommodationId: number, roomId: number, status: 'Y' | 'N') => {
-    // 'Y' (대기) -> 복원 API 호출
-    const changeStatus = status === 'N'
-        ? `/v1/admin/accommodations/${accommodationId}/rooms/${roomId}/restore`
-        // 'N' (활성) -> 삭제 API 호출
-        : `/v1/admin/accommodations/${accommodationId}/rooms/${roomId}/delete`;
-
     try {
-        await api.patch(changeStatus, null);
+        await api.patch(`/v1/admin/accommodations/${accommodationId}/rooms/${roomId}/status`, {
+            deletedYn: status
+        });
         return true;
     } catch (err) {
         console.log(`객실 ID ${roomId} 상태 업데이트 실패:`, err);
@@ -52,6 +48,8 @@ function AdminRoomPage() {
         // 롤백을 위한 원래 값 저장
         const originalStatus = rooms.find(item => item.accommodationId === accommodationId && item.roomId === roomId)?.deletedYn!;
 
+        if (originalStatus === newStatus) return;
+
         // UI 업데이트 
         setRooms(prev =>
             prev.map(item =>
@@ -78,30 +76,34 @@ function AdminRoomPage() {
     };
 
     //이동을 하기위한 hook
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
+
+    //숙소 상세 페이지 이동 핸들러
+    const handleToDetailPage = (roomId: number) => {
+        navigate(`/admin/accommodations/${accommodationId}/rooms/${roomId}`);
+    };
 
     return <>
         <div className="container-fluid py-3">
-            <h1><span className="fw-bold">{rooms[0]?.accommodationName}</span> 객실 목록</h1>
+            <h3><span className="fw-bold">{rooms[0]?.accommodationName}</span> 객실 목록</h3>
 
 
-            <table className="table table-striped text-center">
+            <table className="table table-striped text-center mt-5">
                 <thead>
                     <tr>
-                        <th style={{ width: '5%' }}>번호</th>
+                        <th style={{ width: '10%' }}>번호</th>
                         <th>객실명</th>
                         <th style={{ width: '10%' }}>유형</th>
                         <th style={{ width: '10%' }}>가격</th>
-                        <th style={{ width: '15%' }}>최대 인원(성인)</th>
+                        <th style={{ width: '20%' }}>최대 인원(성인)</th>
                         <th style={{ width: '15%' }}>등록일</th>
                         <th style={{ width: '10%' }}>상태</th>
-                        <th style={{ width: '10%' }}>상세?</th>
                     </tr>
                 </thead>
                 <tbody>
                     {rooms.length === 0 ? ( // 객실이 하나도 없을 때
                         <tr>
-                            <td colSpan={8} className="text-center py-5">
+                            <td colSpan={7} className="text-center py-5">
                                 <div className="text-muted">
                                     <i className="bi bi-inbox fs-1 d-block mb-3"></i>
                                     <p className="mb-0">등록된 객실이 없습니다.</p>
@@ -112,7 +114,15 @@ function AdminRoomPage() {
                         rooms.map((item, index) => ( // 객실이 있을 때
                             <tr key={item.roomId}>
                                 <td>{index + 1}</td>
-                                <td>{item.name}</td>
+                                <td>
+                                    <button
+                                        type="button"
+                                        className="btn btn-link p-0 text-decoration-none"
+                                        onClick={() => handleToDetailPage(item.roomId!)}
+                                    >
+                                        {item.name}
+                                    </button>
+                                </td>
                                 <td>{item.typeName}</td>
                                 <td>{item.price}</td>
                                 <td>{item.maxAdult}</td>
@@ -126,15 +136,6 @@ function AdminRoomPage() {
                                         <option value="N">활성</option>
                                         <option value="Y">대기</option>
                                     </select>
-                                </td>
-                                <td className="text-center">
-                                    <button
-                                        className="btn btn-sm btn-outline-primary me-1"
-                                        title="객실 목록 보기"
-                                        //onClick={() => handleGoToRooms(item.accommodationId!)} // 이동 함수 연결
-                                    >
-                                        <i className="bi bi-three-dots"></i>
-                                    </button>
                                 </td>
                             </tr>
                         )))}

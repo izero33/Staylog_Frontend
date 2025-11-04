@@ -1,28 +1,26 @@
+// src/domain/admin/pages/AdminAccommodationListPage.tsx
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // useNavigate 훅 임포트
 import api from "../../../global/api";
-import type { AdminAccommodationListData } from "../types/AdminAccommodatiomTypes";
+import type { AdminAccommodationListData } from "../types/AdminAccommodationTypes";
 import { formatKST } from "../../../global/utils/date";
 
 // 상태 업데이트 API 호출 함수 (컴포넌트 외부에 정의하여 재사용)
 const updateAccommodationStatus = async (accommodationId: number, status: 'Y' | 'N') => {
-    // 'Y' (대기) -> 복원 API 호출
-    const changeStatus = status === 'N'
-        ? `/v1/admin/accommodations/${accommodationId}/restore`
-        // 'N' (활성) -> 삭제 API 호출
-        : `/v1/admin/accommodations/${accommodationId}/delete`;
-
     try {
-        await api.patch(changeStatus, null);
+        await api.patch(`/v1/admin/accommodations/${accommodationId}/status`, {
+            deletedYn: status
+        });
         return true;
     } catch (err) {
-        console.log(`숙소 ID ${accommodationId} 상태 업데이트 실패:`, err);
+        console.error(`숙소 ID ${accommodationId} 상태 업데이트 실패:`, err);
         return false;
     }
 };
 
 
-function AdminAccommodationPage() {
+function AdminAccommodationListPage() {
     const [accommodations, setAccommodations] = useState<AdminAccommodationListData[]>([]);
 
     // 전체 숙소 목록 조회 (컴포넌트 마운트 시)
@@ -43,6 +41,8 @@ function AdminAccommodationPage() {
 
         // 롤백을 위한 원래 값 저장
         const originalStatus = accommodations.find(item => item.accommodationId === accommodationId)?.deletedYn!;
+
+        if (originalStatus === newStatus) return;
 
         // UI 업데이트 
         setAccommodations(prev =>
@@ -72,6 +72,11 @@ function AdminAccommodationPage() {
     //이동을 하기위한 hook
     const navigate = useNavigate();
 
+    //숙소 상세 페이지 이동 핸들러
+    const handleToDetailPage = (accommodationId: number) => {
+        navigate(`/admin/accommodations/${accommodationId}`);
+    };
+
     //객실 목록 페이지 이동 핸들러
     const handleGoToRooms = (accommodationId: number) => {
         navigate(`/admin/accommodations/${accommodationId}/rooms`);
@@ -80,10 +85,9 @@ function AdminAccommodationPage() {
 
     return <>
         <div className="container-fluid py-3">
-            <h1>숙소 관리 페이지</h1>
+            <h3>숙소 관리 페이지</h3>
 
-
-            <table className="table table-striped text-center">
+            <table className="table table-striped text-center mt-5">
                 <thead>
                     <tr>
                         <th style={{ width: '5%' }}>번호</th>
@@ -110,7 +114,15 @@ function AdminAccommodationPage() {
                             <tr key={item.accommodationId}>
                                 <td>{index + 1}</td>
                                 <td>{item.regionName}</td>
-                                <td>{item.name}</td>
+                                <td>
+                                    <button
+                                        type="button"
+                                        className="btn btn-link p-0 text-decoration-none"
+                                        onClick={() => handleToDetailPage(item.accommodationId!)}
+                                    >
+                                        {item.name}
+                                    </button>
+                                </td>
                                 <td>{item.typeName}</td>
                                 <td>{formatKST(item.createdAt)}</td>
                                 <td>
@@ -140,4 +152,4 @@ function AdminAccommodationPage() {
     </>;
 }
 
-export default AdminAccommodationPage;
+export default AdminAccommodationListPage;

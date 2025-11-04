@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+// 기존 import 아래에 AccommodationRoomListType import 추가
 import { useParams } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Form, Spinner, Offcanvas } from "react-bootstrap";
+import type { AccommodationRoomListType } from "../types/AccommodationType";
+import { useEffect, useState } from "react";
+import useIsMobile from "../hooks/useIsMobile";
 import type { RoomDetailDto } from "../types/RoomDetailDto";
 import api from "../../../global/api";
-
 import BookingPanel from "../components/BookingPanel";
-import useIsMobile from "../hooks/useIsMobile";
+import { Card, Col, Container, Offcanvas, Row, Spinner } from "react-bootstrap";
 import FloatingReserveBubble from "../components/FloatingReserveBubble";
-
+import Info from "../components/AccommodationInfo";
+import AccommodationInfo from "../components/AccommodationInfo";
 
 function RoomDetail() {
 
@@ -18,7 +20,7 @@ function RoomDetail() {
   const [openReserve, setOpenReserve] = useState(false);
   const isMobile = useIsMobile(); //모바일 크기일 때 true
 
-  //숙소정보
+  // 숙소정보
   const featchRoom = () => {
     if (!roomId) {
       setError("유효하지 않은 객실 경로입니다.");
@@ -36,30 +38,24 @@ function RoomDetail() {
       )
   }
 
-  //블락할 날짜 가져오기
+  // 블락할 날짜 가져오기
   useEffect(() => {
     if (!roomId) return;
 
     const today = new Date();
-    const nextMonth = new Date();
-    nextMonth.setMonth(today.getMonth() + 2); // 예: 2개월치만 조회
+    const to = new Date();
+    to.setMonth(today.getMonth() + 2);
 
-    const from = today.toISOString().split("T")[0];
-    const to = nextMonth.toISOString().split("T")[0];
+    const fromStr = today.toISOString().split("T")[0];
+    const toStr = to.toISOString().split("T")[0];
 
-
-    api.get<string[]>(`/v1/${roomId}/blocked`, {
-      params: { from, to },
-    })
-      .then(res => {
-        setBlockedDates(res)
-        setError(null)
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }, [roomId])
-
+    api.get<string[]>(`/v1/${roomId}/blocked`, { params: { from: fromStr, to: toStr } })
+      .then(res => setBlockedDates(res))
+      .catch(err => {
+        console.error(err);
+        setBlockedDates([]);
+      });
+  }, [roomId]);
 
   const handleReserve = () => {
     alert("예약하기");
@@ -67,11 +63,31 @@ function RoomDetail() {
 
   useEffect(() => {
     featchRoom();
-  }, [roomId])
+  }, [roomId]);
 
-  //지도 가져가기 => 채린이 숙소 상세에 넣을거
+  // RoomDetailDto -> AccommodationRoomListType 변환 (타입 완전 매칭)
+  const roomForBooking: AccommodationRoomListType | null = roomDetail
+    ? {
+      roomId: roomDetail.roomId,
+      name: roomDetail.name,
+      price: roomDetail.price,
 
+      // 👇 AccommodationRoomListType 이 요구하는 필수 필드들 채우기
+      maxAdult: roomDetail.maxAdult ?? 0,
+      maxChildren: roomDetail.maxChildren ?? 0,
+      maxInfant: roomDetail.maxInfant ?? 0,
 
+      // 총 인원(편의상)
+      maxGuest:
+        (roomDetail.maxAdult ?? 0) +
+        (roomDetail.maxChildren ?? 0) +
+        (roomDetail.maxInfant ?? 0),
+
+      rmTypeName: roomDetail.rmTypeName ?? roomDetail.type ?? "",
+      rmTypeNameEn: roomDetail.rmTypeNameEn ?? roomDetail.type ?? "",
+
+    }
+    : null;
 
   if (!roomDetail) {
     return (
@@ -81,10 +97,7 @@ function RoomDetail() {
     );
   }
 
-
-
   return <>
-
     <Container className="my-4">
       <Card className="mb-4">
         <Card.Img variant="top"
@@ -103,7 +116,6 @@ function RoomDetail() {
               <li>체크아웃 시간 : {roomDetail.checkOutTime}</li>
               <li>기준 인원 : 성인 {roomDetail.maxAdult}, 어린이 {roomDetail.maxChildren}, 영유아 {roomDetail.maxInfant}</li>
             </ul>
-            <h3>편의시설</h3>
             <section className="mt-4">
               <h3 className="h5 mb-3">편의시설</h3>
               <div className="d-flex flex-wrap gap-4 fs-6">
@@ -129,23 +141,20 @@ function RoomDetail() {
                 </div>
               </div>
             </section>
-
-
-
-
-
           </section>
 
+          <AccommodationInfo/>
         </Col>
 
         {/* 데스크탑(>=lg)에서는 오른쪽 고정, 모바일(<lg)에서는 숨김 */}
         <Col lg={5} className="d-none d-lg-block">
           <div style={{ position: "sticky", top: 16 }}>
             <BookingPanel
-              name="INSIDE (2F)"
-              pricePerNight={184000}
-              nights={2}
-              onReserve={() => alert("예약하기")}
+              name={roomDetail.name}
+              rooms={roomForBooking ? [roomForBooking] : []} // 변환 객체 배열 전달
+              showRoomSelect={false}
+              disabledDates={blockedDates}
+              onReserve={handleReserve}
             />
           </div>
         </Col>
@@ -153,7 +162,9 @@ function RoomDetail() {
     </Container>
 
     {/* 모바일: 말풍선 버튼 */}
-    {isMobile && <FloatingReserveBubble onClick={() => setOpenReserve(true)} />}
+    {isMobile && (
+      <FloatingReserveBubble onClick={() => setOpenReserve(true)} />
+    )}
 
     {/* 모바일: 바텀시트 Offcanvas */}
     <Offcanvas
@@ -161,7 +172,7 @@ function RoomDetail() {
       onHide={() => setOpenReserve(false)}
       placement="bottom"
       className="d-lg-none"
-      style={{ height: "75vh" }} // 바텀시트 높이
+      style={{ height: "75vh" }}
       aria-labelledby="reserve-panel-title"
     >
       <Offcanvas.Header closeButton>
@@ -170,8 +181,7 @@ function RoomDetail() {
       <Offcanvas.Body>
         <BookingPanel
           name={roomDetail.name}
-          pricePerNight={184000}
-          nights={2}
+          rooms={roomForBooking ? [roomForBooking] : []} // 모바일도 동일 처리
           onReserve={() => {
             setOpenReserve(false);
             handleReserve();
@@ -181,7 +191,6 @@ function RoomDetail() {
       </Offcanvas.Body>
     </Offcanvas>
     <Container></Container>
-
   </>
 }
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { formatKST } from "../../../global/utils/date";
 import api from "../../../global/api";
 import AdminReservationDetailModal from "../components/AdminReservationDetailModal";
+import { getStatusLabel } from "../types/AdminReservationStatusLabels";
 
 
 
@@ -99,7 +100,7 @@ function AdminReservationPage() {
                           <td>{formatKST(res.createdAt)}</td>
                           <td>{formatKST(res.checkIn)}</td>
                           <td>{formatKST(res.checkOut)}</td>
-                          <td>{res.status}</td>
+                          <td>{getStatusLabel(res.status, res.statusName)}</td>
                       </tr>
                   ))}
               </tbody>

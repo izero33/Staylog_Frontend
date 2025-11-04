@@ -12,6 +12,10 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''), // '/api' 제거 
       },
+      '/images':{ // upload 된 이미지를 로딩하기 위한 프록시 
+        target: 'http://localhost:9090', 
+        changeOrigin: true 
+      }
     },
   },
 })

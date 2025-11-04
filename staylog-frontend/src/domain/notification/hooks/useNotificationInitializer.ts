@@ -14,6 +14,8 @@ function useNotificationInitializer() {
    const token = useSelector((state: RootState) => state.token);
    const userId = useSelector((state: RootState) => state.userInfo?.userId);
 
+
+   // SSE 연결
    useEffect(() => {
       if (!token || !userId) {
          return
@@ -33,57 +35,64 @@ function useNotificationInitializer() {
    }, [userId, token, dispatch])
 
 
+   // 새 알림 추가
+   useEffect(() => {
+      // 토큰 없으면 연결 종료
+      if (!token) {
+         if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+            console.log('SSE Hook 연결 종료 (로그아웃)');
+         }
+         return;
+      }
 
-   // // 5. [로직 2] 'SSE 연결' 로직
-   // //    (token이 변경될 때마다 실행됨)
-   // useEffect(() => {
-   //    // (A) 토큰이 없으면 (로그아웃)
-   //    if (!token) {
-   //       if (eventSource) {
-   //          eventSource.close();
-   //          eventSource = null;
-   //          console.log('[SSE Hook] 연결 종료 (로그아웃)');
-   //       }
-   //       return; // 연결 중지
-   //    }
+      // 토큰이 있는데 아직 연결이 안 됐다면
+      if (token && !eventSource) {
+         const pureToken = token ? token.substring(7) : '';
+         console.log('[SSE Hook] 연결 시도...');
+         console.log(pureToken);
 
-   //    // (B) 토큰이 있는데, 아직 연결이 안 됐다면
-   //    if (token && !eventSource) {
-   //       console.log('[SSE Hook] 연결 시도...');
-   //       const es = new EventSource(`/v1/notification/subscribe?token=${token}`);
-   //       eventSource = es; // 인스턴스 저장
+         const es = new EventSource(`api/v1/notification/subscribe?token=${pureToken}`);
+         eventSource = es; // 인스턴스 저장
 
-   //       es.onopen = () => console.log('[SSE Hook] 연결 성공!');
-   //       es.onerror = () => {
-   //          console.error('[SSE Hook] 에러 발생, 연결 종료');
-   //          es.close();
-   //          eventSource = null;
-   //          // (여기서 자동 재연결을 막거나, 재시도 로직을 넣을 수 있음)
-   //       };
+         es.onopen = () => console.log('SSE Hook 연결 성공!');
+         es.onerror = () => {
+            console.error('SSE Hook 에러 발생, 연결 종료');
+            es.close();
+            eventSource = null;
+            // (여기서 자동 재연결을 막거나, 재시도 로직을 넣을 수 있음)
+         };
 
-   //       es.addEventListener('new-notification', (event) => {
-   //          try {
-   //             const newNoti = JSON.parse(event.data);
+         es.addEventListener('new-notification', (event) => {
+            try {
+               const newNoti = JSON.parse(event.data);
+               
+               dispatch({
+                  type: 'PUSH_NOTIFICATION',
+                  payload: newNoti
+               });
 
-   //             // TODO: 새 알림 수신 시, 2가지 액션을 디스패치
+               dispatch({
+                  type: 'INCREMENT_UNREAD_COUNT'
+               });
 
-   //          } catch (e) {
-   //             console.error('[SSE Hook] 새 알림 파싱 실패', e);
-   //          }
-   //       });
-   //    }
+            } catch (e) {
+               console.error('[SSE Hook] 새 알림 파싱 실패', e);
+            }
+         });
+      }
 
-   //    // (C) React 컴포넌트가 언마운트될 때 (앱 종료 등)
-   //    //    *이 훅은 App.tsx에서 사용되므로, 사실상 이 cleanup은 '앱 종료' 시에만 호출됨
-   //    return () => {
-   //       if (eventSource) {
-   //          eventSource.close();
-   //          eventSource = null;
-   //          console.log('[SSE Hook] 앱 종료로 연결 해제');
-   //       }
-   //    };
+      // React 컴포넌트가 언마운트될 때
+      return () => {
+         if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+            console.log('SSE Hook 종료로 연결 해제');
+         }
+      };
 
-   // }, [token, dispatch]); // 'token'이 이 로직의 유일한 의존성
+   }, [token, dispatch]);
 }
 
 export default useNotificationInitializer;

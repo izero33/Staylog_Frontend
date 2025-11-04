@@ -23,9 +23,7 @@ function App() {
   // 앱 실행 시 공통코드 조회 및 Redux에 저장
   useCommonCodes()
 
-
-
-
+  // 앱 실행 시 SSE 구독 및 unreadCount 조회
   useNotificationInitializer()
 
 

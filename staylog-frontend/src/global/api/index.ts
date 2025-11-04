@@ -1,6 +1,6 @@
 // src/api/index.ts
 
-import axios, { AxiosError, type AxiosResponse } from "axios";
+import axios, { AxiosError, type AxiosInstance, type AxiosResponse } from "axios";
 import type { ApiResponse } from "../types";
 
 // baseURL 값으로 /api 를 기본으로 가지고 있는 axios 객체를 만들어서
@@ -44,7 +44,7 @@ api.interceptors.response.use(
  * 응답 인터셉터가 ApiResponse<T>의 data 필드를 자동으로 추출하므로,
  * 메서드 반환 타입을 Promise<T>로 정의
  */
-interface CustomAxiosInstance {
+interface CustomAxiosInstance extends AxiosInstance {
   get<T = any>(url: string, config?: any): Promise<T>;
   post<T = any>(url: string, data?: any, config?: any): Promise<T>;
   put<T = any>(url: string, data?: any, config?: any): Promise<T>;

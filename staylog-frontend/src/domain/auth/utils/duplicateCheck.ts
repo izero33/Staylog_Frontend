@@ -32,7 +32,7 @@ async function duplicateCheck({checkType, value, valid}: DuplicateCheckProps): P
       }
 
       try {
-         await api.get(`/v1/user/loginId/${value}/duplicate`)
+         await api.get(`/v1/user/${checkType}/${value}/duplicate`)
          alert(`사용할 수 있는 ${valueType}입니다.`)
          return true;
 

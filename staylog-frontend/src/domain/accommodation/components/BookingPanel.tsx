@@ -6,22 +6,22 @@ import type { AccommodationRoomListType } from "../types/AccommodationType";
 
 type Props = {
   // 상단 탭
-  onClickSchedule ?: () => void;
-  onClickGuests ?: () => void;
+  onClickSchedule?: () => void;
+  onClickGuests?: () => void;
   // 객실 정보
-  name : string;
-  imageUrl ?: string;
-  rooms ?: AccommodationRoomListType[];
-  onReserve ?: () => void;
+  name: string;
+  imageUrl?: string;
+  rooms?: AccommodationRoomListType[];
+  onReserve?: () => void;
   // 예약 불가일
-  disabledDates ?: string[];
-  onSelectRoom ?: (room:AccommodationRoomListType) => void;
+  disabledDates?: string[];
+  onSelectRoom?: (room: AccommodationRoomListType) => void;
   // 객실 상세 페이지에서는 객실 목록 숨기기
   showRoomSelect?: boolean;
 };
 
 // 상단 날짜 탭 예시로 11.22 형식으로 표시
-const formatDate = (date : Date|null): string => {
+const formatDate = (date: Date | null): string => {
   if (!date) return "";
   return `${date.getMonth() + 1}.${date.getDate()}`;
 };
@@ -31,7 +31,7 @@ const formatCurrency = (amount: number): string => {
   return amount.toLocaleString("ko-KR");
 };
 
-function BookingPanel2({
+function BookingPanel({
   rooms = [],
   onReserve,
   disabledDates = [],
@@ -45,7 +45,7 @@ function BookingPanel2({
   const [openGuest, setOpenGuest] = useState(false);
 
   // 체크인 체크아웃 날짜 상태
-  const [[checkIn, checkOut], setRange] = useState<[Date|null, Date|null]>([null, null]);
+  const [[checkIn, checkOut], setRange] = useState<[Date | null, Date | null]>([null, null]);
 
   //화면의 가로폭에 따라 1개월 보일지 2개월 보일지 결정
   const [monthsShown, setMonthsShown] = useState(2);
@@ -56,7 +56,7 @@ function BookingPanel2({
   const [infantCount, setInfantCount] = useState(0);
 
   // 선택된 객실 (첫 번째 객실을 기본으로 표시)
-  const [selectedRoom, setSelectedRoom] = useState<AccommodationRoomListType|null>(
+  const [selectedRoom, setSelectedRoom] = useState<AccommodationRoomListType | null>(
     rooms.length > 0 ? rooms[0] : null
   );
 
@@ -68,7 +68,7 @@ function BookingPanel2({
   const handleClickSchedule = () => setOpenCalendar(e => !e);
 
   // 객실 선택 변경 핸들러
-  const handleRoomChange = (roomId:number) => {
+  const handleRoomChange = (roomId: number) => {
     const room = rooms.find(r => r.roomId === roomId) || null;
     setSelectedRoom(room);
     onSelectRoom?.(room!);
@@ -77,8 +77,8 @@ function BookingPanel2({
   // 숙박일 계산
   const nights = checkIn && checkOut
     ? Math.round(
-        ((new Date(checkOut).setHours(0, 0, 0, 0) - new Date(checkIn).setHours(0, 0, 0, 0))/(1000 * 60 * 60 * 24))
-      )
+      ((new Date(checkOut).setHours(0, 0, 0, 0) - new Date(checkIn).setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
+    )
     : 0;
 
   // 총 인원 계산
@@ -89,10 +89,9 @@ function BookingPanel2({
   const totalPrice = roomPrice > 0 ? Math.round(roomPrice * nights) : 0;
 
   // 예약 불가일 -> Date 배열
-  const excludeDates = (selectedRoom?.disabledDates ?? []).map(
+  const excludeDates = (disabledDates ?? []).map(
     d => new Date(d + "T00:00:00")
   );
-
   // 화면 넓이에 따라 1/2개월 자동 전환
   useEffect(() => {
     const recalc = () => {
@@ -130,10 +129,10 @@ function BookingPanel2({
     <Card className="bg-white">
       {/* 일정과 인원 탭*/}
       <Card.Header className="p-0 border-0">
-        <div className="border-bottom bg-white d-flex" style={{ position:"relative" }}>
+        <div className="border-bottom bg-white d-flex" style={{ position: "relative" }}>
           {/* 일정 */}
-          <div 
-            className="w-50 p-3 d-flex align-items-center justify-content-center cursor-pointer" 
+          <div
+            className="w-50 p-3 d-flex align-items-center justify-content-center cursor-pointer"
             onClick={handleClickSchedule}
             style={{ borderRight: '1px solid #dee2e6' }}
           >
@@ -142,8 +141,8 @@ function BookingPanel2({
           </div>
 
           {/* 인원 */}
-          <div 
-            className="w-50 p-3 d-flex align-items-center justify-content-center cursor-pointer" 
+          <div
+            className="w-50 p-3 d-flex align-items-center justify-content-center cursor-pointer"
             onClick={() => setOpenGuest(v => !v)}
           >
             <i className="bi bi-people me-2 fs-5 text-secondary" />
@@ -157,7 +156,7 @@ function BookingPanel2({
               <div
                 ref={popRef}
                 className="border rounded bg-white shadow mt-1 p-2 d-inline-block"
-                style={{ zIndex:2000, width:"max-content", maxWidth:"90vw" }} 
+                style={{ zIndex: 2000, width: "max-content", maxWidth: "90vw" }}
               >
                 <DatePicker
                   key={monthsShown}
@@ -182,12 +181,12 @@ function BookingPanel2({
 
             {/* 인원 선택 */}
             {openGuest && (
-              <div className="position-absolute bg-white border rounded p-3 shadow-lg mt-1" 
-                style={{ zIndex:2000, right:0, minWidth:"250px" }}>
+              <div className="position-absolute bg-white border rounded p-3 shadow-lg mt-1"
+                style={{ zIndex: 2000, right: 0, minWidth: "250px" }}>
                 {[
-                  { label:"성인", count: adultCount, setCount:setAdultCount, min:1 },
-                  { label:"어린이", count: childCount, setCount:setChildCount, min:0 },
-                  { label:"유아", count: infantCount, setCount:setInfantCount, min:0 },
+                  { label: "성인", count: adultCount, setCount: setAdultCount, min: 1 },
+                  { label: "어린이", count: childCount, setCount: setChildCount, min: 0 },
+                  { label: "유아", count: infantCount, setCount: setInfantCount, min: 0 },
                 ].map((item) => (
                   <div key={item.label} className="d-flex align-items-center justify-content-between mb-2">
                     <span>{item.label}</span>
@@ -196,7 +195,7 @@ function BookingPanel2({
                         size="sm"
                         variant="outline-secondary"
                         className="p-0 border-0"
-                        style={{ width:"30px", height:"30px" }}
+                        style={{ width: "30px", height: "30px" }}
                         onClick={() => item.setCount(c => Math.max(item.min, c - 1))}
                       >
                         <i className="bi bi-dash"></i>
@@ -206,8 +205,16 @@ function BookingPanel2({
                         size="sm"
                         variant="outline-secondary"
                         className="p-0 border-0"
-                        style={{ width:"30px", height:"30px" }}
-                        onClick={() => item.setCount(c => c + 1)}
+                        style={{ width: "30px", height: "30px" }}
+                        onClick={() => {
+                          const total = adultCount + childCount + infantCount;
+                          const maxGuest = selectedRoom?.maxGuest ?? 10;
+                          if (total < maxGuest) {
+                            item.setCount(c => c + 1);
+                          } else {
+                            alert(`이 객실의 최대 인원은 ${maxGuest}명입니다.`);
+                          }
+                        }}
                       >
                         <i className="bi bi-plus"></i>
                       </Button>
@@ -228,9 +235,9 @@ function BookingPanel2({
         {selectedRoom ? (
           <div className="mb-4 d-flex align-items-start">
             {/* 썸네일 이미지 컨테이너 */}
-            <div 
-              className="rounded me-3 bg-light d-flex justify-content-center align-items-center" 
-              style={{ width:"80px", height:"80px" }}
+            <div
+              className="rounded me-3 bg-light d-flex justify-content-center align-items-center"
+              style={{ width: "80px", height: "80px" }}
             >
               <i className="bi bi-house-door text-muted fs-4"></i>
             </div>
@@ -242,7 +249,7 @@ function BookingPanel2({
               </p>
 
               <div className="d-flex align-items-center">
-                <span className="fw-bold text-primary" style={{ fontSize:"1.4rem" }}>
+                <span className="fw-bold text-primary" style={{ fontSize: "1.4rem" }}>
                   ₩{formatCurrency(roomPrice)}
                 </span>
               </div>
@@ -276,7 +283,7 @@ function BookingPanel2({
 
         {/* 총액 계산 및 예약 버튼 */}
         {nights > 0 && selectedRoom && (
-          <div className="p-3 border-top pt-4"> 
+          <div className="p-3 border-top pt-4">
             <div className="d-flex justify-content-between mb-2">
               <span className="text-muted">객실 요금</span>
               <span className="fw-bold">
@@ -285,7 +292,7 @@ function BookingPanel2({
             </div>
             <div className="d-flex justify-content-between align-items-end mt-3">
               <span className="fs-5 fw-bold">총액</span>
-              <span className="text-dark fw-bolder" style={{ fontSize:"2rem" }}>
+              <span className="text-dark fw-bolder" style={{ fontSize: "2rem" }}>
                 ₩{formatCurrency(totalPrice)}
               </span>
             </div>
@@ -307,4 +314,4 @@ function BookingPanel2({
   </>
 }
 
-export default BookingPanel2;
+export default BookingPanel;

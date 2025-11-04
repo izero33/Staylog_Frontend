@@ -12,6 +12,9 @@ export interface AccommodationReviewListType {
 
 }
 export interface AccommodationRoomListType {
+    maxAdult: number;
+    maxChildren: number;
+    maxInfant: number;
     readonly roomId : number;
     name : string;
     maxGuest : number;

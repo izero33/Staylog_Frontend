@@ -17,6 +17,7 @@ import BoardForm from "../../domain/board/pages/BoardForm";
 import AccommodationListPage from "../../domain/accommodation/pages/AccommodationListPage";
 import AdminAccommodationDetail from "../../domain/admin/pages/AdminAccommodationDetail";
 import AdminRoomDetail from "../../domain/admin/pages/AdminRoomDetail";
+import AdminAccommodationUpdate from "../../domain/admin/pages/AdminAccommodationUpdate";
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin 라우트 객체는 분리)
@@ -42,6 +43,7 @@ const adminRoute: RouteObject = {
       { path: "user", element: <AdminUserPage /> },  // /admin/user
       { path: "accommodations", element: <AdminAccommodationPage /> },  // /admin/accommodations
       { path: "accommodations/:accommodationId", element: <AdminAccommodationDetail /> },  // /admin/accommodations/:accommodationId
+      { path: "accommodations/:accommodationId/update", element: <AdminAccommodationUpdate /> },  // /admin/accommodations/:accommodationId/update
       { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },  // /admin/accommodations/:accommodationId/rooms
       { path: "accommodations/:accommodationId/rooms/:roomId", element: <AdminRoomDetail /> },  // /admin/accommodations/:accommodationId/rooms/:roomId
       { path: "reservations", element: <AdminReservationPage /> },  // /admin/reservations

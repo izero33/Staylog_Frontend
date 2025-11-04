@@ -87,6 +87,11 @@ function AdminAccommodationDetail() {
         return <div style={{ padding: "40px", textAlign: "center" }}>t숙소 정보를 찾을 수 없습니다</div>;
     }
 
+    //숙소 수정 페이지 이동 핸들러
+    const handleGoToUpdate = (accommodationId: number) => {
+        navigate(`/admin/accommodations/${accommodationId}/update`);
+    };
+
     //객실 목록 페이지 이동 핸들러
     const handleGoToRooms = (accommodationId: number) => {
         navigate(`/admin/accommodations/${accommodationId}/rooms`);
@@ -120,7 +125,7 @@ function AdminAccommodationDetail() {
             </div>
 
             <div className="mt-3 justify-content-end d-flex gap-2">
-                <button title="수정하기" className="btn btn-sm btn-primary mb-3" onClick={() => navigate(-1)}>수정하기</button>
+                <button title="수정하기" className="btn btn-sm btn-primary mb-3" onClick={() => handleGoToUpdate(data.accommodationId!)}>수정하기</button>
                 {data.deletedYn === 'N' ? (
                     <button title="비활성화하기" className="btn btn-sm btn-danger text-white mb-3" onClick={() => updateAccommodationStatus(data.accommodationId!, 'Y')}>비활성화하기</button>
                 ) : (

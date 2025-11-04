@@ -6,39 +6,21 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import GuestSelector from './GuestSelector';
-import type { GuestCount, Region } from '../types';
+import useRegions from '../../common/hooks/useRegions';
+import type { GuestCount } from '../types';
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// 지역 데이터 
-const REGIONS: Region[] = [
-  { code: '전체', name: '전체' },
-  { code: '서울', name: '서울' },
-  { code: '경기', name: '경기' },
-  { code: '제주', name: '제주' },
-  { code: '강원', name: '강원' },
-  { code: '인천', name: '인천' },
-  { code: '부산', name: '부산' },
-  { code: '충청', name: '충청' },
-  { code: '광주', name: '광주' },
-  { code: '강남', name: '강남' },
-  { code: '경주', name: '경주' },
-  { code: '속초', name: '속초' },
-  { code: '남원', name: '남원' },
-  { code: '양평', name: '양평' },
-  { code: '전주', name: '전주' },
-  { code: '가평', name: '가평' },
-  { code: '김천', name: '김천' },
-  { code: '충북', name: '충북' },
-];
-
 function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const navigate = useNavigate();
 
-  // 선택된 지역 코드들
+  // 공통코드에서 지역 목록 가져오기
+  const regions = useRegions();
+
+  // 선택된 지역 코드들 (codeId 저장)
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
 
   // 날짜 선택
@@ -57,15 +39,15 @@ function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [resetKey, setResetKey] = useState<number>(0);
 
   // 지역 선택/해제
-  const toggleRegion = (regionCode: string) => {
-    if (regionCode === '전체') {
-      // "전체" 선택 시 모든 지역 해제
+  const toggleRegion = (codeId: string) => {
+    if (codeId === '전체') {
+      // "전체" 선택 시 모든 지역 해제 (프론트 전용, API로 전송 안 됨)
       setSelectedRegions([]);
     } else {
       setSelectedRegions((prev) =>
-        prev.includes(regionCode)
-          ? prev.filter((code) => code !== regionCode)
-          : [...prev, regionCode]
+        prev.includes(codeId)
+          ? prev.filter((id) => id !== codeId)
+          : [...prev, codeId]
       );
     }
   };
@@ -92,10 +74,10 @@ function SearchModal({ isOpen, onClose }: SearchModalProps) {
     // 쿼리 파라미터 생성
     const params = new URLSearchParams();
 
-    // 지역 코드 추가
+    // 지역 코드 추가 (codeId 전송)
     if (selectedRegions.length > 0) {
-      selectedRegions.forEach((code) => {
-        params.append('regionCodes', code);
+      selectedRegions.forEach((codeId) => {
+        params.append('regionCodes', codeId);
       });
     }
 
@@ -181,20 +163,20 @@ function SearchModal({ isOpen, onClose }: SearchModalProps) {
             지역
           </label>
           <div className="row g-2">
-            {REGIONS.map((region) => (
-              <div key={region.code} className="col-6 col-sm-4 col-md-3">
+            {regions.map((region) => (
+              <div key={region.codeId} className="col-6 col-sm-4 col-md-3">
                 <button
                   type="button"
                   className={`btn w-100 ${
-                    region.code === '전체'
+                    region.codeId === '전체'
                       ? selectedRegions.length === 0
                         ? 'btn-dark'
                         : 'btn-outline-dark'
-                      : selectedRegions.includes(region.code)
+                      : selectedRegions.includes(region.codeId)
                       ? 'btn-dark'
                       : 'btn-outline-dark'
                   }`}
-                  onClick={() => toggleRegion(region.code)}
+                  onClick={() => toggleRegion(region.codeId)}
                   style={{
                     borderRadius: '20px',
                     padding: '12px 20px',
@@ -202,7 +184,7 @@ function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     fontWeight: '500'
                   }}
                 >
-                  {region.name}
+                  {region.codeName}
                 </button>
               </div>
             ))}

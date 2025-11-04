@@ -1,0 +1,177 @@
+// src/domain/board/pages/Board.css
+
+/* =========================================
+   🧭 Board 공통 스타일 (Review / Journal / Notice)
+   ========================================= */
+
+   
+/* ===== 게시글 목록 링크 ===== */
+.board-link {
+  color: black !important;
+  text-decoration: none !important;
+}
+
+.board-link:hover {
+  color: #333 !important;
+  text-decoration: none !important;
+}
+
+/* ===== 게시글 상세보기 공통 ===== */
+.board-container {
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  color: #333;
+}
+
+/* 제목 */
+.board-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* ===== 좌측 지역 사이드바 ===== */
+.region-sidebar {
+  border-right: 1px solid #e5e5e5;
+}
+
+.region-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.region-item {
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 0.95rem;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.region-item:hover {
+  background-color: #f3f3f3;
+}
+
+.region-item.active {
+  background-color: #333;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ===== 게시글 등록 버튼 ===== */
+.board-add-btn {
+  border-radius: 20px;
+  padding: 5px 18px;
+  font-size: 0.9rem;
+}
+
+/* ===== 테이블 공통 ===== */
+.board-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+  font-size: 0.95rem;
+}
+
+.board-table thead th {
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #ccc;
+  font-weight: 600;
+  padding: 12px 0;
+}
+
+.board-table tbody td {
+  border-bottom: 1px solid #eee;
+  padding: 12px 8px;
+  word-break: keep-all;
+}
+
+.board-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+/* ===== 페이지네이션 ===== */
+.pagination-custom .page-item .page-link {
+  border: none;
+  background: none;
+  color: #333;
+  margin: 0 4px;
+  font-weight: 500;
+}
+
+.pagination-custom .page-item.active .page-link {
+  background-color: #000;
+  color: white;
+  border-radius: 50%;
+}
+
+.pagination-custom .page-link:hover {
+  background-color: #ddd;
+  border-radius: 50%;
+}
+
+/* ===== ✅ 반응형 스타일 ===== */
+@media (max-width: 992px) {
+  .board-title {
+    font-size: 1.4rem;
+  }
+
+  .region-sidebar {
+    border-right: none;
+  }
+
+  .region-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .region-item {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .board-add-btn {
+    font-size: 0.8rem;
+    padding: 4px 14px;
+  }
+
+  .board-table thead {
+    display: none;
+  }
+
+  .board-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-bottom: 2px solid #f0f0f0;
+    padding: 8px;
+  }
+
+  .board-table tbody td {
+    border: none;
+    width: 100%;
+    padding: 4px 0;
+    font-size: 0.9rem;
+  }
+
+  .board-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: inline-block;
+    width: 90px;
+    color: #555;
+  }
+
+  .pagination-custom {
+    flex-wrap: wrap;
+  }
+}

@@ -16,20 +16,23 @@ function Navbar() {
    const navigate = useNavigate();
 
    const nickname = useSelector((state: RootState) => {
-	return state.userInfo?.nickname // 없을 수도 있으니 -> ?.
-})
+      return state.userInfo?.nickname // 없을 수도 있으니 -> ?.
+   })
+
+   const notiUnreadCount = useSelector((state: RootState) => state.notiUnreadCount);
+
    /** 로그아웃 api 호출 (refreshToken만 삭제됨, dispath LOGOUT (localstorage의 AccessToken삭제)로 프론트 상태 초기화 */
    const handleLogout = async () => {
-    try {
-      await logout(); //  백엔드에서는 refreshToken만 삭제됨
+      try {
+         await logout(); //  백엔드에서는 refreshToken만 삭제됨
 
-      dispatch({ type: 'LOGOUT' }); // 프론트 상태 초기화 
+         dispatch({ type: 'LOGOUT' }); // 프론트 상태 초기화 
 
-      navigate('/'); // 홈으로 리다이렉트
-    } catch (err) {
-      console.error('로그아웃 실패:', err);
-    }
-  };
+         navigate('/'); // 홈으로 리다이렉트
+      } catch (err) {
+         console.error('로그아웃 실패:', err);
+      }
+   };
 
    // 모달 활성화 관리 상태값
    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -75,8 +78,7 @@ function Navbar() {
       setIsNotiOpen(false);
    }
 
-
-      // 마이페이지 아이콘 드롭다운 표시 여부
+   // 마이페이지 아이콘 드롭다운 표시 여부
    const [isMypageOpen, setIsMypageOpen] = useState<boolean>(false);
 
    // 클릭 시 동작
@@ -118,8 +120,6 @@ function Navbar() {
                   </ul>
 
                   <ul className="navbar-nav flex-fill justify-content-end mb-2 mb-lg-0 gap-4 align-items-center">
-                     
-                     {/* {nickname && <span>{nickname}</span>} */}
 
                   {/* 로그인 상태 */}
                   {nickname ? (
@@ -155,36 +155,41 @@ function Navbar() {
                         >
                            LOGOUT
                         </button>
+                           </li>
+                        </>
+                     ) : (
+                        // 로그인 안 했을 때는 사람 아이콘만 표시
+                        <li
+                           className="nav-item"
+                           onClick={() => openModal("login")}
+                           style={{ cursor: 'pointer' }}
+                        >
+                           <i className="bi bi-person-circle" style={{ fontSize: '32px' }}></i>
                         </li>
-                     </>
-                  ) : (
-                     // 로그인 안 했을 때는 사람 아이콘만 표시
-                     <li
-                        className="nav-item"
-                        onClick={() => openModal("login")}
-                        style={{ cursor: 'pointer' }}
-                     >
-                        <i className="bi bi-person-circle" style={{ fontSize: '32px' }}></i>
-                     </li>
                      )}
                   </ul>
 
                </div>
             </div>
-         </nav>
+         </nav >
 
          {isModalOpen && <Modal
             isOpen={isModalOpen}
             onClose={closeModal}
-            mode={modalMode} />}
+            mode={modalMode} />
+         }
 
-         {isSearchModalOpen && <SearchModal
-            isOpen={isSearchModalOpen}
-            onClose={closeSearchModal} />}
+         {
+            isSearchModalOpen && <SearchModal
+               isOpen={isSearchModalOpen}
+               onClose={closeSearchModal} />
+         }
 
-         {isNotiOpen && <NotiCanvas
-            isOpen={isNotiOpen}
-            onClose={closeNoti} />}
+         {
+            isNotiOpen && <NotiCanvas
+               isOpen={isNotiOpen}
+               onClose={closeNoti} />
+         }
       </>
    );
 }

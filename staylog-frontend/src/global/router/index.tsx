@@ -12,8 +12,13 @@ import AdminReservationPage from "../../domain/admin/pages/AdminReservationPage"
 import AdminRoomPage from "../../domain/admin/pages/AdminRoomPage";
 // import { ReservationProvider } from "../../domain/accommodation/hooks/useReservation"; // 사용되지 않아 주석 유지
 import AccommodationDetail from "../../domain/accommodation/pages/AccommodationDetail";
+
+import AccommodationListPage from "../../domain/accommodation/pages/AccommodationListPage";
+
+// 게시판 관련 페이지
 import Journal from "../../domain/board/pages/Journal";
 import Review from "../../domain/board/pages/Review";
+import ReviewDetail from "../../domain/board/pages/ReviewDetail";
 import BoardForm from "../../domain/board/pages/BoardForm";
 import AccommodationListPage from "../../domain/accommodation/pages/AccommodationListPage";
 import MyPage from "../../domain/mypage/pages";
@@ -21,20 +26,25 @@ import MemberInfoSection from "../../domain/mypage/pages/MemberInfoSection";
 import ReservationSection from "../../domain/mypage/pages/ReservationSection";
 import ReviewSection from "../../domain/mypage/pages/ReviewSection";
 import InquirySection from "../../domain/mypage/pages/InquirySection";
+import TestForm from "../pages/TestForm"; // Import TestForm
+import TestLoadImage from "../pages/TestLoadImage";
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin, Mypage 라우트 객체는 분리)
 const routes: RouteObject[] = [
-    { path: "/index.html", element: <Home /> }, // spring boot 최초 실행 정보 추가
-    { path: "/", element: <Home /> },
-    { path: "/login", element: <LoginForm /> },
-    { path: "/review", element: <Review /> },
-    { path: "/journal", element: <Journal /> },
-    { path: "/boardForm", element: <BoardForm /> },
-    { path: "/signup", element: <SignupForm /> },
-    { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지
-    { path: "/accommodations/:id", element:<AccommodationDetail />},
-    { path: "/room/:roomId", element: <RoomDetail />},
+  { path: "/index.html", element: <Home /> }, // spring boot 최초 실행 정보 추가
+  { path: "/", element: <Home /> },
+  { path: "/login", element: <LoginForm /> },
+  { path: "/review", element: <Review /> },
+  { path: "/journal", element: <Journal /> },
+  { path: "/boardForm", element: <BoardForm /> },
+  { path: "/review/:boardId", element: <ReviewDetail /> },
+  { path: "/signup", element: <SignupForm /> },
+  { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지
+  { path: "/accommodations/:id", element:<AccommodationDetail />},
+  { path: "/room/:roomId", element: <RoomDetail />},
+  { path: "/test-form", element: <TestForm /> },
+  { path: "/test-load", element: <TestLoadImage /> },
 ];
 
 // Admin 중첩 라우트 객체를 별도로 정의
@@ -43,12 +53,12 @@ const adminRoute: RouteObject = {
     element: <AdminLayout />,
     children: [
       { index: true, element: <AdminUserPage /> },  // /admin 기본 페이지
-      { path: "user", element: <AdminUserPage /> },  // /admin/user
-      { path: "accommodations", element: <AdminAccommodationPage /> },  // /admin/accommodations
-      { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },  // /admin/accommodations/:accommodationId/rooms
-      { path: "reservations", element: <AdminReservationPage /> },  // /admin/reservations
-      { path: "reviews", element: <div>리뷰 게시판 관리 페이지</div> },  // /admin/reviews
-      { path: "journals", element: <div>저널 게시판 관리 페이지</div> },  // /admin/journals
+      { path: "user", element: <AdminUserPage /> },
+      { path: "accommodations", element: <AdminAccommodationPage /> },
+      { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },
+      { path: "reservations", element: <AdminReservationPage /> },
+      { path: "reviews", element: <div>리뷰 게시판 관리 페이지</div> },
+      { path: "journals", element: <div>저널 게시판 관리 페이지</div> },
     ],
 };
 

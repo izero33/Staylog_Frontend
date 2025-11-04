@@ -143,8 +143,13 @@ function Navbar() {
                         )}
 
                         {/* 알림 아이콘 (로그인 시만 표시하기) */}
-                        <li onClick={openNoti} className="nav-item">
-                        <i className="bi bi-bell-fill" style={{ fontSize: '32px', cursor: 'pointer' }}></i>
+                        <li onClick={openNoti} className="nav-item position-relative" style={{ cursor: 'pointer' }}>
+                           <i className="bi bi-bell-fill" style={{ fontSize: '32px' }}></i>
+                           {notiUnreadCount > 0 && (
+                              <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.75rem', top: '5px' }}>
+                                 {notiUnreadCount > 9 ? '9+' : notiUnreadCount}
+                                 <span className="visually-hidden">unread messages</span>
+                              </span>)}
                         </li>
 
                         {/* 로그아웃 버튼 */}

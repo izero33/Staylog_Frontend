@@ -1,0 +1,13 @@
+/* mypage.css */
+.container {
+  max-width: 1000px;
+}
+
+h2 {
+  font-weight: 700;
+}
+
+.card {
+  border-radius: 12px;
+  border: 1px solid #eee;
+}

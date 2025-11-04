@@ -1,9 +1,9 @@
-import type { AccommodationRoomList } from '../types/accommodation';
+import type { AccommodationRoomListType } from '../types/AccommodationType';
 import { Card, Row, Col, Button, Image } from 'react-bootstrap';
 
 interface RoomListProps {
-    rooms:AccommodationRoomList[];
-    onSelect:(room:AccommodationRoomList) => void;
+    rooms:AccommodationRoomListType[];
+    onSelect:(room:AccommodationRoomListType) => void;
 }
 
 const RoomList = ({ rooms, onSelect } : RoomListProps) => {

@@ -1,4 +1,6 @@
 export interface RoomDetailDto {
+  rmTypeName: string;
+  rmTypeNameEn: string;
 
   roomId: number;
   accommodationId: number;
@@ -17,6 +19,6 @@ export interface RoomDetailDto {
   kingBed: number;
   checkInTime: string;
   checkOutTime: string;
-
+  description: string;
 }
 

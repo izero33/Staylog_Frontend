@@ -1,6 +1,6 @@
-// src/domain/accommodation/types/accommodation.ts
+// src/domain/accommodation/types/AccommodationType.ts
 
-export interface AccommodationReviewList {
+export interface AccommodationReviewListType {
     readonly boardId : number;
     readonly userId : number;
     nickname : string;
@@ -11,16 +11,20 @@ export interface AccommodationReviewList {
     createdAt : string;
 
 }
-export interface AccommodationRoomList {
+export interface AccommodationRoomListType {
+    maxAdult: number;
+    maxChildren: number;
+    maxInfant: number;
     readonly roomId : number;
     name : string;
     maxGuest : number;
     rmTypeNameEn : string;
     rmTypeName : string;
     price : number;
+    disabledDates?: string[];
 }
 
-export interface AccommodationDetail {
+export interface AccommodationDetailType {
     readonly accommodationId?: number;
     name : string;
     typeNameEn : string;
@@ -35,8 +39,8 @@ export interface AccommodationDetail {
     updatedAt : string | null;
     checkInTime : string;
     checkOutTime : string;
-    rooms? : AccommodationRoomList[];
-    reviews? : AccommodationReviewList[]; 
+    rooms?: AccommodationRoomListType[];
+    reviews?: AccommodationReviewListType[]; 
 
     // 다음 개발 단계에서 추가될 필드 (주석 처리)
     // averageRating?: number;

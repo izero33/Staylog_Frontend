@@ -30,12 +30,17 @@ useEffect(() => {
             dispatch({
                type: "USER_INFO",
                payload: {
-                  userId: decoded.sub,
+                  userId: parseInt(decoded.sub, 10),
                   loginId: decoded.loginId,
                   nickname: decoded.nickname
                   // profileImageUrl: decoded.profileImageUrl ? `/api/images${decoded.profileImageUrl}` : null // 아직 경로 지정 안됨
                }
             })
+
+            dispatch({
+               type: "SET_TOKEN",
+               payload: token
+            });
 
             const remainTime = (decoded.exp - now) * 1000;
             const logoutTimer = setTimeout(() => {
@@ -43,6 +48,11 @@ useEffect(() => {
                nav("/")
                alert("세션이 만료되어 자동 로그아웃 되었습니다.")
             }, remainTime)
+
+            dispatch({
+               type: "SET_LOGOUT_TIMER",
+               payload: logoutTimer
+            });
 
             return () => clearTimeout(logoutTimer)
 

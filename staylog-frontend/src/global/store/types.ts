@@ -31,6 +31,11 @@ export interface LogoutAction {
    type: 'LOGOUT';
 }
 
+export interface SetLogoutTimerAction {
+   type: 'SET_LOGOUT_TIMER';
+   payload: NodeJS.Timeout | null;
+}
+
 // 토큰 저장용 액션
 export interface SetTokenAction {
    type: 'SET_TOKEN';
@@ -91,6 +96,7 @@ export interface DeleteNotificationAction {
 export type AppAction =
    SetUserInfoAction
    | LogoutAction
+   | SetLogoutTimerAction
    | SetTokenAction
    | SetCommonCodesAction
    | SetNotiListAction

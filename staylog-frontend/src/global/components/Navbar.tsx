@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import type { ModalMode } from "../types/ModalMode";
@@ -14,7 +14,7 @@ function Navbar() {
    const navigate = useNavigate();
 
    const nickname = useSelector((state: RootState) => {
-	   return state.userInfo?.nickname // 없을 수도 있으니 -> ?.
+      return state.userInfo?.nickname // 없을 수도 있으니 -> ?.
    })
 
    const notiUnreadCount = useSelector((state: RootState) => state.notiUnreadCount);
@@ -77,9 +77,7 @@ function Navbar() {
    }
 
 
-   useEffect(() => {
-      // 안읽은 알림 수를 조회하는 함수 필요
-   })
+
 
 
    return (
@@ -111,64 +109,73 @@ function Navbar() {
                   </ul>
 
                   <ul className="navbar-nav flex-fill justify-content-end mb-2 mb-lg-0 gap-4 align-items-center">
-                  {/* 로그인 상태 */}
-                  {nickname ? (
-                     <>
-                        {/* 닉네임 표시 */}
-                        <span className="fw-semibold">{nickname}</span>
-                        {/* 항상 사람 아이콘은 항상 표시 */}
+                     {/* 로그인 상태 */}
+                     {nickname ? (
+                        <>
+                           {/* 닉네임 표시 */}
+                           <span className="fw-semibold">{nickname}</span>
+                           {/* 항상 사람 아이콘은 항상 표시 */}
+                           <li
+                              className="nav-item"
+                              onClick={() => openModal("login")}
+                              style={{ cursor: 'pointer' }}
+                           >
+                              <i className="bi bi-person-circle" style={{ fontSize: '32px' }}></i>
+                           </li>
+
+                           {/* 알림 아이콘 (로그인 시만 표시하기) */}
+                           <li onClick={openNoti} className="nav-item position-relative" style={{ cursor: 'pointer' }}>
+                              <i className="bi bi-bell-fill" style={{ fontSize: '32px' }}></i>
+                              {notiUnreadCount > 0 && (
+                                 <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.75rem', top: '5px' }}>
+                                    {notiUnreadCount > 9 ? '9+' : notiUnreadCount}
+                                    <span className="visually-hidden">unread messages</span>
+                                 </span>)}
+                           </li>
+
+                           {/* 로그아웃 버튼 */}
+                           <li className="nav-item">
+                              <button
+                                 className="btn btn-outline-dark px-3 py-1"
+                                 onClick={handleLogout}
+                              >
+                                 LOGOUT
+                              </button>
+                           </li>
+                        </>
+                     ) : (
+                        // 로그인 안 했을 때는 사람 아이콘만 표시
                         <li
-                        className="nav-item"
-                        onClick={() => openModal("login")}
-                        style={{ cursor: 'pointer' }}
+                           className="nav-item"
+                           onClick={() => openModal("login")}
+                           style={{ cursor: 'pointer' }}
                         >
-                        <i className="bi bi-person-circle" style={{ fontSize: '32px' }}></i>
+                           <i className="bi bi-person-circle" style={{ fontSize: '32px' }}></i>
                         </li>
-
-                        {/* 알림 아이콘 (로그인 시만 표시하기) */}
-                        <li onClick={openNoti} className="nav-item">
-                           <i className="bi bi-bell-fill" style={{ fontSize: '32px', cursor: 'pointer' }}></i>
-                           <span>{notiUnreadCount}</span>
-                        </li>
-
-                        {/* 로그아웃 버튼 */}
-                        <li className="nav-item">
-                        <button
-                           className="btn btn-outline-dark px-3 py-1"
-                           onClick={handleLogout}
-                         >
-                           LOGOUT
-                        </button>
-                        </li>
-                     </>
-                  ) : (
-                     // 로그인 안 했을 때는 사람 아이콘만 표시
-                     <li
-                        className="nav-item"
-                        onClick={() => openModal("login")}
-                        style={{ cursor: 'pointer' }}
-                     >
-                        <i className="bi bi-person-circle" style={{ fontSize: '32px' }}></i>
-                     </li>
                      )}
                   </ul>
 
                </div>
             </div>
-         </nav>
+         </nav >
 
          {isModalOpen && <Modal
             isOpen={isModalOpen}
             onClose={closeModal}
-            mode={modalMode} />}
+            mode={modalMode} />
+         }
 
-         {isSearchModalOpen && <SearchModal
-            isOpen={isSearchModalOpen}
-            onClose={closeSearchModal} />}
+         {
+            isSearchModalOpen && <SearchModal
+               isOpen={isSearchModalOpen}
+               onClose={closeSearchModal} />
+         }
 
-         {isNotiOpen && <NotiCanvas
-            isOpen={isNotiOpen}
-            onClose={closeNoti} />}
+         {
+            isNotiOpen && <NotiCanvas
+               isOpen={isNotiOpen}
+               onClose={closeNoti} />
+         }
       </>
    );
 }

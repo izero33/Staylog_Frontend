@@ -28,6 +28,8 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
          return { ...state, token: action.payload };
       case 'SET_COMMON_CODES':
          return { ...state, commonCodes: action.payload };
+      case 'SET_LOGOUT_TIMER':
+         return { ...state, logoutTimer: action.payload };
       case 'LOGOUT':
          if (state.logoutTimer) {
             clearTimeout(state.logoutTimer);

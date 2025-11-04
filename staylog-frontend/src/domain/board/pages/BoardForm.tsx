@@ -28,15 +28,25 @@ function BoardForm() {
 
     // DTO 상태값 관리
     const [dto, setDto] = useState<BoardDto>({
-
-        boardType: "REVIEW",
-        userId: 0,          // 로그인된 사용자 ID
-        accommodationId: 0, // 숙소 ID
-        bookingId: 0,       // 예약 ID
-        regionCode: "",     // 지역 코드 (예: 'SEOUL')
-        title: "",
-        content: ""
-    });
+        boardId: 0,             // 기본값 (신규 작성 시 0 또는 undefined)
+        userId: 0,              // 로그인 사용자 ID
+        userNickName: "",       // 작성자 닉네임
+        userName: "",           // 작성자 이름
+        accommodationId: 0,     // 숙소 ID
+        accommodationName: "",  // 숙소 이름
+        bookingId: 0,           // 예약 ID
+        checkIn: "",            // 체크인 날짜
+        checkOut: "",           // 체크아웃 날짜
+        regionCode: "SEOUL",    // 지역 코드 (예시 기본값)
+        regionName: "",         // 지역 이름
+        boardType: "BOARD_REVIEW",    // 게시판 타입
+        title: "",              // 제목
+        content: "",            // 내용
+        rating: 0,              // 평점 (null 대신 0으로 초기화)
+        likes: 0,               // 좋아요 수
+        viewsCount: 0,          // 조회수
+        createdAt: "",          // 작성일
+      });
 
 
     const navigate = useNavigate();
@@ -75,7 +85,6 @@ function BoardForm() {
     }, [userId]);
 
   
-
 
 
     // 게시글 제목 작성 핸들러
@@ -213,7 +222,7 @@ function BoardForm() {
                 style={{
                 cursor: "pointer",
                 fontSize: "2rem",
-                color: star <= dto.rating ? "#FFD700" : "#ddd", // 노란색 / 회색
+                color: star <= (dto.rating ?? 0) ? "#f0de77ff" : "#dddddcff", // 노란색 / 회색
                 transition: "color 0.2s",
                 }}
             >

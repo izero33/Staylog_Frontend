@@ -29,7 +29,7 @@ const routes: RouteObject[] = [
   { path: "/review", element: <Review /> },
   { path: "/journal", element: <Journal /> },
   { path: "/boardForm", element: <BoardForm /> },
-  { path: "/review/:num", element: <ReviewDetail /> },
+  { path: "/review/:boardId", element: <ReviewDetail /> },
   { path: "/signup", element: <SignupForm /> },
   { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지
   { path: "/accommodations/:id", element:<AccommodationDetail />},

@@ -41,7 +41,7 @@ function Review() {
             try {
                 const res = await api.get("/v1/boards", {
                     params: {
-                        boardType: "REVIEW",  
+                        boardType: "BOARD_REVIEW",  
                         
                         pageNum: 1,
                         pageSize: 10
@@ -129,7 +129,7 @@ function Review() {
                         <NavLink to={`/review/${board.boardId}`} className="board-link">{board.title}</NavLink>
                       </td>
                       <td>{board.userId}</td>
-                      <td>{board.viewCount || 0}</td>
+                      <td>{board.viewsCount || 0}</td>
                       <td>{board.likes || 0}</td>
                       <td>{board.createdAt}</td>
                     </tr>

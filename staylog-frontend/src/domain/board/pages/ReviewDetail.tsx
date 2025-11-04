@@ -36,9 +36,11 @@ function ReviewDetail() {
                 setDto(board);
 
                 // 좋아요
-                const resLike = await api.get(`/v1/boards/likes/${boardId}`);
-                setLiked(resLike?.liked || false);
-                setLikesCount(board.likes || 0);
+                const resLike = await api.get(`/v1/likes/${boardId}`);
+                setLikesCount(resLike || 0);
+
+                const resLiked = await api.get(`/v1/likes/${boardId}/${userId}`);
+                setLiked(resLiked || 0);
                 
             }catch(err) {
                 console.error("게시글 상세 조회 불가:", err);
@@ -87,6 +89,9 @@ function ReviewDetail() {
             </span>
             ))}
         </div>
+
+        
+
 
 
     </div>

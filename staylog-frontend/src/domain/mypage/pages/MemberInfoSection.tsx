@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Form, Button, Image, InputGroup, Fade } from "react-bootstrap";
 import { fetchMemberInfo, updateMemberInfo } from "../api/mypageApi";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import useGetLoginIdFromToken from "../../auth/hooks/useGetLoginIdFromToken";
 import useGetNicknameFromToken from "../../auth/hooks/useGetNicknameFromToken";
 import type { MemberInfo } from "../types/mypageTypes";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../global/store/types";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch } from "../../../global/store";
+import type { AppAction, RootState } from "../../../global/store/types";
 import duplicateCheck from "../../auth/utils/duplicateCheck";
 import AlertModal from "../components/AlertModal";
 import sendEmail from "../../auth/utils/sendEmail";
 import mailCertify from "../../auth/utils/mailCertify";
-//import { uploadProfileImage } from "../api/mypageApi";
+import { uploadProfileImage } from "../api/mypageApi";
 import { REGEX_PASSWORD } from "../../../global/constants/Validation";
 
 
@@ -65,6 +66,9 @@ function MemberInfoSection() {
     
     // 회원정보 수정 후 저장하기 완료 모달 상태
     const [showModal, setShowModal] = useState(false); // 저장 완료 모달 상태
+
+    //  dispatch()는 UPDATE_NICKNAME, USER_INFO, LOGOUT 등 AppAction에 정의된 모든 액션을 안전하게 받을 수 있다.
+    const dispatch = useDispatch<AppDispatch>();
 
     // 회원정보 조회
     useEffect(() => {
@@ -214,28 +218,29 @@ function MemberInfoSection() {
     };
 
     //프로필 이미지 변경 (미리보기 & (업로드)상태 업데이트 & 파일명 표시) **추후 수정 필요**
-    // const handleImageChange = async (img: React.ChangeEvent<HTMLInputElement>) => {
-    //     const file = img.target.files?.[0];
-    //     if (!file) return;
-    //     // 브라우저 미리보기용 URL 생성
-    //     const preview = URL.createObjectURL(file);
-    //         setPreviewUrl(preview);
-    //         setSelectedFileName(file.name); //파일명 저장
-    //     try {
-    //         // 실제 서버(Spring) 업로드
-    //         const imageUrl = await uploadProfileImage(file);
-    //         // 업로드 완료 후 DB에 저장될 URL을 상태로 반영
-    //         setMember((prev) => (prev ? { ...prev, profileImageUrl: imageUrl } : prev));
-    //         console.log("프로필 이미지 업로드 완료:", imageUrl);
-    //     } catch (err) {
-    //         console.error("이미지 업로드 실패:", err);
-    //         alert("이미지 업로드 중 오류가 발생했습니다.");
-    //     }
-    // };
+    const handleImageChange = async (img: React.ChangeEvent<HTMLInputElement>) => {
+        const file = img.target.files?.[0];
+        if (!file || userId) return;
+        // 브라우저 미리보기용 URL 생성
+        const preview = URL.createObjectURL(file);
+            setPreviewUrl(preview);
+            setSelectedFileName(file.name); //파일명 저장
+        try {
+            // 실제 서버(Spring) 업로드
+            const imageUrl = await uploadProfileImage(file, userId!); // 업로드 요청 (userId 뒤에 ! 빼기)
+            // 업로드 완료 후 DB에 저장될 URL을 상태로 반영
+            setMember((prev) => (prev ? { ...prev, profileImageUrl: imageUrl } : prev)); // UI 반영
+            console.log("프로필 이미지 업로드 완료:", imageUrl);
+        } catch (err) {
+            console.error("이미지 업로드 실패:", err);
+            alert("이미지 업로드 중 오류가 발생했습니다.");
+        }
+    };
 
     // 저장 버튼
     const handleSave = async () => {
         if (!member || !userId) return;
+
         // 이메일/닉네임 개별 수정모드에 따라 검증
         if (editModeEmail && !isEmailVerified) {
             setEmailSuccess(false);
@@ -262,12 +267,16 @@ function MemberInfoSection() {
             password: showPasswordInput && passwordInput1 ? passwordInput1 : "", // 비밀번호 변경 사항 반영
         };
         console.log("📦 update payload:", payload); 
+
         try {
             // 회원정보 업데이트 API 호출
             await updateMemberInfo(payload);
             //DB 업데이트 이후 최신 회원정보 다시 불러오기 (닉네임 즉시 반영 위해)
             const updatedData = await fetchMemberInfo(userId);
             setMember(updatedData);
+
+            // Redux 전역 상태 업데이트 (Navbar 닉네임 즉시 반영)
+            dispatch({ type: "UPDATE_NICKNAME", payload: updatedData.nickname } as AppAction);
             // 저장 완료 모달 표시
             setShowModal(true); 
             // 상태 초기화
@@ -567,7 +576,7 @@ function MemberInfoSection() {
                                     
                                     {/* 새 비밀번호 입력란(필드1) */}
                                     <Form.Control
-                                        type="password1"
+                                        type="password"
                                         name="password1"
                                         placeholder="새 비밀번호 입력"
                                         value={passwordInput1} //상태값 바인딩
@@ -577,7 +586,7 @@ function MemberInfoSection() {
 
                                     {/* 비밀번호 확인 입력란(필드2) */}    
                                     <Form.Control
-                                        type="password2"
+                                        type="password"
                                         name="password2"
                                         placeholder="새 비밀번호 확인"
                                         value={passwordInput2} //상태값 바인딩
@@ -678,7 +687,7 @@ function MemberInfoSection() {
                 {editMode && (
                     <Form.Group controlId="formFile" className="mt-2 d-flex flex-wrap align-items-center justify-content-center gap-2">
                         {/* 숨겨진 파일 입력 */}
-                        {/* <Form.Control type="file" accept="image/*" onChange={handleImageChange} style={{ display: "none" }}/> */}
+                        <Form.Control type="file" accept="image/*" onChange={handleImageChange} style={{ display: "none" }}/>
                         {/* 파일 선택 버튼 */}
                         <Button as="label" htmlFor="formFile" variant="outline-secondary" className="rounded-3 px-3" style={{ whiteSpace: "nowrap", height: "38px", lineHeight: "1", cursor: "pointer" }}>
                             파일 선택

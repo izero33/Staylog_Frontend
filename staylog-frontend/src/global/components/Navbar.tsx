@@ -15,9 +15,8 @@ function Navbar() {
    const dispatch = useDispatch();
    const navigate = useNavigate();
 
-   const nickname = useSelector((state: RootState) => {
-      return state.userInfo?.nickname // 없을 수도 있으니 -> ?.
-   })
+   const nickname = useSelector((state: RootState) => state.userInfo?.nickname); // 없을 수도 있으니 -> ?.
+
 
    const notiUnreadCount = useSelector((state: RootState) => state.notiUnreadCount);
 

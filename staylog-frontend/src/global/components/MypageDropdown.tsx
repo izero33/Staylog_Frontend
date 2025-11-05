@@ -71,6 +71,7 @@ function MypageDropdown({ onClose }: MypageDropdownProps) {
             <Dropdown.Item eventKey="reservations">예약 정보</Dropdown.Item>
             <Dropdown.Item eventKey="reviews">리뷰 내역</Dropdown.Item>
             <Dropdown.Item eventKey="inquiries">문의 내역</Dropdown.Item>
+            <Dropdown.Item eventKey="coupon">내 쿠폰함</Dropdown.Item>
 
             <Dropdown.Divider />
             <Dropdown.Item eventKey="logout" className="text-danger text-center fw-semibold">로그아웃</Dropdown.Item>

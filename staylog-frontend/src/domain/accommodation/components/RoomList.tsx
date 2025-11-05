@@ -11,10 +11,10 @@ const RoomList = ({ rooms, onSelect } : RoomListProps) => {
         <div>
             {rooms.map(room => (
                 <Card key={room.roomId} className="mb-4 shadow-sm border-0" onClick={() => onSelect(room)} 
-                    style={{ cursor:"pointer", overflow:"hidden", borderRadius:"16px" }}>
+                    style={{ cursor:"pointer", overflow:"hidden", borderRadius:"5px" }}>
                     <Row className="g-0 align-items-stretch">
                         {/* 이미지 영역 */}
-                        <Col md={5} style={{ padding:0 }}>
+                        <Col md={6} style={{ padding:0 }}>
                             <Image
                                 src={`https://placehold.co/200x150/F0F3F7/99AAB5?text=${encodeURIComponent(room.name)}`}
                                 alt={`${room.name} 이미지`}
@@ -24,12 +24,12 @@ const RoomList = ({ rooms, onSelect } : RoomListProps) => {
                         </Col>
 
                         {/* 객실 정보 영역 */}
-                        <Col md={7}>
+                        <Col md={6}>
                             <Card.Body className="d-flex flex-column justify-content-between" style={{ height: '100%' }}>
                                 {/* 객실명, 객실 최대 인원수, 객실 타입*/}
                                 <div>
-                                    <Card.Title>{room.name}</Card.Title>
-                                    <Card.Text>
+                                    <Card.Title style={{ fontSize:"1.15rem", fontWeight:700}}>{room.name}</Card.Title>
+                                    <Card.Text style={{ fontSize:"0.8rem"}}>
                                         최대 {room.maxGuest}명 | {room.rmTypeName}
                                     </Card.Text>
                                 </div>
@@ -39,7 +39,9 @@ const RoomList = ({ rooms, onSelect } : RoomListProps) => {
                                     <span style={{ fontWeight: 800, fontSize: "1.2em", color: "#000" }}>
                                         {room.price.toLocaleString()}원
                                     </span>
-                                    <Button variant="dark" onClick={(e) => { e.stopPropagation(); onSelect(room); }}>
+                                    <Button variant="dark" 
+                                        onClick={(e) => { e.stopPropagation(); onSelect(room); }}
+                                        style={{ fontSize:"0.9rem", fontWeight:700}}>
                                         객실 선택
                                     </Button>
                                 </div>

@@ -7,7 +7,8 @@ import type { BoardDto } from "../types/boardtypes";
 import api from "../../../global/api";
 
 import "./Board.css";
-import useRegions from "../../common/hooks/useRegions";
+
+import RegionsSideBar from "../components/RegionSideBar";
 
 
 
@@ -15,30 +16,30 @@ import useRegions from "../../common/hooks/useRegions";
 function Review() {
 
   
-    // 지역 코드 
-    const regions = useRegions();
-
-    const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-
-
-
     // 게시글 목록 상태값 관리
     const [boards, setBoards] = useState<BoardDto[]>([]);
+
+    const [selectedRegions, setSelectedRegions] = useState<string[]>(["전체"]);
+
     const navigate = useNavigate();
     
-
-
 
 
     useEffect(()=>{
         const fetchBoards = async () =>{
             try {
+              // 전체 선택이면 필터 제거
+              const validRegions = selectedRegions.includes("전체") 
+                ? [] 
+                : selectedRegions;
+              
+
                 const res = await api.get("/v1/boards", {
                     params: {
-                        boardType: "BOARD_REVIEW",  
-                        
+                        boardType: "BOARD_REVIEW",                         
                         pageNum: 1,
-                        pageSize: 10
+                        pageSize: 10,
+                        regionCodes: validRegions,
                     }
                 });
                 
@@ -53,7 +54,7 @@ function Review() {
             }         
         };
         fetchBoards();
-    },[]);
+    },[selectedRegions]);
 
     
     return <>
@@ -64,24 +65,10 @@ function Review() {
         <Row>
           {/* 좌측 지역 코드 */}
           <Col md={2}>
-          <ListGroup className="region-sidebar"> 
-
-            {/* 지역 목록 - 공통코드에서 조회 */}
-            {regions.map((region) => (
-              <ListGroup.Item
-                key={region.codeId}
-                action
-                className="region-item"
-              >
-                {region.codeName}
-              </ListGroup.Item>
-
-            ))}
-            </ListGroup>
+            <RegionsSideBar 
+              selectedRegions={selectedRegions}
+              setSelectedRegions={setSelectedRegions} />
           </Col>
-
-
-
 
           {/* 메인 게시글 목록 영역 */}
           <Col md={10}>

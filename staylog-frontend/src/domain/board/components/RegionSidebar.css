@@ -1,0 +1,26 @@
+.region-sidebar {
+    width: 220px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 16px;
+  }
+  
+  .region-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+  
+  .region-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .region-item.selected {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+    font-weight: 500;
+  }
+  

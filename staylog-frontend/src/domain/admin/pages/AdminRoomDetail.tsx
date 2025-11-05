@@ -133,25 +133,28 @@ function AdminAccommodationDetail() {
                 >숙소 상세
                     <i className="bi bi-arrow-left ms-1"></i> </button>
             </div>
-
-            <table className="table table-bordered mt-5">
+            <table className="table table-bordered mt-5" style={{ tableLayout: 'fixed' }}>
+                <colgroup>
+                    <col style={{ width: '15%'}} />
+                    <col style={{ width: '85%' }} />
+                </colgroup>
                 <tbody>
                     <tr>
-                        <th className="bg-light">유형</th>
+                        <th className="bg-light text-center">유형</th>
                         <td>{data.typeName}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light">가격</th>
+                        <th className="bg-light text-center">가격</th>
                         <td>{data.price}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light" style={{ width: '30%' }}>최대 인원</th>
+                        <th className="bg-light text-center" style={{ width: '30%' }}>최대 인원</th>
                         <td>
-                            <table className="table table-sm mb-0">
+                             <table className="table table-sm mb-0" style={{ width: '30%' }}>
                                 <tbody>
                                     {data.maxAdult !== 0 && (
                                         <tr>
-                                            <th style={{ width: '33%' }}>성인</th>
+                                            <th style={{ width: '50%' }}>성인</th>
                                             <td>{data.maxAdult}명</td>
                                         </tr>
                                     )}
@@ -172,13 +175,13 @@ function AdminAccommodationDetail() {
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light">침대</th>
+                        <th className="bg-light text-center">침대</th>
                         <td>
-                            <table className="table table-sm mb-0">
+                             <table className="table table-sm mb-0" style={{ width: '30%' }}>
                                 <tbody>
                                     {data.singleBed !== 0 && (
                                         <tr>
-                                            <th style={{ width: '33%' }}>싱글</th>
+                                            <th style={{ width: '50%' }}>싱글</th>
                                             <td>{data.singleBed}개</td>
                                         </tr>
                                     )}
@@ -206,7 +209,7 @@ function AdminAccommodationDetail() {
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light">면적</th>
+                        <th className="bg-light text-center">면적</th>
                         <td>{data.area} m²</td>
                     </tr>
                     {data.checkInTime && (
@@ -222,7 +225,7 @@ function AdminAccommodationDetail() {
                         </tr>
                     )}
                     <tr>
-                        <th className="bg-light">이미지</th>
+                        <th className="bg-light text-center">이미지</th>
                         <td>
                             <div className="accommodationImages images-slider">
                                 <Carousel>
@@ -238,8 +241,8 @@ function AdminAccommodationDetail() {
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light">설명</th>
-                        <td>{data.description}</td>
+                        <th className="bg-light text-center">설명</th>
+                        <td dangerouslySetInnerHTML={{ __html: data.description }} />
                     </tr>
                 </tbody>
             </table>

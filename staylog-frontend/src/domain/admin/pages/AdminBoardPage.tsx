@@ -110,7 +110,7 @@ function AdminAccommodationListPage() {
                 <tbody>
                     {boards.length === 0 ? ( // 숙소가 하나도 없을 때
                         <tr>
-                            <td colSpan={searchParams.boardType === 'BOARD_REVIEW' ? 9 : 8} className="text-center py-5">
+                            <td colSpan={7} className="text-center py-5">
                                 <div className="text-muted">
                                     <i className="bi bi-inbox fs-1 d-block mb-3"></i>
                                     <p className="mb-0">등록된 게시글이 없습니다.</p>

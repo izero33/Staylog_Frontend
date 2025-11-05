@@ -161,7 +161,7 @@ function AdminAccommodationDetail() {
                                         </tr>
                                     )}
                                     <tr>
-                                        <th>좋아요</th>
+                                        <th>좋아요수</th>
                                         <td>{data.likes}</td>
                                     </tr>
                                     <tr>

@@ -18,7 +18,7 @@ function AdminLayout() {
         { path: '', label: '회원관리', end: true },
         { path: 'accommodations', label: '숙소관리' },
         { path: 'reservations', label: '예약관리' },
-        { path: 'reviews', label: '게시판 관리' },
+        { path: 'boards', label: '게시판 관리' },
     ];
     // 현재 활성화된 메뉴 찾기
     const getCurrentMenu = () => {

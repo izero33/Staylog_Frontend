@@ -1,3 +1,7 @@
+// src/domain/admin/types/AdminBoardTypes.tsx
+
+import type { PageRequest, PageResponse } from "../../../global/types/Paginationtypes";
+
 export interface AdminBoard {
    boardId: number;           // 게시글 ID
    userId: number;            // 로그인된 사용자 ID
@@ -17,18 +21,22 @@ export interface AdminBoard {
    deleted: 'Y' | 'N';
 }
 
-export interface AdminBoardSearchParams {
+export interface AdminBoardSearchParams extends PageRequest{
     boardType: 'BOARD_REVIEW' | 'BOARD_JOURNAL';
 
     // 검색 조건
-    searchType?: 'accommodation' | 'userNickname';
-    acType?: string;
+    searchType?: 'accommodationName' | 'userNickName';
     keyword?: string;
-    deleted?: 'Y' | 'N';
+    deleted?: 'Y' | 'N' | null;
     
     // 정렬조건
     sortBy?: 'createdAt' | 'viewsCount' | 'rating' | 'likes';
     sortOrder?: 'ASC' | 'DESC'; 
+}
+
+export interface AdminBoardListResponse {
+    boards: AdminBoardList[];
+    page: PageResponse;
 }
 
 export interface AdminBoardList {

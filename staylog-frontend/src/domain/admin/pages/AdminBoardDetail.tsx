@@ -96,7 +96,7 @@ function AdminAccommodationDetail() {
 
     // 게시글 목록 페이지 이동 핸들러
     const handleGoToBoardList = () => {
-        navigate(`/admin/boards`);
+        navigate(-1);
     };
 
     // 전체 화면 너비 사용 : Container fluid
@@ -120,9 +120,9 @@ function AdminAccommodationDetail() {
                 )}
                 <button
                     className="btn btn-sm btn-outline-primary mb-3"
-                    title="게시글 목록 보기"
+                    title="게시글 목록으로 이동"
                     onClick={handleGoToBoardList} // 이동 함수 연결
-                >게시글 목록
+                >목록으로
                     <i className="bi bi-list ms-1"></i> </button>
             </div>
 
@@ -182,6 +182,7 @@ function AdminAccommodationDetail() {
                     </tr>
                 </tbody>
             </table>
+            {data.content}
         </Container >
     </>
 }

@@ -1,3 +1,4 @@
+// src/global/store/types.ts
 import type { CommonCodeGroupResponse } from '../../domain/common/types';
 import type { responseNotificationsType } from '../../domain/notification/types/NotificationCardType';
 
@@ -7,6 +8,13 @@ export interface UserInfo {
    loginId: string;
    nickname: string;
    // profileImageUrl: string | null
+}
+
+// 닉네임 업데이트 액션 
+// 마이페이지의 닉네임 수정 시, 네비바에서 보여지는 닉네임도 바로 업데이트가 되도록 한다.
+export interface UpdateNicknameAction {
+   type: 'UPDATE_NICKNAME';
+   payload: string; // 변경된 닉네임
 }
 
 // Redux store에 저장되는 모든 데이터를 정의하는 마스터 설계도
@@ -106,3 +114,4 @@ export type AppAction =
    | MarkAllAsReadAction
    | DeleteNotificationAction
    | MarkOneAsReadAction
+   | UpdateNicknameAction; //사람아이콘 왼쪽의 닉네임 업데이트 추가

@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
-import '../css/AdminAccommodationDetail.css';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminRoom } from '../types/AdminRoomTypes';
 
@@ -20,13 +19,13 @@ function AdminAccommodationDetail() {
     const img3 = "https://picsum.photos/200/300/?blur";
     const img4 = "https://picsum.photos/id/237/200/300";
 
-    // 숙소의 번호  /admin/accommodations/:accommodationId/rooms/:roomId  에서 accommodationId, roomId 경로 변수 얻어내기
+    // 숙소, 객실의 번호  /admin/accommodations/:accommodationId/rooms/:roomId  에서 accommodationId, roomId 경로 변수 얻어내기
     const { accommodationId: accommodationIdStr, roomId: roomIdStr } = useParams();
     // 경로 변수를 숫자로 변환
     const accommodationId = Number(accommodationIdStr);
     const roomId = Number(roomIdStr);
 
-    // 숙소 상세 데이터
+    // 객실 상세 데이터
     const [data, setData] = useState<AdminRoom | null>(null);
     // 로딩 상태
     const [loading, setLoading] = useState(true);
@@ -35,7 +34,7 @@ function AdminAccommodationDetail() {
     // 페이지 이동
     const navigate = useNavigate();
 
-    // 숙소 상세데이터를 가져오는 API 호출
+    // 객실 상세데이터를 가져오는 API 호출
     useEffect(() => {
         // 숙소, 객실 번호가 없다면
         if (!accommodationId || !roomId) return;
@@ -54,7 +53,7 @@ function AdminAccommodationDetail() {
                 if (axios.isAxiosError(err)) {
                     setError(
                         err.response?.status === 404
-                            ? '해당 숙소는 존재하지 않습니다.'
+                            ? '해당 객실은 존재하지 않습니다.'
                             : `API 호출 실패: ${err.response?.status || '네트워크 오류'}`
                     );
                 } else {
@@ -66,16 +65,16 @@ function AdminAccommodationDetail() {
             }
         };
         fetchDetail();
-    }, [accommodationId, data?.deletedYn]);
+    }, [accommodationId, roomId, data?.deletedYn]);
 
-    // 숙소 ID 가 없다면
-    if (!accommodationId) {
-        return <div>숙소 ID가 없습니다</div>;
+    // 객실 ID 가 없다면
+    if (!roomId) {
+        return <div>객실 ID가 없습니다</div>;
     }
 
     // 페이지 로딩 중 표시
     if (loading) {
-        return <div style={{ padding: "40px", textAlign: "center" }}> 숙소 정보 불러오는 중</div>;
+        return <div style={{ padding: "40px", textAlign: "center" }}> 객실 정보 불러오는 중</div>;
     }
 
     // 에러 발생 표시
@@ -85,10 +84,10 @@ function AdminAccommodationDetail() {
 
     // 데이터가 없다면 표시
     if (!data) {
-        return <div style={{ padding: "40px", textAlign: "center" }}>t숙소 정보를 찾을 수 없습니다</div>;
+        return <div style={{ padding: "40px", textAlign: "center" }}>객실 정보를 찾을 수 없습니다</div>;
     }
 
-    //객실 목록 페이지 이동 핸들러
+    //숙소 상세 페이지 이동 핸들러
     const handleGoToAccommDetail = (accommodationId: number) => {
         navigate(`/admin/accommodations/${accommodationId}`);
     };
@@ -102,7 +101,7 @@ function AdminAccommodationDetail() {
             setData(data => ({ ...data!, deletedYn: status })); // 상태 업데이트
             return true;
         } catch (err) {
-            console.error(`숙소 ID ${accommodationId} 상태 업데이트 실패:`, err);
+            console.error(`객실 ID ${roomId} 상태 업데이트 실패:`, err);
             return false;
         }
     };
@@ -229,10 +228,10 @@ function AdminAccommodationDetail() {
                                 <Carousel>
                                     <Carousel.Item>
                                         {/* 이미지 비율에 맞게 나오게 함*/}
-                                        <Image src={img1} alt="숙소 이미지 1" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
+                                        <Image src={img1} alt="객실 이미지 1" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
                                     </Carousel.Item>
                                     <Carousel.Item>
-                                        <Image src={img2} alt="숙소 이미지 2" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
+                                        <Image src={img2} alt="객실 이미지 2" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
                                     </Carousel.Item>
                                 </Carousel>
                             </div>

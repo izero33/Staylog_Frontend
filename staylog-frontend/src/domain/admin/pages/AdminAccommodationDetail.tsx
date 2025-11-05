@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
 import type { AdminAccommodation } from '../types/AdminAccommodationTypes';
-import '../css/AdminAccommodationDetail.css';
 import { formatKST } from '../../../global/utils/date';
 
 /*
@@ -84,7 +83,7 @@ function AdminAccommodationDetail() {
 
     // 데이터가 없다면 표시
     if (!data) {
-        return <div style={{ padding: "40px", textAlign: "center" }}>t숙소 정보를 찾을 수 없습니다</div>;
+        return <div style={{ padding: "40px", textAlign: "center" }}>숙소 정보를 찾을 수 없습니다</div>;
     }
 
     //숙소 수정 페이지 이동 핸들러

@@ -29,7 +29,7 @@ type ReservationListPayload = {
   totalCount: number;
 };
 
-type ReservationListResponse = SuccessResponse<ReservationListPayload>;
+export type ReservationListResponse = SuccessResponse<ReservationListPayload>;
 
 
 

@@ -172,7 +172,7 @@ function RoomDetail() {
       onHide={() => setOpenReserve(false)}
       placement="bottom"
       className="d-lg-none"
-      style={{ height: "75vh" }}
+      style={{ maxHeight: "70vh", minHeight: "fit-container" }}
       aria-labelledby="reserve-panel-title"
     >
       <Offcanvas.Header closeButton>

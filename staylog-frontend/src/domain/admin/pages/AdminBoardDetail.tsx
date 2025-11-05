@@ -6,6 +6,7 @@ import api from '../../../global/api';
 import axios from 'axios';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminBoard } from '../types/AdminBoardTypes';
+import AdminReservationDetailModal from '../components/AdminReservationDetailModal';
 
 /*
     Carousel : 게시글 대표 이미지
@@ -24,6 +25,11 @@ function AdminAccommodationDetail() {
     const [loading, setLoading] = useState(true);
     // 에러 메세지
     const [error, setError] = useState<string | null>(null);
+
+    // 상세 모달 상태 관리
+    const [detailOpen, setDetailOpen] = useState(false);
+    const [targetBookingId, setTargetBookingId] = useState<number | null>(null);
+
     // 페이지 이동
     const navigate = useNavigate();
 
@@ -99,6 +105,17 @@ function AdminAccommodationDetail() {
         navigate(-1);
     };
 
+    // 예약 상세 모달 * 예약번호 클릭 → 상세 모달 열기
+    const openDetail = (bookingId: number) => {
+        setTargetBookingId(bookingId);
+        setDetailOpen(true);
+    };
+    // 예약 상세 모달 닫기
+    const closeDetail = () => {
+        setDetailOpen(false);
+        setTargetBookingId(null);
+    };
+
     // 전체 화면 너비 사용 : Container fluid
     return <>
         <Container fluid className="p-0">
@@ -146,7 +163,14 @@ function AdminAccommodationDetail() {
                     </tr>
                     {data.bookingId !== 0 && (<tr>
                         <th className="bg-light text-center">예약번호</th>
-                        <td>{data.bookingId}</td>
+                        <td>
+                            <button
+                                type="button"
+                                className="btn btn-link p-0 text-decoration-none"
+                                onClick={() => openDetail(data.bookingId)}
+                                title="상세 보기"
+                            >{data.bookingId}</button>
+                        </td>
                     </tr>)}
 
                     <tr>
@@ -182,7 +206,12 @@ function AdminAccommodationDetail() {
                     </tr>
                 </tbody>
             </table>
-            {data.content}
+            {/* 상세 모달 */}
+            <AdminReservationDetailModal
+                open={detailOpen}
+                bookingId={targetBookingId}
+                onClose={closeDetail}
+            />
         </Container >
     </>
 }

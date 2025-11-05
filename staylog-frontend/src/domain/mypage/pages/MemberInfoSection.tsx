@@ -295,7 +295,7 @@ function MemberInfoSection() {
         <Card.Body className="p-4">
             {/* 상단 인삿말 영역 */}
             <div className="mb-4 text-center text-md-center">
-                <h3 className="fw-bold"> {nickname || reduxNickname} 님 반가워요 👋 </h3>
+                <h3 className="fw-bold"> {reduxNickname || member.nickname} 님 반가워요 👋 </h3>
                 <p className="text-muted mb-0">
                     {new Date(member.createdAt).getFullYear()}년부터 StayLog를 함께하고 있어요.
                 </p>
@@ -304,8 +304,8 @@ function MemberInfoSection() {
 
             {/* 폼 + 프로필 */}
             <Row className="g-4 align-items-start">
-            {/* 왼쪽 폼 */}
-            <Col xs={12} md={8}>
+            {/* 왼쪽 폼(회원정보) — 모바일 화면 비율일 땐 순서가 아래로 내려가게 */}
+            <Col xs={{ order: 2 }} md={{ order: 1, span: 8 }}>
                 {/* ...Form 영역... */}
                 <Form>
                 <Form.Group className="mb-3">
@@ -620,8 +620,8 @@ function MemberInfoSection() {
                 </Form>
             </Col>
 
-            {/* 오른쪽 폼 */}
-            <Col xs={12} md={4} className="text-center">
+            {/* 오른쪽 폼(프로필 사진) — 모바일 화면 비율일 땐 순서가 위로 오게  */}
+            <Col xs={{ order: 1 }} md={{ order: 2, span: 4 }} className="text-center">
                 <div
                     className="border rounded-circle mx-auto d-flex justify-content-center align-items-center bg-light overflow-hidden"
                     style={{ width: "130px", height: "130px" }}>

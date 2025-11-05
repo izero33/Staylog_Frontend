@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Row, Col, Form, Button, Image, InputGroup } from "react-bootstrap";
+import { Card, Row, Col, Form, Button, Image, InputGroup, Fade } from "react-bootstrap";
 import { fetchMemberInfo, updateMemberInfo } from "../api/mypageApi";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import useGetLoginIdFromToken from "../../auth/hooks/useGetLoginIdFromToken";
@@ -12,6 +12,7 @@ import AlertModal from "../components/AlertModal";
 import sendEmail from "../../auth/utils/sendEmail";
 import mailCertify from "../../auth/utils/mailCertify";
 //import { uploadProfileImage } from "../api/mypageApi";
+import { REGEX_PASSWORD } from "../../../global/constants/Validation";
 
 
 function MemberInfoSection() {
@@ -27,8 +28,13 @@ function MemberInfoSection() {
     const [editMode, setEditMode] = useState(false); // 전체 수정 모드 상태
     const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 업로드 시 미리보기 이미지
     const [selectedFileName, setSelectedFileName] = useState<string>(""); // 선택된 파일명 표시
+
+    // 비밀번호 변경 관련 상태
     const [showPasswordInput, setShowPasswordInput] = useState(false); // 비밀번호 변경 입력란 표시 여부
-    const [passwordInput, setPasswordInput] = useState(""); // 비밀번호 변경 입력값 상태
+    const [passwordInput1, setPasswordInput1] = useState("");  // 새 비밀번호 입력값 (필드1)
+    const [passwordInput2, setPasswordInput2] = useState("");  // 새 비밀번호 입력값 (필드2) 일치여부 확인
+    const [passwordValid, setPasswordValid] = useState(true);  // 형식 검사
+    const [passwordMatch, setPasswordMatch] = useState(true);  // 일치 여부 검사
 
     // 이메일 인증 관련 상태
     const [emailInput, setEmailInput] = useState(""); // 이메일 입력값
@@ -79,6 +85,7 @@ function MemberInfoSection() {
         });
     }, [userId]);
 
+    // 닉네임 중복확인 alert 대체용 모달 설정
     useEffect(() => {
         const originalAlert = window.alert;
         window.alert = (msg:any) => {
@@ -90,7 +97,6 @@ function MemberInfoSection() {
             window.alert = originalAlert;
         };
     }, []);
-
     // 입력값 변경
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!member) return;
@@ -193,6 +199,20 @@ function MemberInfoSection() {
         if (type === "day") setBirthDay(value);
     };
 
+    // 비밀번호 유효성 및 일치여부 검사 (SignupForm 참고)
+    useEffect(() => {
+        // 정규식: 대문자+소문자+특수문자 조합 8자 이상
+        const isValid = REGEX_PASSWORD.test(passwordInput1);
+        const isMatch = passwordInput1 === passwordInput2 || passwordInput2 === "";
+            setPasswordValid(isValid || passwordInput1 === ""); // 빈칸은 true로 처리
+            setPasswordMatch(isMatch);
+    }, [passwordInput1, passwordInput2]);     
+
+    const handlePwdChange = (pwd: React.ChangeEvent<HTMLInputElement>) => {
+        if(!member) return;
+        setMember({ ...member, [pwd.target.name]: pwd.target.value});
+    };
+
     //프로필 이미지 변경 (미리보기 & (업로드)상태 업데이트 & 파일명 표시) **추후 수정 필요**
     // const handleImageChange = async (img: React.ChangeEvent<HTMLInputElement>) => {
     //     const file = img.target.files?.[0];
@@ -229,8 +249,8 @@ function MemberInfoSection() {
         // 생년월일 YYYY-MM-DD 형식으로 조합
         const cleanedBirthDate =
             birthYear && birthMonth && birthDay
-                ? `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`
-                : "";
+            ? `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`
+            : "";
 
         // 조건부로 수정모드인 항목만 반영하도록 payload 구성
         const payload = {
@@ -239,9 +259,9 @@ function MemberInfoSection() {
             email: editModeEmail ? emailInput : member.email,
             nickname: editModeNickname ? nicknameInput : member.nickname,
             birthDate: cleanedBirthDate,
-            newPassword: showPasswordInput && passwordInput ? passwordInput : "", // 비밀번호 변경 사항 반영 (필드)
+            password: showPasswordInput && passwordInput1 ? passwordInput1 : "", // 비밀번호 변경 사항 반영
         };
-            
+        console.log("📦 update payload:", payload); 
         try {
             // 회원정보 업데이트 API 호출
             await updateMemberInfo(payload);
@@ -259,7 +279,8 @@ function MemberInfoSection() {
             setEmailMessage("");
             setNicknameMessage("");
             //비밀번호 변경 후처리
-            setPasswordInput(""); // 비밀번호 입력 초기화
+            setPasswordInput1(""); // 비밀번호 입력 필드1 초기화
+            setPasswordInput2(""); // 비밀번호 입력 필드2 초기화
             setShowPasswordInput(false); // 입력창 닫기
         } catch(err) {
             console.error("회원정보 수정 실패:", err);
@@ -282,7 +303,6 @@ function MemberInfoSection() {
         <Card.Body className="p-4">
             {/* 상단 인삿말 영역 */}
             <div className="mb-4 text-center text-md-centre">
-                {/* <h3 className="fw-bold">{member.nickname} 님 반가워요 👋</h3> */}
                 <h3 className="fw-bold"> {nickname || reduxNickname} 님 반가워요 👋 </h3>
                 <p className="text-muted mb-0">
                     {new Date(member.createdAt).getFullYear()}년부터 StayLog를 함께하고 있어요.
@@ -528,27 +548,117 @@ function MemberInfoSection() {
                     </div>
                 </Form.Group>
 
-                {/* 비밀번호 변경 (입력창 조건부 렌더링으로) */}
-                {showPasswordInput && (
-                    <Form.Group className="mb-3">
-                        <Form.Label className="fw-semibold text-start d-block" style={{ marginBottom: "0.4rem" }}>비밀번호 변경</Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="password"
-                            placeholder="새 비밀번호 입력"
-                            value={passwordInput} //상태값 바인딩
-                            onChange={(pass) => setPasswordInput(pass.target.value)} //별도 상태로 (저장)업데이트
-                            disabled={!editMode}/>
-                        <Form.Text className="text-muted">비밀번호 변경 원치 않으시면 비워두세요.</Form.Text>
-                    </Form.Group>
+                {/* 비밀번호 변경 (입력창 조건부 렌더링으로: 수정모드일 때만 토글 버튼 + 입력창 표시) */}
+                {editMode && (
+                    <>
+                        {/* 비밀번호 변경 버튼 (수정하기 버튼 클릭 시 활성화 되는 버튼) */}
+                        {!showPasswordInput && (
+                            <div className="d-flex justify-content-center gap-2 mb-3">
+                                {/* 비밀번호 변경 버튼 */}
+                                <Button variant="outline-secondary" className="flex-fill" onClick={() => setShowPasswordInput((prev) => !prev)}>비밀번호 변경</Button>
+                            </div>
+                        )}                          
+
+                        {/* 비밀번호 변경 입력창 */}
+                        <Fade in={showPasswordInput} unmountOnExit>
+                            <div>
+                                <Form.Group className="mb-3">
+                                    <Form.Label className="fw-semibold text-start d-block" style={{ marginBottom: "0.4rem" }}>비밀번호 변경</Form.Label>
+                                    
+                                    {/* 새 비밀번호 입력란(필드1) */}
+                                    <Form.Control
+                                        type="password1"
+                                        name="password1"
+                                        placeholder="새 비밀번호 입력"
+                                        value={passwordInput1} //상태값 바인딩
+                                        onChange={(pass) => setPasswordInput1(pass.target.value)} //별도 상태로 (저장)업데이트
+                                        disabled={!editMode}
+                                        className="mb-1"/>
+
+                                    {/* 비밀번호 확인 입력란(필드2) */}    
+                                    <Form.Control
+                                        type="password2"
+                                        name="password2"
+                                        placeholder="새 비밀번호 확인"
+                                        value={passwordInput2} //상태값 바인딩
+                                        onChange={(pass) => setPasswordInput2(pass.target.value)} //별도 상태로 (저장)업데이트
+                                        disabled={!editMode}
+                                        className="mb-1"/>
+
+                                    {/* 안내 메세지 */} 
+                                    <Form.Text className="text-start text-muted d-block">비밀번호 변경 원치 않으실 경우 비워두세요.</Form.Text>        
+
+                                    {/* 유효성 검사 메세지 */}
+                                    <Fade in={!passwordValid }>
+                                        <Form.Text className="text-start text-danger d-block">
+                                            유효하지 않은 비밀번호 입니다.
+                                            <br/>대문자+소문자+특수문자 포함 8자 이상 입력하세요.
+                                        </Form.Text>
+                                    </Fade>
+
+                                    {/* 불일치 결과 메세지 */}
+                                    <Fade in={!passwordMatch}>
+                                        <Form.Text className="text-start text-danger d-block">입력하신 비밀번호가 일치하지 않습니다.</Form.Text>
+                                    </Fade>
+                                    
+                                    {/* 일치 결과 메세지 (비밀번호가 유효성 통과하고, 필드1&필드2 입력값이 일치할 경우 표시) */}
+                                    <Fade in={
+                                        passwordValid && //비밀번호 형식 통과
+                                        passwordInput1 !== "" && //비밀번호 입력값(필드1)이 비어있지 않고
+                                        passwordInput2 !== "" && //비밀번호 입력값(필드2)도 비어있지 않고
+                                        passwordMatch // 두 입력값(필드1&필드2)이 일치 할 경우에만 통과
+                                    }> 
+                                        <Form.Text className="text-start text-success d-block">입력하신 비밀번호가 일치합니다.</Form.Text>
+                                    </Fade>
+                                    
+                                    {/* 비밀번호 변경 취소 버튼 (입력창 하단으로 이동) */}
+                                    <div className="d-flex justify-content-center gap-1 mt-3">
+                                        <Button
+                                            variant="outline-danger"
+                                            className="flex-fill"
+                                            onClick={() => {
+                                                setShowPasswordInput(false);
+                                                setPasswordInput1("");
+                                                setPasswordInput2("");
+                                                setPasswordValid(true);
+                                                setPasswordMatch(true);
+                                        }}
+                                        >비밀번호 변경 취소
+                                        </Button>
+                                    </div>
+                                </Form.Group>
+                            </div>
+                        </Fade>
+                    </>
                 )}
-                <div className="d-flex flex-column flex-sm-row gap-3 mt-4">
+
+                {/* 회원정보 페이지 하단의 버튼 */}
+                <div className="d-flex flex-column flex-sm-row gap-4 mt-4">
                     {!editMode ? (
-                        <Button variant="dark" className="flex-fill" onClick={() => setEditMode(true)}>수정하기</Button>) : (
+                        <Button variant="dark" className="flex-fill" onClick={() => setEditMode(true)}>수정하기</Button> 
+                    ) : (
+                        <>
                         <Button variant="dark" className="flex-fill" onClick={handleSave}>저장하기</Button>
+                        <Button variant="outline-secondary" className="flex-fill" onClick={() => {
+                            // 수정 취소 버튼 클릭 시 상태 초기화
+                            setEditMode(false);
+                            setEditModeEmail(false);
+                            setEditModeNickname(false);
+                            setIsEmailRequested(false);
+                            setIsEmailVerified(false);
+                            setEmailMessage("");
+                            setNicknameMessage("");
+                            setPasswordInput1("");
+                            setPasswordInput2("");
+                            setShowPasswordInput(false);
+                            setPasswordValid(true);
+                            setPasswordMatch(true);
+                            setBirthYear(member.birthDate?.substring(0, 4) || "");
+                            setBirthMonth(member.birthDate?.substring(5, 7) || "");
+                            setBirthDay(member.birthDate?.substring(8, 10) || "");
+                        }}>취소하기</Button>
+                        </>
                     )}
-                        {/* 비밀번호 변경 토글 버튼(클릭 시 표시/숨김 토글) */}
-                        <Button variant="outline-secondary" className="flex-fill" onClick={() => setShowPasswordInput((prev) => !prev)}>비밀번호 변경</Button>
                 </div>
                 </Form>
             </Col>

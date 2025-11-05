@@ -27,6 +27,7 @@ function Home() {
         숙소 상세 페이지 테스트 (ID:2)
       </button>
       <button onClick={()=>navigate("/admin")}>관리자 페이지</button>
+      <button onClick={()=>navigate("/bord")}>에디터</button>
     </>
   );
 }

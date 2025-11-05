@@ -19,6 +19,8 @@ import Journal from "../../domain/board/pages/Journal";
 import Review from "../../domain/board/pages/Review";
 import ReviewDetail from "../../domain/board/pages/ReviewDetail";
 import BoardForm from "../../domain/board/pages/BoardForm";
+import BoardForm2 from "../../domain/board/pages/BoardForm2";
+import Board from "../../domain/board/pages/Board";
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin 라우트 객체는 분리)
@@ -34,6 +36,9 @@ const routes: RouteObject[] = [
   { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지
   { path: "/accommodations/:id", element:<AccommodationDetail />},
   { path: "/room/:roomId", element: <RoomDetail />},
+  { path: "/quill", element: <BoardForm2/>}, //에디터 테스트
+  { path: "/bord", element: <Board/>},//에디터 테스트
+
 ];
 
 // Admin 중첩 라우트 객체를 별도로 정의

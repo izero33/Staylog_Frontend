@@ -107,7 +107,7 @@ function RoomDetail() {
       </Card>
 
       <Row>
-        <Col lg={7}>
+        <Col lg={8}>
           <h2>객실명 : {roomDetail.name}</h2>
           <section className="md-4">
             <h3>객실 규정</h3>
@@ -143,11 +143,11 @@ function RoomDetail() {
             </section>
           </section>
 
-          <AccommodationInfo/>
+          <AccommodationInfo />
         </Col>
 
         {/* 데스크탑(>=lg)에서는 오른쪽 고정, 모바일(<lg)에서는 숨김 */}
-        <Col lg={5} className="d-none d-lg-block">
+        <Col lg={4} className="d-none d-lg-block">
           <div style={{ position: "sticky", top: 16 }}>
             <BookingPanel
               name={roomDetail.name}
@@ -162,10 +162,10 @@ function RoomDetail() {
     </Container>
 
     {/* 모바일: 말풍선 버튼 */}
-    {isMobile && (
+    {isMobile && !openReserve && (
       <FloatingReserveBubble onClick={() => setOpenReserve(true)} />
     )}
-
+    
     {/* 모바일: 바텀시트 Offcanvas */}
     <Offcanvas
       show={openReserve}

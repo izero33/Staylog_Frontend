@@ -17,6 +17,8 @@ import Journal from "../../domain/board/pages/Journal";
 import Review from "../../domain/board/pages/Review";
 import ReviewDetail from "../../domain/board/pages/ReviewDetail";
 import BoardForm from "../../domain/board/pages/BoardForm";
+import BoardForm2 from "../../domain/board/pages/BoardForm2";
+import Board from "../../domain/board/pages/Board";
 import AccommodationListPage from "../../domain/accommodation/pages/AccommodationListPage";
 import AdminAccommodationDetail from "../../domain/admin/pages/AdminAccommodationDetail";
 import AdminRoomDetail from "../../domain/admin/pages/AdminRoomDetail";
@@ -45,6 +47,8 @@ const routes: RouteObject[] = [
   { path: "/room/:roomId", element: <RoomDetail />},
   { path: "/test-form", element: <TestForm /> },
   { path: "/test-load", element: <TestLoadImage /> },
+  { path: "/quill", element: <BoardForm2/>}, //에디터 테스트
+  { path: "/bord", element: <Board/>},//에디터 테스트
 ];
 
 // Admin 중첩 라우트 객체를 별도로 정의

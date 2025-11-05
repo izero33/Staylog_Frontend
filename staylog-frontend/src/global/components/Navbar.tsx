@@ -112,7 +112,7 @@ function Navbar() {
                         <NavLink to="/stay" className="nav-link" aria-current="page">STAY</NavLink>
                      </li>
                      <li className="nav-item">
-                        <NavLink to="/community" className="nav-link">COMMUNITY</NavLink>
+                        <NavLink to="/review" className="nav-link">COMMUNITY</NavLink>
                      </li>
                      <li className="nav-item">
                         <NavLink to="/journal" className="nav-link">JOURNAL</NavLink>

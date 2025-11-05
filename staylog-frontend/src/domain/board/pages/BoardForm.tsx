@@ -130,7 +130,7 @@ function BoardForm() {
             console.log("📦 서버로 전송되는 dto:", dto);
             const res = await api.post("/v1/boards", dto);
             alert("게시글이 성공적으로 등록되었습니다.");
-            navigate("/review/${dto.boardId}");
+            navigate(`/review/${res.boardId}`);
             
 
         }catch(err) {

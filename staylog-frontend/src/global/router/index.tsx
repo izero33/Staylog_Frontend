@@ -30,7 +30,6 @@ import ReviewSection from "../../domain/mypage/pages/ReviewSection";
 import InquirySection from "../../domain/mypage/pages/InquirySection";
 import TestForm from "../pages/TestForm"; // Import TestForm
 import TestLoadImage from "../pages/TestLoadImage";
-import CouponSection from "../../domain/mypage/pages/CouponSection";
 import AdminBoardPage from "../../domain/admin/pages/AdminBoardPage";
 import AdminBoardDetail from "../../domain/admin/pages/AdminBoardDetail";
 
@@ -82,7 +81,6 @@ const mypageRoute: RouteObject = {
         { path: "reservations", element: <ReservationSection /> },
         { path: "reviews", element: <ReviewSection /> },
         { path: "inquiries", element: <InquirySection /> },
-        { path: "coupon", element: <CouponSection /> },
     ],
 };
 

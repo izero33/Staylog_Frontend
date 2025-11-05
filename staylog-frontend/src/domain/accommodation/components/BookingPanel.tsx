@@ -100,7 +100,7 @@ function BookingPanel({
   useEffect(() => {
     const recalc = () => {
       const w = window.innerWidth;
-      setMonthsShown(w < 1100 ? 1 : 2);
+      setMonthsShown(w < 1432 ? 1 : 2);
     };
     recalc();
 
@@ -108,14 +108,14 @@ function BookingPanel({
     return () => window.removeEventListener("resize", recalc);
   }, []);
 
-  // 달력이 열릴 때도 한 번 보정 (초기 렌더 오차 방지)
-  useEffect(() => {
-    if (!openCalendar) return;
-    const el = wrapRef.current;
-    if (!el) return;
-    const w = el.offsetWidth || window.innerWidth;
-    setMonthsShown(w < 660 ? 1 : 2);
-  }, [openCalendar]);
+  // // 달력이 열릴 때도 한 번 보정 (초기 렌더 오차 방지)
+  // useEffect(() => {
+  //   if (!openCalendar) return;
+  //   const el = wrapRef.current;
+  //   if (!el) return;
+  //   const w = el.offsetWidth || window.innerWidth;
+  //   setMonthsShown(w < 1100 ? 1 : 2);
+  // }, [openCalendar]);
 
   // 달력과 인원 팝업 밖을 클릭 시 닫기
   useEffect(() => {
@@ -168,7 +168,7 @@ function BookingPanel({
                 className="border rounded bg-white shadow mt-1 p-2 d-inline-block"
                 style={{ zIndex: 2000, width: "max-content", maxWidth: "90vw" }}>
                 <DatePicker
-                  key={monthsShown}
+          
                   inline
                   locale={ko}
                   selectsRange

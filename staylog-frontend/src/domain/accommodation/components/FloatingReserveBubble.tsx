@@ -3,9 +3,13 @@ import "../css/reserve.css"
 type FloatingReserveBubbleProps = {
   onClick: () => void;
   label?: string;
+  show?: boolean; 
 };
 
-export default function FloatingReserveBubble({ onClick, label = "예약" }: FloatingReserveBubbleProps) {
+export default function FloatingReserveBubble({ onClick, label = "예약", show=true }: FloatingReserveBubbleProps) {
+  
+  if(!show) return null; //표시하지 않기
+  
   return (
     <div
       onClick={onClick}

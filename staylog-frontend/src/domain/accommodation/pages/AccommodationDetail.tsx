@@ -287,9 +287,10 @@ function AccommodationDetail() {
         </Container>
 
         {/* 모바일 : 말풍선 버튼 */}
-        {isMobile && (
-            <FloatingReserveBubble onClick={() => setOpenReserve(true)} />
+        {isMobile && !openReserve && (
+          <FloatingReserveBubble onClick={() => setOpenReserve(true)} />
         )}
+
         {/* 모바일 : 예약폼 */}
         {isMobile && (
             <Offcanvas

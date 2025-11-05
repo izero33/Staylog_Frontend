@@ -18,8 +18,7 @@ function AdminLayout() {
         { path: '', label: '회원관리', end: true },
         { path: 'accommodations', label: '숙소관리' },
         { path: 'reservations', label: '예약관리' },
-        { path: 'reviews', label: '리뷰 게시판 관리' },
-        { path: 'journals', label: '저널 게시판 관리' },
+        { path: 'reviews', label: '게시판 관리' },
     ];
     // 현재 활성화된 메뉴 찾기
     const getCurrentMenu = () => {
@@ -35,7 +34,7 @@ function AdminLayout() {
     return <>
         <Container fluid className="container-fluid admin-container">
             {/* md 이하에서 상단 고정 가로 네비게이션 */}
-            <div className="d-lg-none sticky-top w-100" style={{ top: "78px", zIndex: 1020 }}>
+            <div className="d-lg-none sticky-top w-100" style={{ top: "58px", zIndex: 1020 }}>
                 <div className="bg-white border rounded mb-3">
                     {/* 현재 메뉴 표시 버튼 */}
                     <button 
@@ -70,7 +69,7 @@ function AdminLayout() {
             
             <div className="row admin-row">
                 {/* 사이드바 영역 추가: col-lg-3 */}
-                <div className="col-lg-3 d-none d-lg-block bg-light border-end admin-sidebar">
+                <div className="col-lg-2 d-none d-lg-block admin-sidebar">
                     <div className="sticky-top" style={{ top: "100px" }}>
                         <div className="p-3 rounded">
                             <ul className="nav nav-pills flex-column">
@@ -84,10 +83,7 @@ function AdminLayout() {
                                     <NavLink to="reservations" className={navLinkClass}>예약관리</NavLink>
                                 </li>
                                 <li className="nav-item mb-1">
-                                    <NavLink to="reviews" className={navLinkClass}>리뷰 게시판 관리</NavLink>
-                                </li>
-                                <li className="nav-item mb-1">
-                                    <NavLink to="journals" className={navLinkClass}>저널 게시판 관리</NavLink>
+                                    <NavLink to="boards" className={navLinkClass}>게시판 관리</NavLink>
                                 </li>
                             </ul>
                         </div>
@@ -95,7 +91,7 @@ function AdminLayout() {
                 </div>
 
                 {/* 메인 콘텐츠 영역: col-lg-9 */}
-                <div className="col-lg-9 container">
+                <div className="col-lg-10 container">
                     <div className="p-3">
                         <Outlet />
                     </div>

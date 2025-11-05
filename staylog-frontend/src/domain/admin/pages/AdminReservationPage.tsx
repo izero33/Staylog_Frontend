@@ -12,18 +12,18 @@ import { getStatusLabel } from "../types/AdminReservationStatusLabels";
 function AdminReservationPage() {
 
 
-    // 예약 목록 상태
+    // 예약 목록 상태 관리
     const [reservations, setReservations] = useState<AdminReservation[]>([]);
-    // 상세 모달 상태
+    // 상세 모달 상태 관리
     const [detailOpen, setDetailOpen] = useState(false);
     const [targetBookingId, setTargetBookingId] = useState<number | null>(null);
-    // 로딩 / 에러 메시지 상태 
+    // 로딩 / 에러 메시지 상태 관리 
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     // 목록 조회
       useEffect(() => {
-        let mounted = true;
+        let mounted = true; // 컴포넌트가 현재 화면에 살아있는지 추적하기 위함
         setLoading(true);
         setErrorMsg(null);
         api
@@ -35,7 +35,7 @@ function AdminReservationPage() {
           })
           .catch((err) => {
             console.error("예약 목록 조회 불가:", err);
-            if (mounted) setErrorMsg("예약 목록을 불러오지 못했습니다.");
+            if (mounted) setErrorMsg("예약 목록을 불러오지 못했습니다."); 
           })
           .finally(() => mounted && setLoading(false));
     

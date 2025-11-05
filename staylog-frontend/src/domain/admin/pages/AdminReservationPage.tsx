@@ -13,7 +13,7 @@ import type { CommonCodeDto } from "../../common/types";
 
 function AdminReservationPage() {
 
-    // DB 공통 코드 1. Redux의 공통 코드 슽토어에서 특정 그룹 불러오기
+    // DB 공통 코드 1. Redux의 공통 코드 스토어에서 특정 그룹 불러오기
     const reservationStatusList = useCommonCodeSelector("reservationStatus"); 
 
     // 빠른 조회를 위한 codeId = CommonCodeDto Mapping 2. 그 리스트를 Map 형태로 변환 

@@ -1,0 +1,20 @@
+/* src/global/css/quill.custom.css */
+
+.quill-box .ql-toolbar.ql-snow {
+  border: 1px solid #dcdcdc;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+}
+
+.quill-box .ql-container.ql-snow {
+  border: 1px solid #dcdcdc;
+  border-radius: 0 0 4px 4px;
+  min-height: 250px; /* 툴바 포함 높이 */
+}
+
+.quill-box .ql-editor {
+  min-height: 700px; /* ✅ 글쓰기 영역 높이 */
+  line-height: 1.7;
+  font-size: 15px;
+  padding: 18px;
+}

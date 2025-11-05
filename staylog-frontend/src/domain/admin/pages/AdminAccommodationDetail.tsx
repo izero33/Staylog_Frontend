@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
 import type { AdminAccommodation } from '../types/AdminAccommodationTypes';
-import '../css/AdminAccommodationDetail.css';
 import { formatKST } from '../../../global/utils/date';
 
 /*
@@ -84,7 +83,7 @@ function AdminAccommodationDetail() {
 
     // 데이터가 없다면 표시
     if (!data) {
-        return <div style={{ padding: "40px", textAlign: "center" }}>t숙소 정보를 찾을 수 없습니다</div>;
+        return <div style={{ padding: "40px", textAlign: "center" }}>숙소 정보를 찾을 수 없습니다</div>;
     }
 
     //숙소 수정 페이지 이동 핸들러
@@ -139,30 +138,34 @@ function AdminAccommodationDetail() {
                     <i className="bi bi-list ms-1"></i> </button>
             </div>
 
-            <table className="table table-bordered mt-5">
+            <table className="table table-bordered mt-5" style={{ tableLayout: 'fixed' }}>
+                <colgroup>
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '85%' }} />
+                </colgroup>
                 <tbody>
                     <tr>
-                        <th className="bg-light">유형</th>
+                        <th className="bg-light text-center">유형</th>
                         <td>{data.typeName}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light">지역</th>
+                        <th className="bg-light text-center">지역</th>
                         <td>{data.regionName}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light">주소</th>
+                        <th className="bg-light text-center">주소</th>
                         <td>{data.address}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light">체크인</th>
+                        <th className="bg-light text-center">체크인</th>
                         <td>{data.checkInTime}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light">체크아웃</th>
+                        <th className="bg-light text-center">체크아웃</th>
                         <td>{data.checkOutTime}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light">이미지</th>
+                        <th className="bg-light text-center">이미지</th>
                         <td>
                             <div className="accommodationImages images-slider">
                                 <Carousel>
@@ -178,8 +181,8 @@ function AdminAccommodationDetail() {
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light">설명</th>
-                        <td>{data.description}</td>
+                        <th className="bg-light text-center">설명</th>
+                        <td dangerouslySetInnerHTML={{ __html: data.description }} />
                     </tr>
                 </tbody>
             </table>

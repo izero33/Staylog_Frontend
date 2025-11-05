@@ -8,7 +8,7 @@ import api from "../../../global/api";
 import BookingPanel from "../components/BookingPanel";
 import { Card, Col, Container, Offcanvas, Row, Spinner } from "react-bootstrap";
 import FloatingReserveBubble from "../components/FloatingReserveBubble";
-import Info from "../components/AccommodationInfo";
+import '../css/Accommodation.css';
 import AccommodationInfo from "../components/AccommodationInfo";
 
 function RoomDetail() {
@@ -98,20 +98,20 @@ function RoomDetail() {
   }
 
   return <>
-    <Container className="my-4">
+    <Container className="my-4 accommodationAll">
       <Card className="mb-4">
         <Card.Img variant="top"
-          src={"https://picsum.photos/1200/500"}
+          src={"https://picsum.photos/1400/500"}
           alt="숙소 이미지">
         </Card.Img>
       </Card>
 
       <Row>
-        <Col lg={7}>
-          <h2>객실명 : {roomDetail.name}</h2>
+        <Col lg={8}>
+          <h3>{roomDetail.name}</h3>
           <section className="md-4">
-            <h3>객실 규정</h3>
-            <ul>
+            <h5>객실 규정</h5>
+            <ul >
               <li>체크인 시간 : {roomDetail.checkInTime}</li>
               <li>체크아웃 시간 : {roomDetail.checkOutTime}</li>
               <li>기준 인원 : 성인 {roomDetail.maxAdult}, 어린이 {roomDetail.maxChildren}, 영유아 {roomDetail.maxInfant}</li>
@@ -143,11 +143,11 @@ function RoomDetail() {
             </section>
           </section>
 
-          <AccommodationInfo/>
+          <AccommodationInfo />
         </Col>
 
         {/* 데스크탑(>=lg)에서는 오른쪽 고정, 모바일(<lg)에서는 숨김 */}
-        <Col lg={5} className="d-none d-lg-block">
+        <Col lg={4} className="d-none d-lg-block">
           <div style={{ position: "sticky", top: 16 }}>
             <BookingPanel
               name={roomDetail.name}
@@ -162,17 +162,17 @@ function RoomDetail() {
     </Container>
 
     {/* 모바일: 말풍선 버튼 */}
-    {isMobile && (
+    {isMobile && !openReserve && (
       <FloatingReserveBubble onClick={() => setOpenReserve(true)} />
     )}
-
+    
     {/* 모바일: 바텀시트 Offcanvas */}
     <Offcanvas
       show={openReserve}
       onHide={() => setOpenReserve(false)}
       placement="bottom"
       className="d-lg-none"
-      style={{ height: "75vh" }}
+      style={{ maxHeight: "70vh", minHeight: "fit-container" }}
       aria-labelledby="reserve-panel-title"
     >
       <Offcanvas.Header closeButton>

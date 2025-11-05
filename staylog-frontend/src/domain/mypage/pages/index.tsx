@@ -49,25 +49,10 @@ function index() {
                </Col>
 
                {/* 오른쪽 콘텐츠 */}
-                  <Col xs={12} md={9} lg={10}
-                     className="d-flex flex-column justify-content-center align-items-center text-center"
-                  >
-                     {/* <div className="mb-4">
-                        <h3 className="fw-bold">{member.nickname} 님 반가워요 👋</h3>
-                        <p className="text-muted">
-                           {new Date(member.createdAt).getFullYear()}년부터 StayLog를 함께하고 있어요.
-                        </p>
-                     </div>   */}
-
+                  <Col xs={12} md={9} lg={10} className="d-flex flex-column justify-content-center align-items-center text-center">
                      {/* 회원정보/예약/리뷰/문의 섹션 - 여기서 하위 라우트가 자동 렌더링됨 */}
                      <Outlet />  
-
-                  {/* 회원정보/예약/리뷰/문의 섹션 */}
-                  {/* {activeMenu === "member" && <MemberInfoSection />}
-                  {activeMenu === "reservation" && <ReservationSection />}
-                  {activeMenu === "review" && <ReviewSection />}
-                  {activeMenu === "inquiry" && <InquirySection />}  */}
-               </Col>
+                  </Col>
             </Row>
          </Container>
       </div>

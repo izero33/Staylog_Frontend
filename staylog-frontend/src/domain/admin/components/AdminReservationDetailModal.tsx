@@ -4,11 +4,12 @@ import api from "../../../global/api";
 import { formatKST } from "../../../global/utils/date";
 
 type Props = {
-  open: boolean;
-  bookingId: number | null;
-  onClose: () => void;
+  open: boolean; // 모달 알림 여부
+  bookingId: number | null; // 예약 Id
+  onClose: () => void; // 모달 닫기 콜백 함수
 };
 
+// 예약 상세 데이터 타입 정의 
 type ReservationDetail = {
   bookingId: number;
   userName: string | null;

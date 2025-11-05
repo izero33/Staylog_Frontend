@@ -98,15 +98,13 @@ function AdminAccommodationListPage() {
             <table className="table table-striped text-center mt-5 custom-table">
                 <thead>
                     <tr>
-                        <th style={{ width: '8%' }}>번호</th>
+                        <th style={{ width: '6%' }}>번호</th>
                         <th style={{ width: '12%' }}>숙소명</th>
                         <th>제목</th>
                         <th style={{ width: '12%' }}>작성자</th>
-                        {searchParams.boardType === 'BOARD_REVIEW' ? <th style={{ width: '7%' }}>별점</th> : null}
-                        <th style={{ width: '7%' }}>좋아요</th>
-                        <th style={{ width: '7%' }}>조회수</th>
-                        <th style={{ width: '12%' }}>등록일</th>
-                        <th style={{ width: '12%' }}>상태</th>
+                        <th>반응지표</th>
+                        <th style={{ width: '15%' }}>등록일</th>
+                        <th style={{ width: '10%' }}>상태</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -134,9 +132,13 @@ function AdminAccommodationListPage() {
                                     </button>
                                 </td>
                                 <td>{item.userNickName}</td>
-                                {searchParams.boardType === 'BOARD_REVIEW' ? <td>{item.rating}</td> : null}
-                                <td>{item.likes}</td>
-                                <td>{item.viewsCount}</td>
+                                <td>
+                                    {searchParams.boardType === 'BOARD_REVIEW' && (
+                                        <span className="badge bg-warning text-dark me-1"><i className="bi bi-star"></i> {item.rating}</span>
+                                    )}
+                                    <span className="badge bg-danger me-1"><i className="bi bi-heart"></i> {item.likes}</span>
+                                    <span className="badge bg-secondary"><i className="bi bi-eye"></i> {item.viewsCount}</span>
+                                </td>
                                 <td>{formatKST(item.createdAt)}</td>
                                 <td>
                                     <select
@@ -144,11 +146,11 @@ function AdminAccommodationListPage() {
                                         value={item.deleted}
                                         onChange={(e) => handleStatusChange(item.boardId, e)}
                                     >
-                                        <option value="N">보이기</option>
-                                        <option value="Y">숨기기</option>
+                                        <option value="N">공개</option>
+                                        <option value="Y">숨김</option>
                                     </select>
                                     <span className={`badge bg-${item.deleted === 'N' ? 'success' : 'danger'}`}>
-                                        {item.deleted === 'N' ? '보이기' : '숨기기'}
+                                        {item.deleted === 'N' ? '공개' : '숨김'}
                                     </span>
                                 </td>
                             </tr>

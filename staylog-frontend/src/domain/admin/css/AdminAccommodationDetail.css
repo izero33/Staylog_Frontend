@@ -1,0 +1,26 @@
+.grid-vertical-table {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border: 1px solid #dee2e6;
+}
+
+.grid-vertical-table thead {
+    display: contents;
+}
+
+.grid-vertical-table thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    text-align: left;
+}
+
+.grid-vertical-table tbody {
+    display: contents;
+}
+
+.grid-vertical-table tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}

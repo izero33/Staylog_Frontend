@@ -76,10 +76,12 @@ function SignupForm() {
       }))
 
       // confirm 상태 업데이트
-      setConfirm(prev => ({
-         ...prev,
-         [name]: false 
-      }));
+      if (name === "loginId" || name === "nickname" || name === "email") {
+         setConfirm(prev => ({
+            ...prev,
+            [name]: false
+         }));
+      }
 
       // 정규표현식을 사용한 유효성 검사
       let isValid = false;
@@ -109,8 +111,9 @@ function SignupForm() {
       }
 
       // valid 상태 업데이트
-      setValid(prev => ({ ...prev,
-         [name]: isValid 
+      setValid(prev => ({
+         ...prev,
+         [name]: isValid
       }));
    }
 
@@ -238,7 +241,7 @@ function SignupForm() {
       }
 
       // confirm 값 검증
-      const allConfirmed = Object.values(confirm).every(value => value === true);
+      const allConfirmed = confirm.loginId && confirm.nickname && confirm.email;
 
       if (!allConfirmed) {
          alert("아이디/닉네임 중복 확인 및 이메일 인증을 완료해주세요.");

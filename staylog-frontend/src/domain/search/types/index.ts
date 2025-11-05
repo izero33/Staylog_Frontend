@@ -29,8 +29,9 @@ export interface GuestCount {
 
 // 지역 정보
 export interface Region {
-  code: string;
-  name: string;
+  codeId: string;      // CODE_ID (예: REGION_SEOUL) - API 전송용
+  codeName: string;    // CODE_NAME (예: 서울) - 화면 표시용
+  displayOrder: number; // 정렬 순서
 }
 
 // 정렬 옵션

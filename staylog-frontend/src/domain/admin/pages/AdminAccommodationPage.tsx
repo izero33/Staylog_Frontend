@@ -82,10 +82,22 @@ function AdminAccommodationListPage() {
         navigate(`/admin/accommodations/${accommodationId}/rooms`);
     };
 
+    //숙소 등록 페이지 이동 핸들러
+    const handleToAddPage = () => {
+        navigate(`/admin/accommodations/new`);
+    };
+
 
     return <>
         <div className="container-fluid py-3">
-            <h3>숙소 관리 페이지</h3>
+            <div className="d-flex justify-content-between align-items-center">
+                <h3>숙소 관리 페이지</h3>
+                <button className="btn btn-outline-light text-dark mt-2" style={{ backgroundColor: '#ebebebff' }} onClick={handleToAddPage}>
+                    <i className="bi bi-plus-lg me-2"></i>
+                    숙소 등록
+                </button>
+            </div>
+
 
             <table className="table table-striped text-center mt-5">
                 <thead>
@@ -134,6 +146,9 @@ function AdminAccommodationListPage() {
                                         <option value="N">활성</option>
                                         <option value="Y">대기</option>
                                     </select>
+                                    <span className={`badge bg-${item.deletedYn === 'N' ? 'success' : 'danger'}`}>
+                                        {item.deletedYn === 'N' ? '활성' : '대기'}
+                                    </span>
                                 </td>
                                 <td className="text-center">
                                     <button

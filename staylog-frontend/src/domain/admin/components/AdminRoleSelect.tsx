@@ -1,5 +1,5 @@
-import { roleOptions } from "../../admin/types/AdminTypes";
-import type { Role } from "../../admin/types/AdminTypes";
+import { roleOptions } from "../../admin/types/AdminUserTypes";
+import type { Role } from "../../admin/types/AdminUserTypes";
 
 /**
  * 권한 선택 컴포넌트

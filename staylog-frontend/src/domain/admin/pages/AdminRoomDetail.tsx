@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
-import '../css/AdminAccommodationDetail.css';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminRoom } from '../types/AdminRoomTypes';
 
@@ -20,13 +19,13 @@ function AdminAccommodationDetail() {
     const img3 = "https://picsum.photos/200/300/?blur";
     const img4 = "https://picsum.photos/id/237/200/300";
 
-    // 숙소의 번호  /admin/accommodations/:accommodationId/rooms/:roomId  에서 accommodationId, roomId 경로 변수 얻어내기
+    // 숙소, 객실의 번호  /admin/accommodations/:accommodationId/rooms/:roomId  에서 accommodationId, roomId 경로 변수 얻어내기
     const { accommodationId: accommodationIdStr, roomId: roomIdStr } = useParams();
     // 경로 변수를 숫자로 변환
     const accommodationId = Number(accommodationIdStr);
     const roomId = Number(roomIdStr);
 
-    // 숙소 상세 데이터
+    // 객실 상세 데이터
     const [data, setData] = useState<AdminRoom | null>(null);
     // 로딩 상태
     const [loading, setLoading] = useState(true);
@@ -35,7 +34,7 @@ function AdminAccommodationDetail() {
     // 페이지 이동
     const navigate = useNavigate();
 
-    // 숙소 상세데이터를 가져오는 API 호출
+    // 객실 상세데이터를 가져오는 API 호출
     useEffect(() => {
         // 숙소, 객실 번호가 없다면
         if (!accommodationId || !roomId) return;
@@ -54,7 +53,7 @@ function AdminAccommodationDetail() {
                 if (axios.isAxiosError(err)) {
                     setError(
                         err.response?.status === 404
-                            ? '해당 숙소는 존재하지 않습니다.'
+                            ? '해당 객실은 존재하지 않습니다.'
                             : `API 호출 실패: ${err.response?.status || '네트워크 오류'}`
                     );
                 } else {
@@ -66,16 +65,16 @@ function AdminAccommodationDetail() {
             }
         };
         fetchDetail();
-    }, [accommodationId, data?.deletedYn]);
+    }, [accommodationId, roomId, data?.deletedYn]);
 
-    // 숙소 ID 가 없다면
-    if (!accommodationId) {
-        return <div>숙소 ID가 없습니다</div>;
+    // 객실 ID 가 없다면
+    if (!roomId) {
+        return <div>객실 ID가 없습니다</div>;
     }
 
     // 페이지 로딩 중 표시
     if (loading) {
-        return <div style={{ padding: "40px", textAlign: "center" }}> 숙소 정보 불러오는 중</div>;
+        return <div style={{ padding: "40px", textAlign: "center" }}> 객실 정보 불러오는 중</div>;
     }
 
     // 에러 발생 표시
@@ -85,10 +84,10 @@ function AdminAccommodationDetail() {
 
     // 데이터가 없다면 표시
     if (!data) {
-        return <div style={{ padding: "40px", textAlign: "center" }}>t숙소 정보를 찾을 수 없습니다</div>;
+        return <div style={{ padding: "40px", textAlign: "center" }}>객실 정보를 찾을 수 없습니다</div>;
     }
 
-    //객실 목록 페이지 이동 핸들러
+    //숙소 상세 페이지 이동 핸들러
     const handleGoToAccommDetail = (accommodationId: number) => {
         navigate(`/admin/accommodations/${accommodationId}`);
     };
@@ -102,7 +101,7 @@ function AdminAccommodationDetail() {
             setData(data => ({ ...data!, deletedYn: status })); // 상태 업데이트
             return true;
         } catch (err) {
-            console.error(`숙소 ID ${accommodationId} 상태 업데이트 실패:`, err);
+            console.error(`객실 ID ${roomId} 상태 업데이트 실패:`, err);
             return false;
         }
     };
@@ -134,25 +133,28 @@ function AdminAccommodationDetail() {
                 >숙소 상세
                     <i className="bi bi-arrow-left ms-1"></i> </button>
             </div>
-
-            <table className="table table-bordered mt-5">
+            <table className="table table-bordered mt-5" style={{ tableLayout: 'fixed' }}>
+                <colgroup>
+                    <col style={{ width: '15%'}} />
+                    <col style={{ width: '85%' }} />
+                </colgroup>
                 <tbody>
                     <tr>
-                        <th className="bg-light">유형</th>
+                        <th className="bg-light text-center">유형</th>
                         <td>{data.typeName}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light">가격</th>
+                        <th className="bg-light text-center">가격</th>
                         <td>{data.price}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light" style={{ width: '30%' }}>최대 인원</th>
+                        <th className="bg-light text-center" style={{ width: '30%' }}>최대 인원</th>
                         <td>
-                            <table className="table table-sm mb-0">
+                             <table className="table table-sm mb-0" style={{ width: '30%' }}>
                                 <tbody>
                                     {data.maxAdult !== 0 && (
                                         <tr>
-                                            <th style={{ width: '33%' }}>성인</th>
+                                            <th style={{ width: '50%' }}>성인</th>
                                             <td>{data.maxAdult}명</td>
                                         </tr>
                                     )}
@@ -173,13 +175,13 @@ function AdminAccommodationDetail() {
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light">침대</th>
+                        <th className="bg-light text-center">침대</th>
                         <td>
-                            <table className="table table-sm mb-0">
+                             <table className="table table-sm mb-0" style={{ width: '30%' }}>
                                 <tbody>
                                     {data.singleBed !== 0 && (
                                         <tr>
-                                            <th style={{ width: '33%' }}>싱글</th>
+                                            <th style={{ width: '50%' }}>싱글</th>
                                             <td>{data.singleBed}개</td>
                                         </tr>
                                     )}
@@ -207,7 +209,7 @@ function AdminAccommodationDetail() {
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light">면적</th>
+                        <th className="bg-light text-center">면적</th>
                         <td>{data.area} m²</td>
                     </tr>
                     {data.checkInTime && (
@@ -223,24 +225,24 @@ function AdminAccommodationDetail() {
                         </tr>
                     )}
                     <tr>
-                        <th className="bg-light">이미지</th>
+                        <th className="bg-light text-center">이미지</th>
                         <td>
                             <div className="accommodationImages images-slider">
                                 <Carousel>
                                     <Carousel.Item>
                                         {/* 이미지 비율에 맞게 나오게 함*/}
-                                        <Image src={img1} alt="숙소 이미지 1" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
+                                        <Image src={img1} alt="객실 이미지 1" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
                                     </Carousel.Item>
                                     <Carousel.Item>
-                                        <Image src={img2} alt="숙소 이미지 2" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
+                                        <Image src={img2} alt="객실 이미지 2" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
                                     </Carousel.Item>
                                 </Carousel>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light">설명</th>
-                        <td>{data.description}</td>
+                        <th className="bg-light text-center">설명</th>
+                        <td dangerouslySetInnerHTML={{ __html: data.description }} />
                     </tr>
                 </tbody>
             </table>

@@ -17,6 +17,8 @@ import Journal from "../../domain/board/pages/Journal";
 import Review from "../../domain/board/pages/Review";
 import ReviewDetail from "../../domain/board/pages/ReviewDetail";
 import BoardForm from "../../domain/board/pages/BoardForm";
+import BoardForm2 from "../../domain/board/pages/BoardForm2";
+import Board from "../../domain/board/pages/Board";
 import AccommodationListPage from "../../domain/accommodation/pages/AccommodationListPage";
 import AdminAccommodationDetail from "../../domain/admin/pages/AdminAccommodationDetail";
 import AdminRoomDetail from "../../domain/admin/pages/AdminRoomDetail";
@@ -28,6 +30,8 @@ import ReviewSection from "../../domain/mypage/pages/ReviewSection";
 import InquirySection from "../../domain/mypage/pages/InquirySection";
 import TestForm from "../pages/TestForm"; // Import TestForm
 import TestLoadImage from "../pages/TestLoadImage";
+import AdminBoardPage from "../../domain/admin/pages/AdminBoardPage";
+import AdminBoardDetail from "../../domain/admin/pages/AdminBoardDetail";
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin, Mypage 라우트 객체는 분리)
@@ -45,6 +49,8 @@ const routes: RouteObject[] = [
   { path: "/room/:roomId", element: <RoomDetail />},
   { path: "/test-form", element: <TestForm /> },
   { path: "/test-load", element: <TestLoadImage /> },
+  { path: "/quill", element: <BoardForm2/>}, //에디터 테스트
+  { path: "/bord", element: <Board/>},//에디터 테스트
 ];
 
 // Admin 중첩 라우트 객체를 별도로 정의
@@ -60,8 +66,8 @@ const adminRoute: RouteObject = {
       { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },  // /admin/accommodations/:accommodationId/rooms
       { path: "accommodations/:accommodationId/rooms/:roomId", element: <AdminRoomDetail /> },  // /admin/accommodations/:accommodationId/rooms/:roomId
       { path: "reservations", element: <AdminReservationPage /> },  // /admin/reservations
-      { path: "reviews", element: <div>리뷰 게시판 관리 페이지</div> },  // /admin/reviews
-      { path: "journals", element: <div>저널 게시판 관리 페이지</div> },  // /admin/journals
+      { path: "boards", element: <AdminBoardPage /> },  // /admin/boards
+      { path: "boards/:boardId", element: <AdminBoardDetail /> },  // /admin/boards/:boardId
     ],
 };
 

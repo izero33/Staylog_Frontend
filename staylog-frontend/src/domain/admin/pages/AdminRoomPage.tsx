@@ -28,7 +28,7 @@ function AdminRoomPage() {
 
     const [rooms, setRooms] = useState<AdminRoomListData[]>([]);
 
-    // 전체 숙소 목록 조회 (컴포넌트 마운트 시)
+    // 전체 객실 목록 조회 (컴포넌트 마운트 시)
     useEffect(() => {
         api.get<AdminRoomListData[]>(`/v1/admin/accommodations/${accommodationId}/rooms`)
             .then(res => setRooms(res))
@@ -78,15 +78,25 @@ function AdminRoomPage() {
     //이동을 하기위한 hook
     const navigate = useNavigate();
 
-    //숙소 상세 페이지 이동 핸들러
+    //객실 상세 페이지 이동 핸들러
     const handleToDetailPage = (roomId: number) => {
         navigate(`/admin/accommodations/${accommodationId}/rooms/${roomId}`);
     };
 
+    //객실 등록 페이지 이동 핸들러
+    const handleToAddPage = (accommodationId: number) => {
+        navigate(`/admin/accommodations/${accommodationId}/rooms/new`);
+    };
+
     return <>
         <div className="container-fluid py-3">
-            <h3><span className="fw-bold">{rooms[0]?.accommodationName}</span> 객실 목록</h3>
-
+            <div className="d-flex justify-content-between align-items-center">
+                <h3><span className="fw-bold">{rooms[0]?.accommodationName}</span> 객실 목록</h3>
+                <button className="btn btn-outline-light text-dark mt-2" style={{ backgroundColor: '#ebebebff' }} onClick={() => handleToAddPage(accommodationId)}>
+                    <i className="bi bi-plus-lg me-2"></i>
+                    객실 등록
+                </button>
+            </div>
 
             <table className="table table-striped text-center mt-5">
                 <thead>
@@ -136,6 +146,9 @@ function AdminRoomPage() {
                                         <option value="N">활성</option>
                                         <option value="Y">대기</option>
                                     </select>
+                                    <span className={`badge bg-${item.deletedYn === 'N' ? 'success' : 'danger'}`}>
+                                        {item.deletedYn === 'N' ? '활성' : '대기'}
+                                    </span>
                                 </td>
                             </tr>
                         )))}

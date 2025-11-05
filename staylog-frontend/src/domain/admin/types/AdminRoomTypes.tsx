@@ -19,7 +19,7 @@ export interface AdminRoom {
     kingBed?: number;
     createdAt: string;
     updatedAt?: string;
-    description?: string;
+    description: string;
 }
 
 export interface AdminRoomSearchParams {

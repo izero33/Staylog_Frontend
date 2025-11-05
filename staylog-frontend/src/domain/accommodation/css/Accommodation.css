@@ -1,25 +1,31 @@
+.accommodationAll {
+    max-width : 75rem; /* 최대 너비 제한 */
+    margin : 0 auto;     /* 화면 가운데 정렬 */
+}
+
 /*메뉴 탭 커스텀*/
 .menuTab {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 10px;
-    margin-bottom: 40px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: 500;
-
+    display : flex;
+    justify-content : space-between;
+    padding : 0 0;
+    cursor : pointer;
+    font-size : 1.1rem;
+    font-weight : 500;
     /* 스크롤 시 상단에 고정 */
     position : sticky;
-    top : 65px; /* 상단 네비바 높이만큼 */
-    background-color : #fff; /* 뒤에 내용이 겹치지 않도록 */
-    z-index : 100; /* 다른 요소 위로 */
+    top : 4rem; /* 상단 네비바 높이 여백 */
+    width : 100%; /* 부모 폭에 맞추기 */
+    background-color : #fff; /* 배경 겹치는 걸 방지 */
+    z-index : 100;
 }
+
 .menuTab .navItem {
+    font-size: 1.0rem;
     flex-grow : 1;
     text-align : center;
     position : relative;
-    padding : 5px 0;
+    padding : 0.6rem 0 0.6rem;
+    border-bottom : 1px solid #ccc; /* 전체 탭의 회색 밑줄을 각 항목에 추가 */
     color : #141414; /* 비활성화된 색상 */
     transition : color 0.3s;
 }
@@ -29,13 +35,10 @@
     color : #6c6c6c;
 }
 
-/* 선택된 메뉴 탭 */
 .menuTab .navItem.active {
-    color : #5391ca;;
     font-weight : 700;
-    /* 밑줄 효과 */
-    border-bottom : 3px solid #5391ca;;
-    margin-bottom : -11px; /* border-bottom을 탭 라인 위에 표시하기 위해 조정 */
+    padding-bottom : 0.6rem;
+    border-bottom : 3px solid #000000; /* 얇은 회색 밑줄을 덮어쓰기 */
 }
 
 /* 안내 사항 아코디언 */
@@ -51,7 +54,7 @@
     font-weight : 500;         /* 글씨 약간 굵게 */
     padding : 1rem 0;          /* 위아래 여백만 남겨서 넓게 보이게 */
     font-weight : 400;
-    font-size : 1.2rem;
+    font-size : 1.0rem;
 }
 
 /* 아코디언이 열렸을 때 */
@@ -71,23 +74,27 @@
 /* 오른쪽 예약폼 높이 84px 여유 공간*/
 .panelTop {
     /* !important를 사용해 Bootstrap 기본 top:0을 강제로 덮어쓰기 */
-    top : 84px !important; 
+    top : 5rem !important; 
+}
+
+/* 오른쪽 예약폼 객실 목록 선택할 때 커서 가져간 곳에 색상 변경*/
+.roomSelect:hover {
+    background-color : #e4e4e4;
 }
 
 /* 데스크톱 화면 크기 버전 고정 크기 */
 .right.sticky-top {
-    position: sticky;
-    top: 84px;
-    width: 100%; /* Col 폭에 맞게 */
-    max-width: 100%;
+    position : sticky;
+    top : 5rem;
+    width : 100%; /* Col 폭에 맞게 */
+    max-width : 100%;
 }
 
-/* 화면이 줄어드는 반응형 */
+/* 모바일 화면에서 sticky 위치 조정 */
 @media (max-width: 1199px) {
-    .right.sticky-top {
-        position : static; /* sticky 해제 */
-        width : 100%;      /* 부모 폭에 맞춤 */
-        max-width : 100%;
-        margin-top : 20px; /* 버튼 아래로 내려가도록 여백 */
+    .menuTab {
+        top : 3.5rem; /* 모바일 네비바 높이에 맞춤 */
+        width : 100%;
+        padding : 8px 0;
     }
 }

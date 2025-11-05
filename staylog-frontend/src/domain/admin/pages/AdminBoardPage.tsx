@@ -154,45 +154,9 @@ function AdminBoardPage() {
 
                 {/* 필터 내용 (Collapse) */}
                 <div className="collapse d-md-flex" id="filterCollapse">
-                    {/* 검색 기준 및 입력 그룹 */}
-                    <div className="d-flex gap-2">
-                        <select
-                            name="searchType"
-                            className="form-select-sm border-light h-75"
-                            onChange={(e) => {
-                                const value = e.target.value as 'accommodationName' | 'userNickName' | undefined;
-                                setSearchParams(prev => ({
-                                    ...prev,
-                                    searchType: value || undefined
-                                }));
-                            }}
-                        >
-                            <option value=''>검색 기준</option>
-                            <option value="accommodationName">숙소명</option>
-                            <option value="userNickName">작성자</option>
-                        </select>
-
-                        <div className="input-group h-75">
-                            <input
-                                type="text"
-                                placeholder="검색어 입력"
-                                className="form-control-sm border-1"
-                                value={inputKeyword}
-                                onChange={(e) => setInputKeyword(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleSearch();
-                                    }
-                                }}
-                            />
-                            <button className="btn border-secondary border-1 btn-sm" onClick={handleSearch}>
-                                <i className="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </div>
 
                     {/* 상태/정렬 필터 그룹 */}
-                    <div className="ms-md-auto d-flex gap-2 flex-wrap mt-3">
+                    <div className="gap-1 flex-wrap d-flex gap-2 flex-wrap d-flex align-items-center">
                         <select
                             name="status"
                             className="form-select-sm border-secondary"
@@ -236,6 +200,53 @@ function AdminBoardPage() {
                             <option value="likes_DESC">좋아요 많은순</option>
                             <option value="likes_ASC">좋아요 적은순</option>
                         </select>
+                    </div>
+
+                    {/* 검색 기준 및 입력 그룹 */}
+                    <div className="ms-md-auto d-flex gap-2 mt-2 mt-md-0 align-items-center">
+                        <select
+                            name="searchType"
+                            className="form-select form-select-sm border-light w-auto"
+                            onChange={(e) => {
+                                const value = e.target.value as 'accommodationName' | 'userNickName' | undefined;
+                                setSearchParams(prev => ({
+                                    ...prev,
+                                    searchType: value || undefined
+                                }));
+                            }}
+                        >
+                            <option value=''>검색 기준</option>
+                            <option value="accommodationName">숙소명</option>
+                            <option value="userNickName">작성자</option>
+                        </select>
+
+                        <div className="input-group input-group-sm">
+                            <input
+                                type="text"
+                                placeholder="검색어 입력"
+                                className="form-control-sm border-1"
+                                value={inputKeyword}
+                                onChange={(e) => setInputKeyword(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSearch();
+                                    }
+                                }}
+                            />
+                            <button title="검색" className="btn border-secondary border-1 btn-sm" onClick={handleSearch}>
+                                <i className="bi bi-search"></i>
+                            </button>
+                            <button title="모든 검색조건 제거" className="btn border-secondary border-1 btn-sm" onClick={() => {
+                                setInputKeyword('');
+                                setSearchParams({
+                                    boardType: searchParams.boardType,
+                                    pageNum: 1,
+                                    pageSize: 10
+                                });
+                            }}>
+                                <i className="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -130,7 +130,7 @@ function BoardForm() {
             console.log("📦 서버로 전송되는 dto:", dto);
             const res = await api.post("/v1/boards", dto);
             alert("게시글이 성공적으로 등록되었습니다.");
-            navigate("/review/${res.boardId}");
+            navigate("/review/${dto.boardId}");
             
 
         }catch(err) {
@@ -207,7 +207,7 @@ function BoardForm() {
 
         {/* 별점 */}
         <div className="mb-3">
-        <label className="form-label me-2">별점</label>
+        <label className="form-label mt-2">별점</label>
         <div className="star-rating d-flex align-items-center">
             {[1, 2, 3, 4, 5].map((star) => (
             <span

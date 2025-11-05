@@ -1,17 +1,16 @@
 // src/domain/board/pages/ReviewDetail.tsx
 
 import { useEffect, useState } from "react";
-import type { BoardDto, likesDto } from "../types/boardtypes";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../global/api";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
+import type { BoardDto } from "../types/boardtypes";
 
 
 
 function ReviewDetail() {
     
 
-    
 
     // 게시글 번호
     const {boardId} = useParams();
@@ -42,16 +41,29 @@ function ReviewDetail() {
         fetchBoard();
     },[boardId]);
 
+    // 게시글 삭제 버튼
+    const handleDelete = async () => {
+
+        const confirmDelete = window.confirm("게시글을 삭제하시겠습니까?");
+        if (!confirmDelete) return; // 취소 누르면 함수 종료
+
+        try {
+            await api.delete(`/v1/boards/${boardId}`);
+            alert("게시글이 성공적으로 삭제되었습니다.");
+            navigate("/review"); // 삭제 후 목록으로
+        } catch (err) {
+            
+            console.error("게시글 삭제 실패:", err);
+            alert("게시글 삭제 중 오류가 발생했습니다.");
+        }
+    };
+
+
 
     // USER 상태값 관리
     const userId = useGetUserIdFromToken();
     
-    // 좋아요 상태값 관리    
-    const [likesDto, setLikesDto] = useState<likesDto | null>({
-        likeId: 0,
-        boardId: boardId,
-        userId: userId
-    });
+    // 좋아요 상태값 관리     
     const [liked, setLiked] = useState<boolean>(false);
     const [likes, setLikes] = useState<number>(0);
 
@@ -83,33 +95,32 @@ function ReviewDetail() {
 
     // 좋아요 버튼
     const handleLike = async () => {
-        
-        if (!userId) {
-            alert("로그인 후 이용해주세요.");
-            return;
+    if (!userId) {
+        alert("로그인 후 이용해주세요.");
+        return;
+    }
+
+    const payload = {
+        boardId: Number(boardId),
+        userId: Number(userId),
+    };
+
+    try {
+        // ✅ 이제 하나의 API만 호출
+        await api.post(`/v1/likes/toggle`, payload);
+
+        // ✅ 프론트 상태 업데이트만 내부에서 처리
+        if (!liked) {
+        setLikes((prev) => prev + 1);
+        setLiked(true);
+        } else {
+        setLikes((prev) => (prev > 0 ? prev - 1 : 0));
+        setLiked(false);
         }
 
-        const payload = {
-            boardId: Number(boardId),
-            userId: Number(userId),
-          };
-          
-        try {
-            if (!liked) {   // ✅ 좋아요 추가
-                      
-                await api.post(`/v1/likes`, payload);
-                setLikes((prev) => prev + 1);
-                setLiked(true);
-
-            } else {        // ✅ 좋아요 취소
-                
-                await api.delete(`/v1/likes`, { data:payload});
-                setLikes((prev) => (prev > 0 ? prev - 1 : 0));
-                setLiked(false);
-            }
-        } catch (err) {
-            console.error("좋아요 처리 실패:", err);
-        }
+    } catch (err) {
+        console.error("좋아요 처리 실패:", err);
+    }
     };
 
 
@@ -128,13 +139,13 @@ function ReviewDetail() {
         {/* 작성자, 작성일, 조회수 */}
         <div className="board-meta-info d-flex justify-content-end">
             <span className="me-2">작성자: {dto?.userNickName || dto?.userName || dto?.userId}</span>
-            <span className="me-2">작성일: {dto?.createdAt}</span>
+            <span className="me-2">작성일: {dto?.createdAt?.split("T")[0]}</span>
             <span>조회수: {dto?.viewsCount ?? 0}</span>
         </div>  
 
 
         {/* 게시글 내용 */}
-        <div dangerouslySetInnerHTML={{ __html: dto?.content || "" }} className="m-3" />
+        <div dangerouslySetInnerHTML={{ __html: dto?.content || "" }} className="mt-5 mb-5" />
 
         {/* 별점 */}
         <div className="d-flex justify-content-center align-items-center mt-5 mb-5">
@@ -183,6 +194,19 @@ function ReviewDetail() {
 
 
     <div className="border-top my-3 border-dark"></div>
+
+    {/* 게시글 삭제 */}
+    {userId && (
+
+    <div className="d-flex justify-content-end mb-5">
+        <button
+            className="btn btn-outline-danger"
+            onClick={handleDelete}>
+            삭제
+        </button>
+    </div>
+
+    )}
 
     </>
 }

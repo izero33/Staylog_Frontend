@@ -25,3 +25,10 @@ export type BoardDto = {
 
 
 }
+
+export type LikesDto = {
+      
+      likeId?: number;            // 좋아요 ID
+      boardId: number;            // 게시글 ID
+      userId: number;             // 사용자 ID
+}

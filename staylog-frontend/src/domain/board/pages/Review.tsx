@@ -7,33 +7,27 @@ import type { BoardDto } from "../types/boardtypes";
 import api from "../../../global/api";
 
 import "./Board.css";
-import { getCommonCodes, type CommonCode } from "../../../global/utils/CommonCodes";
+import useRegions from "../../common/hooks/useRegions";
 
 
 
 
 function Review() {
 
-    
+  
+    // 지역 코드 
+    const regions = useRegions();
+
+    const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+
+
 
     // 게시글 목록 상태값 관리
     const [boards, setBoards] = useState<BoardDto[]>([]);
     const navigate = useNavigate();
-    const [regions, setRegions] = useState<CommonCode[]>([]);
+    
 
-    // 지역 태그 - 공통 코드 조회
-    useEffect(() => {
-      const fetchRegions = async () => {
-        try {
-          const regionsList = await getCommonCodes("REGION_TYPE");
-          console.log("📌 불러온 지역 코드:", regionsList);
-          setRegions(regionsList);
-        } catch (err) {
-          console.error("지역 코드 조회 실패:", err);
-        }
-      };
-      fetchRegions();
-    }, []);
+
 
 
     useEffect(()=>{
@@ -71,11 +65,6 @@ function Review() {
           {/* 좌측 지역 코드 */}
           <Col md={2}>
           <ListGroup className="region-sidebar"> 
-
-            {/* '전체' 항목 고정 */}
-            <ListGroup.Item action className = "region-item active">
-              전체 지역
-            </ListGroup.Item>
 
             {/* 지역 목록 - 공통코드에서 조회 */}
             {regions.map((region) => (
@@ -126,12 +115,12 @@ function Review() {
                       <td>{board.regionName}</td>
                       <td>{board.accommodationName}</td>
                       <td>
-                        <NavLink to={`/review/${board.boardId}`} className="board-link">{board.title}</NavLink>
+                        <NavLink to={`/review/${board.boardId}`} className="fw-bold text-dark text-decoration-none">{board.title}</NavLink>
                       </td>
-                      <td>{board.userId}</td>
+                      <td>{board.userNickName || board.userName || board.userId}</td>
                       <td>{board.viewsCount || 0}</td>
                       <td>{board.likes || 0}</td>
-                      <td>{board.createdAt}</td>
+                      <td>{board.createdAt?.split("T")[0]}</td>
                     </tr>
                   ))
                 ) : (
@@ -144,7 +133,7 @@ function Review() {
 
             {/* 페이지네이션 */}
             <div className="d-flex justify-content-center mt-3">
-              <Pagination className="pagination-custom">
+              <Pagination className="pagination">
                 <Pagination.Prev />
                 <Pagination.Item active>{1}</Pagination.Item>
                 <Pagination.Item>{2}</Pagination.Item>

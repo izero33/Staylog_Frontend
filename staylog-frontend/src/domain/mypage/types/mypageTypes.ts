@@ -19,7 +19,7 @@ export interface Reservations {
    stayName: string;
    checkIn: string;
    checkOut: string;
-   status: 'pending' | 'confirmed' | 'canceled';
+   status: 'upcoming' | 'completed' | 'cancelled'; //'pending' | 'confirmed' | 'canceled';
 }
 
 export interface Reviews {
@@ -30,13 +30,13 @@ export interface Reviews {
    isWrite: 'Y' | 'N';
 }
 
-export interface inquiries {
-   inquiryId: number;
-   category: string;
-   title: string;
-   content: string;
-   createdAt: string;
-}
+// export interface inquiries {
+//    inquiryId: number;
+//    category: string;
+//    title: string;
+//    content: string;
+//    createdAt: string;
+// }
 
 export interface Comments {
    commentId: number;

@@ -1,6 +1,6 @@
 // mypageApi.ts
 import api from "../../../global/api";
-import type { MemberInfo, Reservations, Reviews, inquiries } from "../types/mypageTypes";
+import type { MemberInfo, Reservations, Reviews } from "../types/mypageTypes";
 
 
 // 회원정보 조회

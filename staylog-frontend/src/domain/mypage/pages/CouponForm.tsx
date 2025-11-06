@@ -2,21 +2,20 @@ import { useEffect, useState } from 'react';
 import { Tabs, Tab, Alert, Badge } from 'react-bootstrap';
 import useGetUserIdFromToken from '../../auth/hooks/useGetUserIdFromToken';
 import api from '../../../global/api';
-import AvailableCouponCard from '../components/availableCouponCard';
 import UnavailableCouponCard from '../components/UnavailableCouponCard';
 import type { couponType } from '../types/couponTypes';
+import AvailableCouponCard from '../components/AvailableCouponCard';
 // 💡 공통 타입 import
 
 interface CouponFormProps {
    onClose?: () => void; // 모달 닫기 콜백
    // 💡 'view': 마이페이지(조회), 'select': 결제창(선택)
-   mode?: 'coupon-view' | 'coupon-select';
-   // 💡 쿠폰 선택 시 부모에게 선택된 쿠폰 정보를 전달할 콜백
-   onSelect?: (coupon: couponType) => void;
+   mode?: 'coupon' | undefined;
+   onUseCoupon?: (coupon: couponType) => void
 }
 
 // 💡 props에 mode와 onSelect 추가, mode의 기본값은 'view'
-function CouponForm({ onClose, mode, onSelect }: CouponFormProps) {
+function CouponForm({ onClose, mode, onUseCoupon }: CouponFormProps) {
    
    const userId = useGetUserIdFromToken();
 
@@ -67,9 +66,7 @@ function CouponForm({ onClose, mode, onSelect }: CouponFormProps) {
                         <AvailableCouponCard
                            key={item.couponId}
                            coupon={item}
-                           // 💡 mode와 onSelect 함수를 자식에게 전달
-                           mode={mode}
-                           onSelect={onSelect}
+                           onUseCoupon={onUseCoupon}
                         />
                      ))
                   )}

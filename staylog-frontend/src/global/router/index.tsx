@@ -32,6 +32,7 @@ import TestForm from "../pages/TestForm"; // Import TestForm
 import TestLoadImage from "../pages/TestLoadImage";
 import AdminBoardPage from "../../domain/admin/pages/AdminBoardPage";
 import AdminBoardDetail from "../../domain/admin/pages/AdminBoardDetail";
+import CheckoutForm from "../../domain/payment/pages/CheckoutForm";
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin, Mypage 라우트 객체는 분리)
@@ -51,6 +52,7 @@ const routes: RouteObject[] = [
   { path: "/test-load", element: <TestLoadImage /> },
   { path: "/quill", element: <BoardForm2/>}, //에디터 테스트
   { path: "/bord", element: <Board/>},//에디터 테스트
+  { path: "/checkout", element: <CheckoutForm/>},//에디터 테스트
 ];
 
 // Admin 중첩 라우트 객체를 별도로 정의

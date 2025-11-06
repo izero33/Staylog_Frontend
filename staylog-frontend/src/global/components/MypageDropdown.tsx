@@ -3,9 +3,9 @@ import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux"; // Redux 디스패치 훅 import
 import { logout } from "../../domain/auth/api"; // 로그아웃 API 함수 import
-import { useState } from "react";
 import type { ModalMode } from "../types";
 import Modal from "./Modal";
+import { useModal } from "../hooks/useModal";
 
 interface MypageDropdownProps {
   onClose: () => void; // Navbar.tsx 에서 넘겨준 onClose 받는다.
@@ -54,25 +54,8 @@ function MypageDropdown({ onClose }: MypageDropdownProps) {
         onClose();
     }; 
 
-
-    // ====== 쿠폰함 모달을 사용하기 위한 상태값과 함수 ======
-
-    // 모달 활성화 관리 상태값
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-    // 모달 모드 상태값
-    const [modalMode, setModalMode] = useState<ModalMode>('coupon-view');
-
-    // 모드값을 인자로 받고 모달창을 여는 함수
-    function openModal(mode: ModalMode) {
-        setModalMode(mode);
-        setIsModalOpen(true);
-    }
-
-    // 모달창을 닫는 함수 (Modal 컴포넌트로 전달됨)
-    function closeModal() {
-        setIsModalOpen(false);
-    }
+    // 모달 커스텀훅 사용
+    const {isModalOpen, modalMode, openModal, closeModal} = useModal<ModalMode>('none')
 
 
     return (
@@ -96,8 +79,7 @@ function MypageDropdown({ onClose }: MypageDropdownProps) {
             <Dropdown.Item eventKey="reservations">예약 정보</Dropdown.Item>
             <Dropdown.Item eventKey="reviews">리뷰 내역</Dropdown.Item>
             <Dropdown.Item eventKey="inquiries">문의 내역</Dropdown.Item>
-            <Dropdown.Item onClick={() => openModal('coupon-view')}>내 쿠폰함</Dropdown.Item>
-            <Dropdown.Item onClick={() => openModal('coupon-select')}>내 쿠폰함22</Dropdown.Item>
+            <Dropdown.Item onClick={() => openModal('coupon')}>내 쿠폰함</Dropdown.Item>
 
             <Dropdown.Divider />
             <Dropdown.Item eventKey="logout" className="text-danger text-center fw-semibold">로그아웃</Dropdown.Item>

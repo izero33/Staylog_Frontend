@@ -7,11 +7,10 @@ import type { couponType } from '../types/couponTypes';
 // 부모로부터 받을 props 인터페이스
 interface CouponCardProps {
    coupon: couponType;
-   mode: 'coupon-view' | 'coupon-select' | undefined;
-   onSelect?: (coupon: couponType) => void; // 💡 onSelect 추가 (optional)
+   onUseCoupon?: (coupon: couponType) => void
 }
 
-function AvailableCouponCard({ coupon, mode, onSelect }: CouponCardProps) {
+function AvailableCouponCard({ coupon, onUseCoupon }: CouponCardProps) {
    
    // D-day 계산
    const today = new Date();
@@ -49,12 +48,12 @@ function AvailableCouponCard({ coupon, mode, onSelect }: CouponCardProps) {
                             mode가 'select'이고 onSelect 함수가 존재할 때만 
                             "사용하기" 버튼을 렌더링합니다.
                         */}
-                  {mode === 'coupon-select' && onSelect && (
+                  { onUseCoupon && (
                      <div className="text-end mt-2">
                         <Button
                            variant="primary"
                            size="sm"
-                           onClick={() => onSelect(coupon)} // 💡 클릭 시 onSelect 호출
+                           onClick={() => onUseCoupon(coupon)} // 💡 클릭 시 onSelect 호출
                         >
                            <i className="bi bi-check-circle"></i> 사용하기
                         </Button>

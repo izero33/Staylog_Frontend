@@ -1,11 +1,13 @@
 // src/domain/admin/pages/AdminRoomListPage.tsx
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom"; // useNavigate 훅 임포트
+import { useLocation, useNavigate, useParams } from "react-router-dom"; // useNavigate 훅 임포트
 import api from "../../../global/api";
 import { formatKST } from "../../../global/utils/date";
-import type { AdminRoomListData, AdminRoomSearchParams } from "../types/AdminRoomTypes";
+import type { AdminRoomListData, AdminRoomListResponse, AdminRoomSearchParams } from "../types/AdminRoomTypes";
 import type { CommonCodeNameList } from "../types/CommonCodeNameList";
+import type { PageResponse } from "../../../global/types/Paginationtypes";
+import Pagination from "../../../global/components/Pagination";
 
 // 상태 업데이트 API 호출 함수 (컴포넌트 외부에 정의하여 재사용)
 const updateAccommodationStatus = async (accommodationId: number, roomId: number, status: 'Y' | 'N') => {
@@ -27,20 +29,33 @@ function AdminRoomPage() {
     // 경로 변수를 숫자로 변환
     const accommodationId = Number(accommodationIdStr);
 
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // 페이지 이동 훅
+    const location = useLocation(); // 현재 위치 훅
     const [rooms, setRooms] = useState<AdminRoomListData[]>([]);
-    const [searchPrams, setSearchParams] = useState<AdminRoomSearchParams>({
-        accommodationId: accommodationId
-    });
-    const [inputKeyword, setInputKeyword] = useState<string>('');
+
+    // location.state에서 전달된 검색어 상태 초기화
+    const [searchParams, setSearchParams] = useState<AdminRoomSearchParams>(
+        location.state?.searchParams || {
+            keyword: '',
+            accommodationId: accommodationId,
+            pageNum: 1,
+            pageSize: 10
+        }
+    );
+    const [inputKeyword, setInputKeyword] = useState<string>(
+        location.state?.inputKeyword || ''
+    );
 
     //공통 코드 상태 정의
     const [rmTypeCodeList, setRmTypeCodeList] = useState<CommonCodeNameList[]>([]);
 
     // 전체 객실 목록 조회 (컴포넌트 마운트 시)
     useEffect(() => {
-        api.get<AdminRoomListData[]>(`/v1/admin/accommodations/${accommodationId}/rooms`, { params: searchPrams })
-            .then(res => setRooms(res))
+        api.get<AdminRoomListResponse>(`/v1/admin/accommodations/${accommodationId}/rooms`, { params: searchParams })
+            .then(res => {
+                setRooms(res.rooms);
+                setPage(res.page);
+            })
             .catch(err => console.log("객실 목록 로드 실패", err));
 
 
@@ -48,7 +63,7 @@ function AdminRoomPage() {
         api.get<CommonCodeNameList[]>("/v1/commonCode", { params: { codeId: 'ROOM_TYPE' } })
             .then(res => setRmTypeCodeList(res))
             .catch(err => console.log("객실 타입 로드 실패", err));
-    }, [accommodationId, searchPrams]);
+    }, [accommodationId, searchParams]);
 
     // 상태 변경 API 호출 핸들러 (원래 값 롤백 기능 포함)
     const handleStatusChange = async (
@@ -92,7 +107,13 @@ function AdminRoomPage() {
 
     //객실 상세 페이지 이동 핸들러
     const handleToDetailPage = (roomId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}/rooms/${roomId}`);
+        navigate(`/admin/accommodations/${accommodationId}/rooms/${roomId}`, {
+            state: {
+                searchParams,   // 현재 검색 조건
+                inputKeyword,   // 현재 검색어
+                from: location.pathname  // 이전 페이지 경로
+            }
+        });
     };
 
     //객실 등록 페이지 이동 핸들러
@@ -109,7 +130,19 @@ function AdminRoomPage() {
 
         setSearchParams(prev => ({
             ...prev,
-            keyword: inputKeyword.trim()
+            keyword: inputKeyword.trim(),
+            pageNum: 1 // 검색 시 1페이지로 이동
+        }));
+    };
+
+    // 페이지 정보 상태
+    const [page, setPage] = useState<PageResponse | null>(null);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNum: number) => {
+        setSearchParams(prev => ({
+            ...prev,
+            pageNum
         }));
     };
 
@@ -141,6 +174,7 @@ function AdminRoomPage() {
                         <select
                             name="rmType"
                             className="form-select-sm border-secondary"
+                            value={searchParams.rmType || ''}
                             onChange={(e) => {
                                 const value = e.target.value;
                                 setSearchParams(prev => ({
@@ -156,6 +190,7 @@ function AdminRoomPage() {
                         <select
                             name="status"
                             className="form-select-sm border-secondary"
+                            value={searchParams.deletedYn || ''}
                             onChange={(e) => {
                                 const value = e.target.value as 'Y' | 'N' | '';
                                 setSearchParams(prev => ({
@@ -190,7 +225,11 @@ function AdminRoomPage() {
                             </button>
                             <button title="모든 검색조건 제거" className="btn border-secondary border-1 btn-sm" onClick={() => {
                                 setInputKeyword('');
-                                setSearchParams({accommodationId: accommodationId});
+                                setSearchParams({
+                                    accommodationId: accommodationId,
+                                    pageNum: 1,
+                                    pageSize: 10
+                                });
                             }}>
                                 <i className="bi bi-arrow-counterclockwise"></i>
                             </button>
@@ -257,6 +296,9 @@ function AdminRoomPage() {
                         )))}
                 </tbody>
             </table>
+            
+            {/* 페이지네이션 */}
+            {page && <Pagination page={page} onPageChange={handlePageChange} />}
         </div>
     </>;
 }

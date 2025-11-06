@@ -1,3 +1,6 @@
+import { extend } from "dayjs";
+import type { PageRequest, PageResponse } from "../../../global/types/Paginationtypes";
+
 export interface AdminRoom {
     accommodationId: number;
     accommodationName: string;
@@ -22,11 +25,16 @@ export interface AdminRoom {
     description: string;
 }
 
-export interface AdminRoomSearchParams {
+export interface AdminRoomSearchParams extends PageRequest {
     accommodationId: number;
     rmType?: string;
     keyword?: string;
     deletedYn?: 'Y' | 'N';
+}
+
+export interface AdminRoomListResponse {
+    rooms: AdminRoomListData[];
+    page: PageResponse;
 }
 
 export interface AdminRoomListData {

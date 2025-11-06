@@ -1,3 +1,4 @@
+// src/global/types/Paginationtypes.ts
 /**
  * 페이지 요청 파라미터
  */

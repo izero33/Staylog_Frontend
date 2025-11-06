@@ -1,11 +1,14 @@
 // src/domain/admin/pages/AdminAccommodationListPage.tsx
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // useNavigate 훅 임포트
+import { useLocation, useNavigate } from "react-router-dom"; // useNavigate 훅 임포트
 import api from "../../../global/api";
 import type { AdminAccommodationListData, AdminAccommodationSearchParams } from "../types/AdminAccommodationTypes";
 import { formatKST } from "../../../global/utils/date";
 import type { CommonCodeNameList } from "../types/CommonCodeNameList";
+import type { PageResponse } from "../../../global/types/Paginationtypes";
+import type { AdminAccommodationListResponse } from "../types/AdminAccommodatiomTypes";
+import Pagination from "../../../global/components/Pagination";
 
 // 상태 업데이트 API 호출 함수 (컴포넌트 외부에 정의하여 재사용)
 const updateAccommodationStatus = async (accommodationId: number, status: 'Y' | 'N') => {
@@ -22,10 +25,22 @@ const updateAccommodationStatus = async (accommodationId: number, status: 'Y' | 
 
 
 function AdminAccommodationListPage() {
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // 페이지 이동 훅
+    const location = useLocation(); // 현재 위치 훅
+
+    // 숙소 목록 상태 정의
     const [accommodations, setAccommodations] = useState<AdminAccommodationListData[]>([]);
-    const [searchPrams, setSearchParams] = useState<AdminAccommodationSearchParams>({});
-    const [inputKeyword, setInputKeyword] = useState<string>('');
+
+    // location.state에서 검색 파라미터 복원
+    const [searchParams, setSearchParams] = useState<AdminAccommodationSearchParams>(
+        location.state?.searchParams || {
+            pageNum: 1,
+            pageSize: 10
+        }
+    );
+    const [inputKeyword, setInputKeyword] = useState<string>(
+        location.state?.inputKeyword || ''
+    );
 
     //공통 코드 상태 정의
     const [acTypeCodeList, setAcTypeCodeList] = useState<CommonCodeNameList[]>([]);
@@ -35,8 +50,11 @@ function AdminAccommodationListPage() {
     // 전체 숙소 목록 조회 (컴포넌트 마운트 시)
     useEffect(() => {
         // 숙소 목록 로드
-        api.get<AdminAccommodationListData[]>("/v1/admin/accommodations", { params: searchPrams })
-            .then(res => setAccommodations(res)) // res.data 접근 가정
+        api.get<AdminAccommodationListResponse>("/v1/admin/accommodations", { params: searchParams })
+            .then(res => {
+                setAccommodations(res.accommodations);
+                setPage(res.page);
+            })
             .catch(err => console.log("숙소 목록 로드 실패", err));
 
         // 공통 코드: 숙소 타입 목록 로드
@@ -48,7 +66,7 @@ function AdminAccommodationListPage() {
         api.get<CommonCodeNameList[]>("/v1/commonCode", { params: { codeId: 'REGION_TYPE' } })
             .then(res => setRegionCodeList(res))
             .catch(err => console.log("지역 코드 로드 실패", err));
-    }, [searchPrams]);
+    }, [searchParams]);
 
     // 상태 변경 API 호출 핸들러 (원래 값 롤백 기능 포함)
     const handleStatusChange = async (
@@ -91,7 +109,13 @@ function AdminAccommodationListPage() {
 
     //숙소 상세 페이지 이동 핸들러
     const handleToDetailPage = (accommodationId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}`);
+        navigate(`/admin/accommodations/${accommodationId}`, {
+            state: {
+                searchParams,   // 현재 검색 조건
+                inputKeyword,   // 현재 검색어
+                from: location.pathname  // 이전 페이지 경로
+            }
+        });
     };
 
     //객실 목록 페이지 이동 핸들러
@@ -113,7 +137,18 @@ function AdminAccommodationListPage() {
 
         setSearchParams(prev => ({
             ...prev,
-            keyword: inputKeyword.trim()
+            keyword: inputKeyword.trim(),
+            pageNum: 1  // 검색 시 첫 페이지로
+        }));
+    };
+
+    // 페이지 정보 상태 정의
+    const [page, setPage] = useState<PageResponse | null>(null);
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNum: number) => {
+        setSearchParams(prev => ({
+            ...prev,
+            pageNum
         }));
     };
 
@@ -145,6 +180,7 @@ function AdminAccommodationListPage() {
                         <select
                             name="acType"
                             className="form-select-sm border-secondary"
+                            value={searchParams.acType || ''}
                             onChange={(e) => {
                                 const value = e.target.value;
                                 setSearchParams(prev => ({
@@ -160,6 +196,7 @@ function AdminAccommodationListPage() {
                         <select
                             name="regionCode"
                             className="form-select-sm border-secondary"
+                            value={searchParams.regionCode || ''}
                             onChange={(e) => {
                                 const value = e.target.value;
                                 setSearchParams(prev => ({
@@ -175,6 +212,7 @@ function AdminAccommodationListPage() {
                         <select
                             name="status"
                             className="form-select-sm border-secondary"
+                            value={searchParams.deletedYn || ''}
                             onChange={(e) => {
                                 const value = e.target.value as 'Y' | 'N' | '';
                                 setSearchParams(prev => ({
@@ -220,6 +258,13 @@ function AdminAccommodationListPage() {
                 </div>
             </div>
 
+            {/* 페이지 정보 */}
+            {page && (
+                <div className="text-end text-muted mt-3">
+                    전체 {page.totalCount}건 ({page.pageNum}/{page.totalPage} 페이지)
+                </div>
+            )}
+
             <table className="table table-striped text-center mt-5">
                 <thead>
                     <tr>
@@ -245,7 +290,7 @@ function AdminAccommodationListPage() {
                     ) : (
                         accommodations.map((item, index) => ( // 숙소가 있을 때
                             <tr key={item.accommodationId || index}>
-                                <td>{index + 1}</td>
+                                <td>{page ? (page.pageNum - 1) * page.pageSize + index + 1 : index + 1}</td>
                                 <td>{item.regionName}</td>
                                 <td>
                                     <button
@@ -284,6 +329,9 @@ function AdminAccommodationListPage() {
                         )))}
                 </tbody>
             </table>
+
+            {/* 페이지네이션 */}
+            {page && <Pagination page={page} onPageChange={handlePageChange} />}
         </div>
     </>
 }

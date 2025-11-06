@@ -1,7 +1,7 @@
 // src/domain/admin/pages/AdminBoardListPage.tsx
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../../global/api";
 import { formatKST } from "../../../global/utils/date";
 import type {
@@ -11,6 +11,7 @@ import type {
 } from "../types/AdminBoardTypes";
 import '../css/AdminTable.css';
 import type { PageResponse } from "../../../global/types/Paginationtypes";
+import Pagination from "../../../global/components/Pagination";
 
 // 상태 업데이트 API 호출 함수
 const updateBoardStatus = async (boardId: number, status: 'Y' | 'N') => {
@@ -27,14 +28,20 @@ const updateBoardStatus = async (boardId: number, status: 'Y' | 'N') => {
 
 function AdminBoardPage() {
     const navigate = useNavigate(); // 페이지 이동 훅
+    const location = useLocation(); // 현재 위치 훅
     const [boards, setBoards] = useState<AdminBoardList[]>([]); // 게시글 목록 상태
-    const [page, setPage] = useState<PageResponse | null>(null); // 페이지 정보 상태
-    const [inputKeyword, setInputKeyword] = useState<string>(''); // 검색어 입력 상태
-    const [searchParams, setSearchParams] = useState<AdminBoardSearchParams>({
-        boardType: 'BOARD_REVIEW',
-        pageNum: 1,
-        pageSize: 10
-    });
+
+    // location.state에서 검색어 복원
+    const [inputKeyword, setInputKeyword] = useState<string>(
+        location.state?.inputKeyword || ''
+    );
+    const [searchParams, setSearchParams] = useState<AdminBoardSearchParams>(
+        location.state?.searchParams || {
+            boardType: 'BOARD_REVIEW',
+            pageNum: 1,
+            pageSize: 10
+        }
+    );
 
     // 게시글 목록 조회
     useEffect(() => {
@@ -100,17 +107,15 @@ function AdminBoardPage() {
         }));
     };
 
-    // 페이지 변경 핸들러
-    const handlePageChange = (pageNum: number) => {
-        setSearchParams(prev => ({
-            ...prev,
-            pageNum
-        }));
-    };
-
     // 상세 페이지 이동
     const handleToDetailPage = (boardId: number) => {
-        navigate(`/admin/boards/${boardId}`);
+        navigate(`/admin/boards/${boardId}`, {
+            state: {
+                searchParams,   // 현재 검색 조건
+                inputKeyword,   // 현재 검색어
+                from: location.pathname  // 이전 페이지 경로
+            }
+        });
     };
 
     // 게시판 타입 변경
@@ -121,6 +126,17 @@ function AdminBoardPage() {
             pageSize: 10
         });
         setInputKeyword('');
+    };
+
+    // 페이지 정보 상태
+    const [page, setPage] = useState<PageResponse | null>(null);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNum: number) => {
+        setSearchParams(prev => ({
+            ...prev,
+            pageNum
+        }));
     };
 
     return (
@@ -160,6 +176,7 @@ function AdminBoardPage() {
                         <select
                             name="status"
                             className="form-select-sm border-secondary"
+                            value={searchParams.deleted || ''}
                             onChange={(e) => {
                                 const value = e.target.value as 'Y' | 'N' | '';
                                 setSearchParams(prev => ({
@@ -207,6 +224,7 @@ function AdminBoardPage() {
                         <select
                             name="searchType"
                             className="form-select form-select-sm border-light w-auto"
+                            value={searchParams.searchType || ''}
                             onChange={(e) => {
                                 const value = e.target.value as 'accommodationName' | 'userNickName' | undefined;
                                 setSearchParams(prev => ({
@@ -327,51 +345,7 @@ function AdminBoardPage() {
             </table>
 
             {/* 페이지네이션 */}
-            {page && page.totalPage > 1 && (
-                <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-center">
-                        {/* 이전 버튼 */}
-                        <li className={`page-item ${page.startPage === 1 ? 'disabled' : ''}`}>
-                            <button
-                                className="page-link"
-                                onClick={() => handlePageChange(page.startPage - 1)}
-                                disabled={page.startPage === 1}
-                            >
-                                이전
-                            </button>
-                        </li>
-
-                        {/* 페이지 번호 */}
-                        {Array.from(
-                            { length: page.endPage - page.startPage + 1 },
-                            (_, i) => page.startPage + i
-                        ).map(num => (
-                            <li
-                                key={num}
-                                className={`page-item ${num === page.pageNum ? 'active' : ''}`}
-                            >
-                                <button
-                                    className="page-link"
-                                    onClick={() => handlePageChange(num)}
-                                >
-                                    {num}
-                                </button>
-                            </li>
-                        ))}
-
-                        {/* 다음 버튼 */}
-                        <li className={`page-item ${page.endPage >= page.totalPage ? 'disabled' : ''}`}>
-                            <button
-                                className="page-link"
-                                onClick={() => handlePageChange(page.endPage + 1)}
-                                disabled={page.endPage >= page.totalPage}
-                            >
-                                다음
-                            </button>
-                        </li>
-                    </ul>
-                </nav>
-            )}
+            {page && <Pagination page={page} onPageChange={handlePageChange} />}
         </div>
     );
 }

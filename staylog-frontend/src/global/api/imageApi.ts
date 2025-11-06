@@ -8,7 +8,7 @@ import api from ".";
 type UploadParams = {
   // 단일 파일 또는 파일 배열 모두 받을 수 있게
   imgs: File | File[];
-  targetType: string; // 예: "BOARD" | "PROFILE" | "TEMP"
+  targetType: string; // 예: "BOARD" | "PROFILE"
   targetId: string;   // 게시글 ID 또는 임시 ID(0/음수)
 };
 

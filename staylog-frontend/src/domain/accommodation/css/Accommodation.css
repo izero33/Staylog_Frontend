@@ -98,3 +98,17 @@
         padding : 8px 0;
     }
 }
+
+/* 숙소 대표 이미지 비율 반응형 */
+.accommodationImages {
+    width : 100%;
+    overflow : hidden;
+    border-radius: 0.5rem;
+}
+
+.carousel-img {
+    width : 100%;
+    height : 100%; /* 부모 ratio 영역 꽉 채움 */
+    object-fit : cover; /* 영역에 맞게 자르면서 꽉 채움 */
+    display : block;
+}

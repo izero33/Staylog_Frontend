@@ -28,6 +28,7 @@ import ReviewSection from "../../domain/mypage/pages/ReviewSection";
 import InquirySection from "../../domain/mypage/pages/InquirySection";
 import TestForm from "../pages/TestForm"; // Import TestForm
 import TestLoadImage from "../pages/TestLoadImage";
+import CommentsPage from "../../domain/board/components/comment/CommentsPage";
 import AdminBoardPage from "../../domain/admin/pages/AdminBoardPage";
 import AdminBoardDetail from "../../domain/admin/pages/AdminBoardDetail";
 import AdminRoomUpdate from "../../domain/admin/pages/AdminRoomUpdate";
@@ -52,6 +53,7 @@ const routes: RouteObject[] = [
   { path: "/test-load", element: <TestLoadImage /> },
   { path: "/quill", element: <BoardForm2/>}, //에디터 테스트
   { path: "/bord", element: <Board/>},//에디터 테스트
+  { path: "/comments/:boardId", element: <CommentsPage /> },
   { path: "/checkout", element: <CheckoutForm/>},//에디터 테스트
 ];
 

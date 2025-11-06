@@ -13,9 +13,7 @@ import AdminRoomPage from "../../domain/admin/pages/AdminRoomPage";
 // import { ReservationProvider } from "../../domain/accommodation/hooks/useReservation"; // 사용되지 않아 주석 유지
 import AccommodationDetail from "../../domain/accommodation/pages/AccommodationDetail";
 // 게시판 관련 페이지
-import Journal from "../../domain/board/pages/Journal";
-import Review from "../../domain/board/pages/Review";
-import ReviewDetail from "../../domain/board/pages/ReviewDetail";
+import BoardDetail from "../../domain/board/pages/BoardDetail";
 import BoardForm from "../../domain/board/pages/BoardForm";
 import BoardForm2 from "../../domain/board/pages/BoardForm2";
 import Board from "../../domain/board/pages/Board";
@@ -34,6 +32,7 @@ import AdminBoardPage from "../../domain/admin/pages/AdminBoardPage";
 import AdminBoardDetail from "../../domain/admin/pages/AdminBoardDetail";
 import CheckoutForm from "../../domain/payment/pages/CheckoutForm";
 import AdminCouponPage from "../../domain/admin/pages/AdminCouponPage";
+import Boards from "../../domain/board/pages/Boards";
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin, Mypage 라우트 객체는 분리)
@@ -41,10 +40,9 @@ const routes: RouteObject[] = [
   { path: "/index.html", element: <Home /> }, // spring boot 최초 실행 정보 추가
   { path: "/", element: <Home /> },
   { path: "/login", element: <LoginForm /> },
-  { path: "/review", element: <Review /> },
-  { path: "/journal", element: <Journal /> },
-  { path: "/boardForm", element: <BoardForm /> },
-  { path: "/review/:boardId", element: <ReviewDetail /> },
+  { path: "/:boardType", element: <Boards /> },
+  { path: "/boardForm/:boardType", element: <BoardForm /> },
+  { path: "/:boardType/:boardId", element: <BoardDetail /> },
   { path: "/signup", element: <SignupForm /> },
   { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지
   { path: "/accommodations/:id", element:<AccommodationDetail />},

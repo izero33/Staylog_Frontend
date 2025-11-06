@@ -19,7 +19,7 @@ import { REGEX_PASSWORD } from "../../../global/constants/Validation";
 function MemberInfoSection() {
     // auth 훅은 컴포넌트 최상단에서 선언
     const userId = useGetUserIdFromToken(); // 사용자 PK
-    const loginId = useGetLoginIdFromToken(); // 로그인 ID
+    //const loginId = useGetLoginIdFromToken(); // 로그인 ID
     const nickname = useGetNicknameFromToken(); // 닉네임
     // Redux에도 로그인 정보가 있을 수 있지만, JWT 기반으로 갱신 보완
     const reduxNickname = useSelector((state: RootState) => state.userInfo?.nickname);
@@ -56,9 +56,7 @@ function MemberInfoSection() {
     const [editModeNickname, setEditModeNickname] = useState(false); // 닉네임 편집 모드
 
     // 생년월일 관련 상태
-    const [birthYear, setBirthYear] = useState<string>(""); // 생년월일 - 년도
-    const [birthMonth, setBirthMonth] = useState<string>(""); // 생년월일 - 월
-    const [birthDay, setBirthDay] = useState<string>(""); // 생년월일 - 일
+    const [birthDate, setBirthDate] = useState<string>("");  // 생년월일
 
     // 모달용 상태
     const [showNicknameModal, setShowNicknameModal] = useState(false); // 닉네임 중복확인 모달 상태
@@ -77,10 +75,7 @@ function MemberInfoSection() {
             .then((data) => {
             setMember(data);
             if (data.birthDate) {
-                const [y, m, d] = data.birthDate.substring(0, 10).split("-");
-                    setBirthYear(y);
-                    setBirthMonth(m.padStart(2, "0"));
-                    setBirthDay(d.padStart(2, "0"));
+                setBirthDate (data.birthDate.substring(0, 10));
             }
         })
         .catch((err) => {
@@ -196,13 +191,6 @@ function MemberInfoSection() {
         setShowNicknameModal(true);
     };
 
-    // 생년월일 선택 처리
-    const handleBirthChange = (type: string, value: string) => {
-        if (type === "year") setBirthYear(value);
-        if (type === "month") setBirthMonth(value);
-        if (type === "day") setBirthDay(value);
-    };
-
     // 비밀번호 유효성 및 일치여부 검사 (SignupForm 참고)
     useEffect(() => {
         // 정규식: 대문자+소문자+특수문자 조합 8자 이상
@@ -213,21 +201,22 @@ function MemberInfoSection() {
     }, [passwordInput1, passwordInput2]);     
 
     const handlePwdChange = (pwd: React.ChangeEvent<HTMLInputElement>) => {
-        if(!member) return;
-        setMember({ ...member, [pwd.target.name]: pwd.target.value});
+        const { name, value } = pwd.target;
+        if(name === "password1") setPasswordInput1(value);
+        if(name === "password2") setPasswordInput2(value);
     };
 
     //프로필 이미지 변경 (미리보기 & (업로드)상태 업데이트 & 파일명 표시) **추후 수정 필요**
     const handleImageChange = async (img: React.ChangeEvent<HTMLInputElement>) => {
         const file = img.target.files?.[0];
-        if (!file || userId) return;
+        if (!file || !userId) return;
         // 브라우저 미리보기용 URL 생성
         const preview = URL.createObjectURL(file);
             setPreviewUrl(preview);
             setSelectedFileName(file.name); //파일명 저장
         try {
             // 실제 서버(Spring) 업로드
-            const imageUrl = await uploadProfileImage(file, userId!); // 업로드 요청 (userId 뒤에 ! 빼기)
+            const imageUrl = await uploadProfileImage(file, userId); // 업로드 요청 (userId 뒤에 ! 빼기)
             // 업로드 완료 후 DB에 저장될 URL을 상태로 반영
             setMember((prev) => (prev ? { ...prev, profileImageUrl: imageUrl } : prev)); // UI 반영
             console.log("프로필 이미지 업로드 완료:", imageUrl);
@@ -251,11 +240,11 @@ function MemberInfoSection() {
             alert("닉네임 중복확인을 완료해주세요.");
             return;
         }        
-        // 생년월일 YYYY-MM-DD 형식으로 조합
-        const cleanedBirthDate =
-            birthYear && birthMonth && birthDay
-            ? `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`
-            : "";
+        // // 생년월일 YYYY-MM-DD 형식으로 조합
+        // const cleanedBirthDate =
+        //     birthYear && birthMonth && birthDay
+        //     ? `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`
+        //     : "";
 
         // 조건부로 수정모드인 항목만 반영하도록 payload 구성
         const payload = {
@@ -263,7 +252,7 @@ function MemberInfoSection() {
             userId,
             email: editModeEmail ? emailInput : member.email,
             nickname: editModeNickname ? nicknameInput : member.nickname,
-            birthDate: cleanedBirthDate,
+            birthDate: birthDate || "",
             password: showPasswordInput && passwordInput1 ? passwordInput1 : "", // 비밀번호 변경 사항 반영
         };
         console.log("📦 update payload:", payload); 
@@ -301,18 +290,12 @@ function MemberInfoSection() {
         return <p className="text-center mt-5">회원 정보를 불러오는 중...</p>;
     }
 
-    // 연도/월/일 드롭다운 옵션 생성
-    const years = Array.from({ length: 100 }, (_, i) => String(2025 - i));
-    const months = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"));
-    const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0"));;
-
-
     return (
         <Card className="shadow-sm border-0 w-100">
         <Card.Body className="p-4">
             {/* 상단 인삿말 영역 */}
-            <div className="mb-4 text-center text-md-centre">
-                <h3 className="fw-bold"> {nickname || reduxNickname} 님 반가워요 👋 </h3>
+            <div className="mb-4 text-center text-md-center">
+                <h3 className="fw-bold"> {reduxNickname || member.nickname} 님 반가워요 👋 </h3>
                 <p className="text-muted mb-0">
                     {new Date(member.createdAt).getFullYear()}년부터 StayLog를 함께하고 있어요.
                 </p>
@@ -321,8 +304,8 @@ function MemberInfoSection() {
 
             {/* 폼 + 프로필 */}
             <Row className="g-4 align-items-start">
-            {/* 왼쪽 폼 */}
-            <Col xs={12} md={8}>
+            {/* 왼쪽 폼(회원정보) — 모바일 화면 비율일 땐 순서가 아래로 내려가게 */}
+            <Col xs={{ order: 2 }} md={{ order: 1, span: 8 }}>
                 {/* ...Form 영역... */}
                 <Form>
                 <Form.Group className="mb-3">
@@ -492,50 +475,17 @@ function MemberInfoSection() {
                     <Form.Control type="text" name="phone" value={member.phone || ""} onChange={handleChange} disabled={!editMode}/>
                 </Form.Group>
 
-                {/* 생년월일 드롭다운 */}
+                {/** 생년월일 캘린더 형식으로 변경 */}
                 <Form.Group className="mb-3">
                     <Form.Label className="fw-semibold text-start d-block" style={{ marginBottom: "0.4rem" }}>생년월일</Form.Label>
-                    <div className="d-flex gap-2 align-items-center">
-                        <Form.Select 
-                            value={birthYear} 
-                            onChange={(e) => handleBirthChange("year", e.target.value)} 
-                            disabled={!editMode} 
+                        <Form.Control 
+                            type="date"
+                            name="birthDate"
+                            value={birthDate} 
+                            onChange={(e) => setBirthDate(e.target.value)} // YYYY-MM-DD
+                            disabled={!editMode}
                             className={`border ${editMode ? "bg-white text-dark" : "bg-light text-muted"}`}
-                        >
-                            <option value="">년</option>
-                                {years.map((y) => (
-                            <option key={y} value={y}>
-                                {y}
-                            </option>
-                            ))}
-                        </Form.Select>
-                        <Form.Select 
-                            value={birthMonth} 
-                            onChange={(e) => handleBirthChange("month", e.target.value)} 
-                            disabled={!editMode}   
-                            className={`border ${editMode ? "bg-white text-dark" : "bg-light text-muted"}`}
-                        >
-                            <option value="">월</option>
-                            {months.map((m) => (
-                                <option key={m} value={m}>
-                                    {m}
-                                </option>
-                            ))}
-                        </Form.Select>
-                        <Form.Select 
-                            value={birthDay} 
-                            onChange={(e) => handleBirthChange("day", e.target.value)} 
-                            disabled={!editMode} 
-                            className={`border ${editMode ? "bg-white text-dark" : "bg-light text-muted"}`}
-                        >
-                            <option value="">일</option>
-                            {days.map((d) => (
-                                <option key={d} value={d}>
-                                    {d}
-                                </option>
-                            ))}
-                        </Form.Select>
-                    </div>
+                        />
                 </Form.Group>
 
                 {/* 성별 선택 버튼 */}
@@ -580,7 +530,7 @@ function MemberInfoSection() {
                                         name="password1"
                                         placeholder="새 비밀번호 입력"
                                         value={passwordInput1} //상태값 바인딩
-                                        onChange={(pass) => setPasswordInput1(pass.target.value)} //별도 상태로 (저장)업데이트
+                                        onChange={handlePwdChange} // 별도 상태로 (저장)업데이트
                                         disabled={!editMode}
                                         className="mb-1"/>
 
@@ -590,7 +540,7 @@ function MemberInfoSection() {
                                         name="password2"
                                         placeholder="새 비밀번호 확인"
                                         value={passwordInput2} //상태값 바인딩
-                                        onChange={(pass) => setPasswordInput2(pass.target.value)} //별도 상태로 (저장)업데이트
+                                        onChange={handlePwdChange} //별도 상태로 (저장)업데이트
                                         disabled={!editMode}
                                         className="mb-1"/>
 
@@ -657,14 +607,12 @@ function MemberInfoSection() {
                             setIsEmailVerified(false);
                             setEmailMessage("");
                             setNicknameMessage("");
+                            setBirthDate("");
                             setPasswordInput1("");
                             setPasswordInput2("");
                             setShowPasswordInput(false);
                             setPasswordValid(true);
                             setPasswordMatch(true);
-                            setBirthYear(member.birthDate?.substring(0, 4) || "");
-                            setBirthMonth(member.birthDate?.substring(5, 7) || "");
-                            setBirthDay(member.birthDate?.substring(8, 10) || "");
                         }}>취소하기</Button>
                         </>
                     )}
@@ -672,8 +620,8 @@ function MemberInfoSection() {
                 </Form>
             </Col>
 
-            {/* 오른쪽 폼 */}
-            <Col xs={12} md={4} className="text-center">
+            {/* 오른쪽 폼(프로필 사진) — 모바일 화면 비율일 땐 순서가 위로 오게  */}
+            <Col xs={{ order: 1 }} md={{ order: 2, span: 4 }} className="text-center">
                 <div
                     className="border rounded-circle mx-auto d-flex justify-content-center align-items-center bg-light overflow-hidden"
                     style={{ width: "130px", height: "130px" }}>

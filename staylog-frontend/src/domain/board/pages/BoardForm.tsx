@@ -1,10 +1,10 @@
 // src/domain/board/types/boardtypes.tsx
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../global/api";
 import type { BoardDto } from "../types/boardtypes";
-import BookingModal from "../hooks/BookingModal";
+import BookingModal from "../components/BookingModal";
 
 
 import QuillEditor from "../components/QuillEditor";
@@ -16,6 +16,10 @@ import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 
 function BoardForm() {
 
+    // 게시판 카테고리 boradType
+    const { boardType } = useParams<{ boardType: string }>();
+
+
     // USER 상태값 관리
     const rawUserId = useGetUserIdFromToken();
     const [userId, setUserId] = useState<number | null>(null);
@@ -25,6 +29,10 @@ function BoardForm() {
 
     // 예약내역 모달 상태값 관리
     const [showModal, setShowModal] = useState<boolean>(false);
+
+    const apiBoardType =
+        boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
+
 
     // DTO 상태값 관리
     const [dto, setDto] = useState<BoardDto>({
@@ -37,9 +45,9 @@ function BoardForm() {
         bookingId: 0,           // 예약 ID
         checkIn: "",            // 체크인 날짜
         checkOut: "",           // 체크아웃 날짜
-        regionCode: "SEOUL",    // 지역 코드 (예시 기본값)
+        regionCode: "REGION_SEOUL",    // 지역 코드 (예시 기본값)
         regionName: "",         // 지역 이름
-        boardType: "BOARD_REVIEW",    // 게시판 타입
+        boardType: apiBoardType,    // 게시판 타입
         title: "",              // 제목
         content: "",            // 내용
         rating: 0,              // 평점 (null 대신 0으로 초기화)
@@ -107,6 +115,8 @@ function BoardForm() {
     const handleSubmit = async(e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
 
+       
+
         // 유효성 검사
         if (!dto.title.trim()) {
             alert("제목을 입력해주세요.");
@@ -116,11 +126,11 @@ function BoardForm() {
         alert("내용을 입력해주세요.");
         return;
         }
-        if (!dto.bookingId) {
+        if (boardType === "review" && !dto.bookingId) {
         alert("예약 내역을 선택해주세요.");
         return;
         }
-        if (!dto.rating) {
+        if (boardType === "review" && !dto.rating) {
         alert("별점을 선택해주세요.");
         return;
         }
@@ -130,7 +140,7 @@ function BoardForm() {
             console.log("📦 서버로 전송되는 dto:", dto);
             const res = await api.post("/v1/boards", dto);
             alert("게시글이 성공적으로 등록되었습니다.");
-            navigate("/review/${dto.boardId}");
+            navigate(`/${boardType}/${res.boardId}`);
             
 
         }catch(err) {
@@ -160,7 +170,8 @@ function BoardForm() {
                 placeholder="제목을 입력하세요.." />
         </div>
 
-        {/* 예약내역 선택 모달 */}
+        {/* 예약내역 선택 모달 - 리뷰 작성폼에만 */}
+        {boardType === "review" && (
         <div className="mb-3 d-flex align-items-center gap-2">
         <div>
             <label className="form-label mb-1">예약내역</label>
@@ -196,6 +207,7 @@ function BoardForm() {
             }}
         />
         </div>
+        )}
 
         {/* 내용 */}
         <div className="mb-2">
@@ -205,34 +217,34 @@ function BoardForm() {
                 onChange={handleContentChange} />
         </div>
 
-        {/* 별점 */}
+        {/* 별점 - 리뷰 작성폼에만 */}
+        {boardType === "review" && (
         <div className="mb-3">
-        <label className="form-label mt-2">별점</label>
-        <div className="star-rating d-flex align-items-center">
-            {[1, 2, 3, 4, 5].map((star) => (
-            <span
-                key={star}
-                onClick={() =>
-                setDto((prev) => ({
-                    ...prev,
-                    rating: star,
-                }))
-                }
-
-                style={{
-                cursor: "pointer",
-                fontSize: "2rem",
-                color: star <= (dto.rating ?? 0) ? "#f0de77ff" : "#dddddcff", // 노란색 / 회색
-                transition: "color 0.2s",
-                }}
-            >
-                ★
-            </span>
-            ))}
-        </div>
+            <label className="form-label mt-2">별점</label>
+            <div className="star-rating d-flex align-items-center">
+                {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                    key={star}
+                    onClick={() =>
+                    setDto((prev) => ({
+                        ...prev,
+                        rating: star,
+                    }))
+                    }
+                    style={{
+                    cursor: "pointer",
+                    fontSize: "2rem",
+                    color: star <= (dto.rating ?? 0) ? "#f0de77ff" : "#dddddcff", // 노란색 / 회색
+                    transition: "color 0.2s",
+                    }}
+                >★</span>
+                ))}
+            </div>
         </div>
 
+        )}
 
+        {/* 등록 버튼 */}
         <button type="submit" className="btn btn-secondary">등록</button>
 
     </form>

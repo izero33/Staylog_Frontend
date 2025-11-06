@@ -39,9 +39,9 @@ const RoomList = ({ rooms, onSelect } : RoomListProps) => {
                                     <span style={{ fontWeight: 800, fontSize: "1.2em", color: "#000" }}>
                                         {room.price.toLocaleString()}원
                                     </span>
-                                    <Button variant="dark" 
+                                    <Button  variant="dark" 
                                         onClick={(e) => { e.stopPropagation(); onSelect(room); }}
-                                        style={{ fontSize:"0.9rem", fontWeight:700}}>
+                                        style={{ fontSize:"0.9rem", fontWeight:700 }}>
                                         객실 선택
                                     </Button>
                                 </div>

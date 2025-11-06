@@ -1,10 +1,13 @@
 // src/domain/admin/pages/AdminRoomListPage.tsx
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom"; // useNavigate 훅 임포트
+import { useLocation, useNavigate, useParams } from "react-router-dom"; // useNavigate 훅 임포트
 import api from "../../../global/api";
 import { formatKST } from "../../../global/utils/date";
-import type { AdminRoomListData } from "../types/AdminRoomTypes";
+import type { AdminRoomListData, AdminRoomListResponse, AdminRoomSearchParams } from "../types/AdminRoomTypes";
+import type { CommonCodeNameList } from "../types/CommonCodeNameList";
+import type { PageResponse } from "../../../global/types/Paginationtypes";
+import Pagination from "../../../global/components/Pagination";
 
 // 상태 업데이트 API 호출 함수 (컴포넌트 외부에 정의하여 재사용)
 const updateAccommodationStatus = async (accommodationId: number, roomId: number, status: 'Y' | 'N') => {
@@ -26,14 +29,41 @@ function AdminRoomPage() {
     // 경로 변수를 숫자로 변환
     const accommodationId = Number(accommodationIdStr);
 
+    const navigate = useNavigate(); // 페이지 이동 훅
+    const location = useLocation(); // 현재 위치 훅
     const [rooms, setRooms] = useState<AdminRoomListData[]>([]);
+
+    // location.state에서 전달된 검색어 상태 초기화
+    const [searchParams, setSearchParams] = useState<AdminRoomSearchParams>(
+        location.state?.searchParams || {
+            keyword: '',
+            accommodationId: accommodationId,
+            pageNum: 1,
+            pageSize: 10
+        }
+    );
+    const [inputKeyword, setInputKeyword] = useState<string>(
+        location.state?.inputKeyword || ''
+    );
+
+    //공통 코드 상태 정의
+    const [rmTypeCodeList, setRmTypeCodeList] = useState<CommonCodeNameList[]>([]);
 
     // 전체 객실 목록 조회 (컴포넌트 마운트 시)
     useEffect(() => {
-        api.get<AdminRoomListData[]>(`/v1/admin/accommodations/${accommodationId}/rooms`)
-            .then(res => setRooms(res))
+        api.get<AdminRoomListResponse>(`/v1/admin/accommodations/${accommodationId}/rooms`, { params: searchParams })
+            .then(res => {
+                setRooms(res.rooms);
+                setPage(res.page);
+            })
             .catch(err => console.log("객실 목록 로드 실패", err));
-    }, [accommodationId]);
+
+
+        // 공통 코드: 객실 타입 목록 로드
+        api.get<CommonCodeNameList[]>("/v1/commonCode", { params: { codeId: 'ROOM_TYPE' } })
+            .then(res => setRmTypeCodeList(res))
+            .catch(err => console.log("객실 타입 로드 실패", err));
+    }, [accommodationId, searchParams]);
 
     // 상태 변경 API 호출 핸들러 (원래 값 롤백 기능 포함)
     const handleStatusChange = async (
@@ -75,12 +105,15 @@ function AdminRoomPage() {
         }
     };
 
-    //이동을 하기위한 hook
-    const navigate = useNavigate();
-
     //객실 상세 페이지 이동 핸들러
     const handleToDetailPage = (roomId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}/rooms/${roomId}`);
+        navigate(`/admin/accommodations/${accommodationId}/rooms/${roomId}`, {
+            state: {
+                searchParams,   // 현재 검색 조건
+                inputKeyword,   // 현재 검색어
+                from: location.pathname  // 이전 페이지 경로
+            }
+        });
     };
 
     //객실 등록 페이지 이동 핸들러
@@ -88,14 +121,123 @@ function AdminRoomPage() {
         navigate(`/admin/accommodations/${accommodationId}/rooms/new`);
     };
 
+    // 검색 핸들러
+    const handleSearch = () => {
+        if (!inputKeyword.trim()) {
+            alert('검색어를 입력해주세요.');
+            return;
+        }
+
+        setSearchParams(prev => ({
+            ...prev,
+            keyword: inputKeyword.trim(),
+            pageNum: 1 // 검색 시 1페이지로 이동
+        }));
+    };
+
+    // 페이지 정보 상태
+    const [page, setPage] = useState<PageResponse | null>(null);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNum: number) => {
+        setSearchParams(prev => ({
+            ...prev,
+            pageNum
+        }));
+    };
+
     return <>
         <div className="container-fluid py-3">
             <div className="d-flex justify-content-between align-items-center">
                 <h3><span className="fw-bold">{rooms[0]?.accommodationName}</span> 객실 목록</h3>
-                <button className="btn btn-outline-light text-dark mt-2" style={{ backgroundColor: '#ebebebff' }} onClick={() => handleToAddPage(accommodationId)}>
-                    <i className="bi bi-plus-lg me-2"></i>
-                    객실 등록
+                <button className="btn btn-outline-light text-dark mt-2 fw-bold" style={{ backgroundColor: '#ebebebff' }} onClick={() => handleToAddPage(accommodationId)}>
+                    <i className="bi bi-plus-lg"></i> 객실 등록
                 </button>
+            </div>
+
+            {/* 검색 필터 및 정렬 */}
+            <div className="d-flex flex-column mt-3">
+                {/* 모바일 전용 검색 필터 버튼 */}
+                <button
+                    className="btn btn-sm btn-outline-secondary d-md-none mb-3" // md 이상에서는 숨김 (d-md-none)
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#filterCollapse" // 아래 Collapse DIV의 ID와 일치
+                >
+                    검색 필터 설정 <i className="bi bi-funnel"></i>
+                </button>
+
+                {/* 필터 내용 (Collapse) */}
+                <div className="collapse d-md-flex mt-3" id="filterCollapse">
+                    {/* 상태/정렬 필터 그룹 */}
+                    <div className="gap-1 flex-wrap d-flex">
+                        <select
+                            name="rmType"
+                            className="form-select-sm border-secondary"
+                            value={searchParams.rmType || ''}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setSearchParams(prev => ({
+                                    ...prev,
+                                    rmType: value || undefined
+                                }));
+                            }}
+                        >
+                            {rmTypeCodeList.map(item => (
+                                <option key={item.codeId} value={item.codeId}>{item.codeName}</option>
+                            ))}
+                        </select>
+                        <select
+                            name="status"
+                            className="form-select-sm border-secondary"
+                            value={searchParams.deletedYn || ''}
+                            onChange={(e) => {
+                                const value = e.target.value as 'Y' | 'N' | '';
+                                setSearchParams(prev => ({
+                                    ...prev,
+                                    deletedYn: value || undefined,
+                                }));
+                            }}
+                        >
+                            <option value=''>전체</option>
+                            <option value="N">공개</option>
+                            <option value="Y">숨김</option>
+                        </select>
+                    </div>
+
+                    {/* 검색어 입력 그룹 */}
+                    <div className="ms-md-auto d-flex gap-2 flex-wrap h-75 mt-2 mt-md-0">
+                        <div className="input-group h-75">
+                            <input
+                                type="text"
+                                placeholder="숙소명 검색"
+                                className="form-control-sm border-1"
+                                value={inputKeyword}
+                                onChange={(e) => setInputKeyword(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSearch();
+                                    }
+                                }}
+                            />
+                            <button title="검색" className="btn border-secondary border-1 btn-sm" onClick={handleSearch}>
+                                <i className="bi bi-search"></i>
+                            </button>
+                            <button title="모든 검색조건 제거" className="btn border-secondary border-1 btn-sm" onClick={() => {
+                                setInputKeyword('');
+                                setSearchParams({
+                                    accommodationId: accommodationId,
+                                    pageNum: 1,
+                                    pageSize: 10
+                                });
+                            }}>
+                                <i className="bi bi-arrow-counterclockwise"></i>
+                            </button>
+
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
             <table className="table table-striped text-center mt-5">
@@ -154,6 +296,9 @@ function AdminRoomPage() {
                         )))}
                 </tbody>
             </table>
+            
+            {/* 페이지네이션 */}
+            {page && <Pagination page={page} onPageChange={handlePageChange} />}
         </div>
     </>;
 }

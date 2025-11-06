@@ -1,6 +1,6 @@
 
 import { Container, Carousel, Image } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
@@ -32,6 +32,7 @@ function AdminAccommodationDetail() {
     const [error, setError] = useState<string | null>(null);
     // 페이지 이동
     const navigate = useNavigate();
+    const location = useLocation();
 
     // 숙소 상세데이터를 가져오는 API 호출
     useEffect(() => {
@@ -96,6 +97,22 @@ function AdminAccommodationDetail() {
         navigate(`/admin/accommodations/${accommodationId}/rooms`);
     };
 
+    // 숙소 목록 페이지 이동 핸들러
+    const handleGoToList = () => {
+        if (location.state?.from) {
+            // 저장된 검색 상태와 함께 목록으로 돌아가기
+            navigate(location.state.from, {
+                state: {
+                    searchParams: location.state.searchParams,
+                    inputKeyword: location.state.inputKeyword
+                }
+            });
+        } else {
+            // state가 없으면 그냥 뒤로가기
+            navigate(-1);
+        }
+    };
+
     // 상태 업데이트 API 호출 함수 (컴포넌트 외부에 정의하여 재사용)
     const updateAccommodationStatus = async (accommodationId: number, status: 'Y' | 'N') => {
         try {
@@ -113,32 +130,47 @@ function AdminAccommodationDetail() {
     // 전체 화면 너비 사용 : Container fluid
     return <>
         <Container fluid className="p-0">
-            <h3>{data.name}
-                <span className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '0.8rem' }}>
-                    {data.deletedYn === 'N' ? '활성화' : '비활성화'}
-                </span>
+            <h3 className="justify-content-between d-flex">
+                <div>
+                    {data.name}
+                    <span className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '0.8rem' }}>
+                        {data.deletedYn === 'N' ? '활성화' : '비활성화'}
+                    </span>
+                </div>
+                <div className="">
+                    <button
+                        className="btn btn-sm btn-outline-secondary me-1"
+                        title="숙소 목록으로 돌아가기"
+                        onClick={handleGoToList} // 이동 함수 연결
+                    >
+                        <i className="bi bi-arrow-left"></i> 뒤로가기
+                    </button>
+
+                </div>
             </h3>
-            <div className="text-end text-muted">
+
+            <div className="text-muted ">
                 <span className='me-2'>등록일 : {formatKST(data.createdAt)}</span>
                 <span>수정일 : {formatKST(data.updatedAt)}</span>
             </div>
-
-            <div className="mt-3 justify-content-end d-flex gap-2">
-                <button title="수정하기" className="btn btn-sm btn-primary mb-3" onClick={() => handleGoToUpdate(data.accommodationId!)}>수정하기</button>
+            
+            <div className="justify-content-end d-flex mt-5 gap-1">
+                <button title="수정하기" className="btn btn-sm btn-primary" onClick={() => handleGoToUpdate(data.accommodationId!)}>수정하기</button>
                 {data.deletedYn === 'N' ? (
-                    <button title="비활성화하기" className="btn btn-sm btn-danger text-white mb-3" onClick={() => updateAccommodationStatus(data.accommodationId!, 'Y')}>비활성화하기</button>
+                    <button title="비활성화하기" className="btn btn-sm btn-danger text-white" onClick={() => updateAccommodationStatus(data.accommodationId!, 'Y')}>비활성화하기</button>
                 ) : (
-                    <button title="활성화하기" className="btn btn-sm btn-success mb-3" onClick={() => updateAccommodationStatus(data.accommodationId!, 'N')}>활성화하기</button>
+                    <button title="활성화하기" className="btn btn-sm btn-success" onClick={() => updateAccommodationStatus(data.accommodationId!, 'N')}>활성화하기</button>
                 )}
                 <button
-                    className="btn btn-sm btn-outline-primary mb-3"
+                    className="btn btn-sm btn-outline-primary"
                     title="객실 목록 보기"
                     onClick={() => handleGoToRooms(data.accommodationId!)} // 이동 함수 연결
-                >객실목록
-                    <i className="bi bi-list ms-1"></i> </button>
+                >
+                    객실 목록 <i className="bi bi-list"></i>
+                </button>
             </div>
 
-            <table className="table table-bordered mt-5" style={{ tableLayout: 'fixed' }}>
+            <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed' }}>
                 <colgroup>
                     <col style={{ width: '15%' }} />
                     <col style={{ width: '85%' }} />

@@ -1,11 +1,12 @@
 
 import { Container } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminBoard } from '../types/AdminBoardTypes';
+import AdminReservationDetailModal from '../components/AdminReservationDetailModal';
 
 /*
     Carousel : 게시글 대표 이미지
@@ -24,8 +25,14 @@ function AdminAccommodationDetail() {
     const [loading, setLoading] = useState(true);
     // 에러 메세지
     const [error, setError] = useState<string | null>(null);
+
+    // 상세 모달 상태 관리
+    const [detailOpen, setDetailOpen] = useState(false);
+    const [targetBookingId, setTargetBookingId] = useState<number | null>(null);
+
     // 페이지 이동
     const navigate = useNavigate();
+    const location = useLocation();
 
     // 게시글 상세데이터를 가져오는 API 호출
     useEffect(() => {
@@ -95,8 +102,30 @@ function AdminAccommodationDetail() {
     };
 
     // 게시글 목록 페이지 이동 핸들러
-    const handleGoToBoardList = () => {
-        navigate(-1);
+    const handleGoToList = () => {
+        if (location.state?.from) {
+            // 저장된 검색 상태와 함께 목록으로 돌아가기
+            navigate(location.state.from, {
+                state: {
+                    searchParams: location.state.searchParams,
+                    inputKeyword: location.state.inputKeyword
+                }
+            });
+        } else {
+            // state가 없으면 그냥 뒤로가기
+            navigate(-1);
+        }
+    };
+
+    // 예약 상세 모달 * 예약번호 클릭 → 상세 모달 열기
+    const openDetail = (bookingId: number) => {
+        setTargetBookingId(bookingId);
+        setDetailOpen(true);
+    };
+    // 예약 상세 모달 닫기
+    const closeDetail = () => {
+        setDetailOpen(false);
+        setTargetBookingId(null);
     };
 
     // 전체 화면 너비 사용 : Container fluid
@@ -121,9 +150,10 @@ function AdminAccommodationDetail() {
                 <button
                     className="btn btn-sm btn-outline-primary mb-3"
                     title="게시글 목록으로 이동"
-                    onClick={handleGoToBoardList} // 이동 함수 연결
-                >목록으로
-                    <i className="bi bi-list ms-1"></i> </button>
+                    onClick={handleGoToList} // 이동 함수 연결
+                >
+                    <i className="bi bi-arrow-left ms-1"></i> 게시글 목록
+                </button>
             </div>
 
             <table className="table table-bordered mt-5" style={{ tableLayout: 'fixed' }}>
@@ -146,7 +176,14 @@ function AdminAccommodationDetail() {
                     </tr>
                     {data.bookingId !== 0 && (<tr>
                         <th className="bg-light text-center">예약번호</th>
-                        <td>{data.bookingId}</td>
+                        <td>
+                            <button
+                                type="button"
+                                className="btn btn-link p-0 text-decoration-none"
+                                onClick={() => openDetail(data.bookingId)}
+                                title="상세 보기"
+                            >{data.bookingId}</button>
+                        </td>
                     </tr>)}
 
                     <tr>
@@ -182,7 +219,12 @@ function AdminAccommodationDetail() {
                     </tr>
                 </tbody>
             </table>
-            {data.content}
+            {/* 상세 모달 */}
+            <AdminReservationDetailModal
+                open={detailOpen}
+                bookingId={targetBookingId}
+                onClose={closeDetail}
+            />
         </Container >
     </>
 }

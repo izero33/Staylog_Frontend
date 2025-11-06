@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import api from '../api';
 import { Flipper, Flipped } from 'react-flip-toolkit';
 import '../css/ImageUploaderCustom.css'; // 드롭존을 위한 커스텀 CSS
+import { imageUploadApi } from '../api/imageApi';
 
 // 파일 객체 구조 정의
 export interface DroppedFile {
@@ -42,7 +42,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onFilesChange, clearTrigg
 
     setSelectedFiles(prev => [...prev, ...newFiles]);
   };
-
+  // --- 선택한 이미지 삭제 --- //
   const removeFile = (id: string) => {
     const fileToRemove = selectedFiles.find(f => f.id === id);
     if (fileToRemove) {
@@ -106,35 +106,35 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onFilesChange, clearTrigg
   const handleUpload = useCallback(async () => {
     if (selectedFiles.length === 0) {
       setError('업로드할 파일이 없습니다.');
+      onUploadError?.('업로드할 파일이 없습니다.');
       return;
     }
     if (!targetType || !targetId) {
-      setError('Target Type 또는 Target ID가 지정되지 않았습니다.');
+      const errorMsg = 'Target Type 또는 Target ID가 지정되지 않았습니다.';
+      setError(errorMsg);
+      onUploadError?.(errorMsg);
       return;
     }
 
     setIsUploading(true);
     setError(null);
 
-    const formData = new FormData();
-    selectedFiles.forEach((file, index) => {
-      formData.append('files', file.file);
-      formData.append(`imageOrder[${index}]`, (index + 1).toString()); // 1부터 시작하는 순서
-    });
-    formData.append('targetType', targetType);
-    formData.append('targetId', targetId);
+    // 실제 File 객체들의 배열을 추출
+    const filesToUpload = selectedFiles.map(item => item.file);
 
     try {
-      const res = await api.post('/v1/images/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      // 중앙 Api 함수를 호출하여 업로드 실행
+      const res = await imageUploadApi({
+        imgs: filesToUpload,
+        targetType: targetType,
+        targetId: targetId
       });
-      console.log('Upload successful:', res);
-      onUploadComplete?.(res); // 응답 데이터에 업로드된 이미지 정보가 포함되어 있다고 가정
+
+      console.log('업로드 성공: ', res);
+      onUploadComplete?.(res);  // 성공 콜백 호출
       clearAllFiles(); // 업로드 성공 후 파일 목록 초기화
     } catch (err: any) {
-      console.error('Upload failed:', err);
+      console.error('업로드 실패:', err);
       const errorMessage = err.response?.message || '이미지 업로드에 실패했습니다.';
       setError(errorMessage);
       onUploadError?.(errorMessage);

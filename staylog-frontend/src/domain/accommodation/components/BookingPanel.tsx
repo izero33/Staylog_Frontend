@@ -51,7 +51,7 @@ function BookingPanel({
   const [monthsShown, setMonthsShown] = useState(2);
 
   // 인원 수 상태 (성인, 어린이, 유아 순서)
-  const [adultCount, setAdultCount] = useState(2);
+  const [adultCount, setAdultCount] = useState(1);
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
 

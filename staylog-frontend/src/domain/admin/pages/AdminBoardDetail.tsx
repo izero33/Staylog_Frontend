@@ -1,6 +1,6 @@
 
 import { Container } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
@@ -32,6 +32,7 @@ function AdminAccommodationDetail() {
 
     // 페이지 이동
     const navigate = useNavigate();
+    const location = useLocation();
 
     // 게시글 상세데이터를 가져오는 API 호출
     useEffect(() => {
@@ -101,8 +102,19 @@ function AdminAccommodationDetail() {
     };
 
     // 게시글 목록 페이지 이동 핸들러
-    const handleGoToBoardList = () => {
-        navigate(-1);
+    const handleGoToList = () => {
+        if (location.state?.from) {
+            // 저장된 검색 상태와 함께 목록으로 돌아가기
+            navigate(location.state.from, {
+                state: {
+                    searchParams: location.state.searchParams,
+                    inputKeyword: location.state.inputKeyword
+                }
+            });
+        } else {
+            // state가 없으면 그냥 뒤로가기
+            navigate(-1);
+        }
     };
 
     // 예약 상세 모달 * 예약번호 클릭 → 상세 모달 열기
@@ -138,9 +150,10 @@ function AdminAccommodationDetail() {
                 <button
                     className="btn btn-sm btn-outline-primary mb-3"
                     title="게시글 목록으로 이동"
-                    onClick={handleGoToBoardList} // 이동 함수 연결
-                >목록으로
-                    <i className="bi bi-list ms-1"></i> </button>
+                    onClick={handleGoToList} // 이동 함수 연결
+                >
+                    <i className="bi bi-arrow-left ms-1"></i> 게시글 목록
+                </button>
             </div>
 
             <table className="table table-bordered mt-5" style={{ tableLayout: 'fixed' }}>

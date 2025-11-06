@@ -27,7 +27,6 @@ import MyPage from "../../domain/mypage/pages";
 import MemberInfoSection from "../../domain/mypage/pages/MemberInfoSection";
 import ReservationSection from "../../domain/mypage/pages/ReservationSection";
 import ReviewSection from "../../domain/mypage/pages/ReviewSection";
-import InquirySection from "../../domain/mypage/pages/InquirySection";
 import TestForm from "../pages/TestForm"; // Import TestForm
 import TestLoadImage from "../pages/TestLoadImage";
 import AdminBoardPage from "../../domain/admin/pages/AdminBoardPage";
@@ -80,7 +79,6 @@ const mypageRoute: RouteObject = {
         { path: "member", element: <MemberInfoSection /> },
         { path: "reservations", element: <ReservationSection /> },
         { path: "reviews", element: <ReviewSection /> },
-        { path: "inquiries", element: <InquirySection /> },
     ],
 };
 

@@ -3,6 +3,9 @@ import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux"; // Redux 디스패치 훅 import
 import { logout } from "../../domain/auth/api"; // 로그아웃 API 함수 import
+import type { ModalMode } from "../types";
+import Modal from "./Modal";
+import { useModal } from "../hooks/useModal";
 
 interface MypageDropdownProps {
   onClose: () => void; // Navbar.tsx 에서 넘겨준 onClose 받는다.
@@ -51,7 +54,12 @@ function MypageDropdown({ onClose }: MypageDropdownProps) {
         onClose();
     }; 
 
+    // 모달 커스텀훅 사용
+    const {isModalOpen, modalMode, openModal, closeModal} = useModal<ModalMode>('none')
+
+
     return (
+        <>
         <Dropdown align="end" onSelect={handleSelect}>
         {/* 아이콘이 토글 역할을 하도록 만든다 */}
         <Dropdown.Toggle
@@ -71,11 +79,20 @@ function MypageDropdown({ onClose }: MypageDropdownProps) {
             <Dropdown.Item eventKey="reservations">예약 정보</Dropdown.Item>
             <Dropdown.Item eventKey="reviews">리뷰 내역</Dropdown.Item>
             <Dropdown.Item eventKey="inquiries">문의 내역</Dropdown.Item>
+            <Dropdown.Item onClick={() => openModal('coupon')}>내 쿠폰함</Dropdown.Item>
 
             <Dropdown.Divider />
             <Dropdown.Item eventKey="logout" className="text-danger text-center fw-semibold">로그아웃</Dropdown.Item>
         </Dropdown.Menu>
         </Dropdown>
+
+        {isModalOpen && <Modal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            mode={modalMode} />
+        }
+
+        </>
     );
 }
 

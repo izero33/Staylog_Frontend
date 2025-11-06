@@ -13,11 +13,13 @@ function BoardDetail() {
     // 게시글 카테고리, 게시글 번호
     const { boardType, boardId } = useParams<{ boardType: string; boardId: string }>();
 
+    // USER 상태값 관리
+    const userId = useGetUserIdFromToken();
 
     // DTO 상태값 관리
     const [dto, setDto] = useState<BoardDto | null>(null);
 
-    
+
 
 
     const navigate = useNavigate();
@@ -30,8 +32,10 @@ function BoardDetail() {
                 
                 const apiBoardType =
                     boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
-                const res = await api.get(`/v1/boards/${boardId}`);
+                const res = await api.get(`/v1/boards/${boardId}`, {params: userId ? {userId : Number(userId)} : {} });
                 console.log("📦 불러온 게시글 상세:", res);
+                console.log("userId:", userId);
+                console.log("요청 URL", `/v1/boards/${boardId}`, {params: userId ? {userId : Number(userId)} : {} });
                 
                 setDto(res);
 
@@ -63,8 +67,7 @@ function BoardDetail() {
 
 
 
-    // USER 상태값 관리
-    const userId = useGetUserIdFromToken();
+    
     
     // 좋아요 상태값 관리     
     const [liked, setLiked] = useState<boolean>(false);

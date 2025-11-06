@@ -30,6 +30,10 @@ function BoardForm() {
     // 예약내역 모달 상태값 관리
     const [showModal, setShowModal] = useState<boolean>(false);
 
+    const apiBoardType =
+        boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
+
+
     // DTO 상태값 관리
     const [dto, setDto] = useState<BoardDto>({
         boardId: 0,             // 기본값 (신규 작성 시 0 또는 undefined)
@@ -41,9 +45,9 @@ function BoardForm() {
         bookingId: 0,           // 예약 ID
         checkIn: "",            // 체크인 날짜
         checkOut: "",           // 체크아웃 날짜
-        regionCode: "SEOUL",    // 지역 코드 (예시 기본값)
+        regionCode: "REGION_SEOUL",    // 지역 코드 (예시 기본값)
         regionName: "",         // 지역 이름
-        boardType: "BOARD_REVIEW",    // 게시판 타입
+        boardType: apiBoardType,    // 게시판 타입
         title: "",              // 제목
         content: "",            // 내용
         rating: 0,              // 평점 (null 대신 0으로 초기화)
@@ -111,6 +115,8 @@ function BoardForm() {
     const handleSubmit = async(e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
 
+       
+
         // 유효성 검사
         if (!dto.title.trim()) {
             alert("제목을 입력해주세요.");
@@ -120,11 +126,11 @@ function BoardForm() {
         alert("내용을 입력해주세요.");
         return;
         }
-        if (!dto.bookingId) {
+        if (boardType === "review" && !dto.bookingId) {
         alert("예약 내역을 선택해주세요.");
         return;
         }
-        if (!dto.rating) {
+        if (boardType === "review" && !dto.rating) {
         alert("별점을 선택해주세요.");
         return;
         }
@@ -134,7 +140,7 @@ function BoardForm() {
             console.log("📦 서버로 전송되는 dto:", dto);
             const res = await api.post("/v1/boards", dto);
             alert("게시글이 성공적으로 등록되었습니다.");
-            navigate(`/review/${res.boardId}`);
+            navigate(`/${boardType}/${res.boardId}`);
             
 
         }catch(err) {

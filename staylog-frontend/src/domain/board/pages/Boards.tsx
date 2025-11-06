@@ -30,15 +30,15 @@ function Boards() {
 
     const [pageInfo, setPageInfo] = useState({
       pageNum: 1,
-      startPage: 1,
-      endPage: 1,
-      totalPage: 1,
+      // startPage: 1,
+      // endPage: 1,
+      // totalPage: 1,
       pageSize: boardType === "journal" ? 9 : 10
     });
 
 
     // USER 상태값 관리
-    const UserId = useGetUserIdFromToken();
+    const userId = useGetUserIdFromToken();
 
     const navigate = useNavigate();
 
@@ -54,14 +54,15 @@ function Boards() {
           const apiBoardType =
             boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
 
-          const res = await api.get("/v1/boards", {
-              params: {
-                  boardType: apiBoardType,                         
-                  pageNum,
-                  pageSize: 10,
-                  regionCodes: validRegions,
-              }
+          const res = await api.get(`/v1/boards`, {
+            params: {
+              boardType: apiBoardType,      // BOARD_JOURNAL or BOARD_REVIEW
+              pageNum,                      // 현재 페이지
+              pageSize: pageInfo.pageSize,  // 페이지 크기
+              regionCodes: validRegions,    // 지역 필터 (배열)
+            },
           });
+
           console.log("➡️ 요청 파라미터:", { pageNum, validRegions });
           
           // SucessResponse.of(code, message, data) 형태로 -> res
@@ -89,18 +90,23 @@ function Boards() {
 
     
     return <>
+
     {/* 상단 제목 영역 */}
-    {boardType === "journal" &&(
+    <div className="mt-4">
+      {boardType === "journal" &&(
+        
+        <h2 className="text-center fw-bold p-4">저널 게시판</h2>
+
+      )}
+
+      {boardType === "review" &&(
       
-      <h2 className="text-center fw-bold p-4">저널 게시판</h2>
+        <h2 className="text-center fw-bold p-4">리뷰 게시판</h2>
 
-    )}
+      )}
 
-    {boardType === "review" &&(
-    
-      <h2 className="text-center fw-bold p-4">리뷰 게시판</h2>
+    </div>
 
-    )}
       <Container className="mt-4">
         <Row>
           {/* 좌측 지역 코드 */}
@@ -115,17 +121,27 @@ function Boards() {
           {/* 메인 게시글 목록 영역 */}
           
           <Col md={10}>
-            {/* 게시글 등록 버튼 */}
-            {UserId &&              
-              <div className="d-flex justify-content-end mb-3">
-                <Button as={NavLink as any} to={`/boardForm/${boardType}`} 
-                  variant="secondary" 
-                  className="review-register-button">
-                  {boardType === "journal" ? "저널 등록" : "리뷰 등록"}
-                </Button>
-              </div>
-            }
-            
+          <div className="d-flex justify-content-end mb-3">
+            {/* 리뷰 게시판은 로그인한 누구나 등록 가능 */}
+            {boardType === "review" && userId && (
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate(`/form/${boardType}`)}
+              >
+                리뷰 등록
+              </button>
+            )}
+
+            {/* 저널 게시판은 VIP만 등록 가능 */}
+            {boardType === "journal" && (
+              <button
+                className="btn btn-success"
+                onClick={() => navigate(`/form/${boardType}`)}
+              >
+                저널 등록
+              </button>
+            )}
+          </div>  
             
             {/* 리뷰 게시글 목록 테이블 */}
             {boardType === "review" &&(

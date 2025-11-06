@@ -39,7 +39,7 @@ const routes: RouteObject[] = [
   { path: "/", element: <Home /> },
   { path: "/login", element: <LoginForm /> },
   { path: "/:boardType", element: <Boards /> },
-  { path: "/boardForm/:boardType", element: <BoardForm /> },
+  { path: "/form/:boardType", element: <BoardForm /> },
   { path: "/:boardType/:boardId", element: <BoardDetail /> },
   { path: "/signup", element: <SignupForm /> },
   { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지

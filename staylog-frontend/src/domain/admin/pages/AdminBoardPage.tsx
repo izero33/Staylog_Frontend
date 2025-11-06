@@ -1,16 +1,17 @@
 // src/domain/admin/pages/AdminBoardListPage.tsx
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../../global/api";
 import { formatKST } from "../../../global/utils/date";
-import type { 
-    AdminBoardList, 
-    AdminBoardSearchParams, 
-    AdminBoardListResponse 
+import type {
+    AdminBoardList,
+    AdminBoardSearchParams,
+    AdminBoardListResponse
 } from "../types/AdminBoardTypes";
 import '../css/AdminTable.css';
 import type { PageResponse } from "../../../global/types/Paginationtypes";
+import Pagination from "../../../global/components/Pagination";
 
 // 상태 업데이트 API 호출 함수
 const updateBoardStatus = async (boardId: number, status: 'Y' | 'N') => {
@@ -27,14 +28,20 @@ const updateBoardStatus = async (boardId: number, status: 'Y' | 'N') => {
 
 function AdminBoardPage() {
     const navigate = useNavigate(); // 페이지 이동 훅
+    const location = useLocation(); // 현재 위치 훅
     const [boards, setBoards] = useState<AdminBoardList[]>([]); // 게시글 목록 상태
-    const [page, setPage] = useState<PageResponse | null>(null); // 페이지 정보 상태
-    const [inputKeyword, setInputKeyword] = useState<string>(''); // 검색어 입력 상태
-    const [searchParams, setSearchParams] = useState<AdminBoardSearchParams>({
-        boardType: 'BOARD_REVIEW',
-        pageNum: 1,
-        pageSize: 10
-    });
+
+    // location.state에서 검색어 복원
+    const [inputKeyword, setInputKeyword] = useState<string>(
+        location.state?.inputKeyword || ''
+    );
+    const [searchParams, setSearchParams] = useState<AdminBoardSearchParams>(
+        location.state?.searchParams || {
+            boardType: 'BOARD_REVIEW',
+            pageNum: 1,
+            pageSize: 10
+        }
+    );
 
     // 게시글 목록 조회
     useEffect(() => {
@@ -100,17 +107,15 @@ function AdminBoardPage() {
         }));
     };
 
-    // 페이지 변경 핸들러
-    const handlePageChange = (pageNum: number) => {
-        setSearchParams(prev => ({
-            ...prev,
-            pageNum
-        }));
-    };
-
     // 상세 페이지 이동
     const handleToDetailPage = (boardId: number) => {
-        navigate(`/admin/boards/${boardId}`);
+        navigate(`/admin/boards/${boardId}`, {
+            state: {
+                searchParams,   // 현재 검색 조건
+                inputKeyword,   // 현재 검색어
+                from: location.pathname  // 이전 페이지 경로
+            }
+        });
     };
 
     // 게시판 타입 변경
@@ -121,6 +126,17 @@ function AdminBoardPage() {
             pageSize: 10
         });
         setInputKeyword('');
+    };
+
+    // 페이지 정보 상태
+    const [page, setPage] = useState<PageResponse | null>(null);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNum: number) => {
+        setSearchParams(prev => ({
+            ...prev,
+            pageNum
+        }));
     };
 
     return (
@@ -139,83 +155,117 @@ function AdminBoardPage() {
 
             <h4>{searchParams.boardType === 'BOARD_REVIEW' ? '리뷰 게시판 관리' : '저널 게시판 관리'}</h4>
 
-            {/* 검색 필터 */}
-            <div className="d-flex mt-3">
-                <div className="d-flex gap-2">
-                    <select 
-                        name="searchType" 
-                        className="form-select-sm border-light" 
-                        onChange={(e) => {
-                            const value = e.target.value as 'accommodationName' | 'userNickName' | undefined;
-                            setSearchParams(prev => ({
-                                ...prev,
-                                searchType: value || undefined
-                            }));
-                        }}
-                    >
-                        <option value=''>검색 기준</option>
-                        <option value="accommodationName">숙소명</option>
-                        <option value="userNickName">작성자</option>
-                    </select>
+            {/* 검색 필터 및 정렬 */}
+            <div className="d-flex flex-column mt-3">
 
-                    <div className="input-group">
-                        <input 
-                            type="text" 
-                            placeholder="검색어 입력" 
-                            className="form-control-sm border-1"
-                            value={inputKeyword}
-                            onChange={(e) => setInputKeyword(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleSearch();
-                                }
-                            }} 
-                        />
-                        <button className="btn border-secondary border-1 btn-sm" onClick={handleSearch}>
-                            <i className="bi bi-search"></i>
-                        </button>
+                {/* 모바일 전용 검색 필터 버튼 */}
+                <button
+                    className="btn btn-sm btn-outline-secondary d-md-none mb-3" // md 이상에서는 숨김 (d-md-none)
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#filterCollapse" // 아래 Collapse DIV의 ID와 일치
+                >
+                    검색 필터 설정 <i className="bi bi-funnel"></i>
+                </button>
+
+                {/* 필터 내용 (Collapse) */}
+                <div className="collapse d-md-flex" id="filterCollapse">
+
+                    {/* 상태/정렬 필터 그룹 */}
+                    <div className="gap-1 flex-wrap d-flex gap-2 flex-wrap d-flex align-items-center">
+                        <select
+                            name="status"
+                            className="form-select-sm border-secondary"
+                            value={searchParams.deleted || ''}
+                            onChange={(e) => {
+                                const value = e.target.value as 'Y' | 'N' | '';
+                                setSearchParams(prev => ({
+                                    ...prev,
+                                    deleted: value || null,
+                                    pageNum: 1
+                                }));
+                            }}
+                        >
+                            <option value=''>전체</option>
+                            <option value="N">공개</option>
+                            <option value="Y">숨김</option>
+                        </select>
+
+                        <select
+                            className="form-select-sm"
+                            name="orderBy"
+                            onChange={(e) => {
+                                const [sortBy, sortOrder] = e.target.value.split('_') as ['createdAt' | 'viewsCount' | 'rating' | 'likes', 'ASC' | 'DESC'];
+                                setSearchParams(prev => ({
+                                    ...prev,
+                                    sortBy,
+                                    sortOrder,
+                                    pageNum: 1
+                                }));
+                            }}
+                        >
+                            <option value="createdAt_DESC">최신등록순</option>
+                            <option value="createdAt_ASC">오래된순</option>
+                            {searchParams.boardType === 'BOARD_REVIEW' && (
+                                <>
+                                    <option value="rating_DESC">평점 높은순</option>
+                                    <option value="rating_ASC">평점 낮은순</option>
+                                </>
+                            )}
+                            <option value="viewsCount_DESC">조회수 높은순</option>
+                            <option value="viewsCount_ASC">조회수 낮은순</option>
+                            <option value="likes_DESC">좋아요 많은순</option>
+                            <option value="likes_ASC">좋아요 적은순</option>
+                        </select>
                     </div>
-                </div>
 
-                <div className="ms-auto d-flex gap-2">
-                    <select 
-                        name="status" 
-                        className="form-select-sm border-secondary" 
-                        onChange={(e) => {
-                            const value = e.target.value as 'Y' | 'N' | '';
-                            setSearchParams(prev => ({
-                                ...prev,
-                                deleted: value || null,
-                                pageNum: 1
-                            }));
-                        }}
-                    >
-                        <option value=''>전체</option>
-                        <option value="N">공개</option>
-                        <option value="Y">숨김</option>
-                    </select>
+                    {/* 검색 기준 및 입력 그룹 */}
+                    <div className="ms-md-auto d-flex gap-2 mt-2 mt-md-0 align-items-center">
+                        <select
+                            name="searchType"
+                            className="form-select form-select-sm border-light w-auto"
+                            value={searchParams.searchType || ''}
+                            onChange={(e) => {
+                                const value = e.target.value as 'accommodationName' | 'userNickName' | undefined;
+                                setSearchParams(prev => ({
+                                    ...prev,
+                                    searchType: value || undefined
+                                }));
+                            }}
+                        >
+                            <option value=''>검색 기준</option>
+                            <option value="accommodationName">숙소명</option>
+                            <option value="userNickName">작성자</option>
+                        </select>
 
-                    <select 
-                        name="orderBy" 
-                        onChange={(e) => {
-                            const [sortBy, sortOrder] = e.target.value.split('_') as ['createdAt' | 'viewsCount' | 'rating' | 'likes', 'ASC' | 'DESC'];
-                            setSearchParams(prev => ({
-                                ...prev,
-                                sortBy,
-                                sortOrder,
-                                pageNum: 1
-                            }));
-                        }}
-                    >
-                        <option value="createdAt_DESC">최신등록순</option>
-                        <option value="createdAt_ASC">오래된순</option>
-                        <option value="rating_DESC">평점 높은순</option>
-                        <option value="rating_ASC">평점 낮은순</option>
-                        <option value="viewsCount_DESC">조회수 높은순</option>
-                        <option value="viewsCount_ASC">조회수 낮은순</option>
-                        <option value="likes_DESC">좋아요 많은순</option>
-                        <option value="likes_ASC">좋아요 적은순</option>
-                    </select>
+                        <div className="input-group input-group-sm">
+                            <input
+                                type="text"
+                                placeholder="검색어 입력"
+                                className="form-control-sm border-1"
+                                value={inputKeyword}
+                                onChange={(e) => setInputKeyword(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSearch();
+                                    }
+                                }}
+                            />
+                            <button title="검색" className="btn border-secondary border-1 btn-sm" onClick={handleSearch}>
+                                <i className="bi bi-search"></i>
+                            </button>
+                            <button title="모든 검색조건 제거" className="btn border-secondary border-1 btn-sm" onClick={() => {
+                                setInputKeyword('');
+                                setSearchParams({
+                                    boardType: searchParams.boardType,
+                                    pageNum: 1,
+                                    pageSize: 10
+                                });
+                            }}>
+                                <i className="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -231,7 +281,7 @@ function AdminBoardPage() {
                 <thead>
                     <tr>
                         <th style={{ width: '6%' }}>번호</th>
-                        <th style={{ width: '12%' }}>숙소명</th>
+                        <th>숙소명</th>
                         <th>제목</th>
                         <th style={{ width: '12%' }}>작성자</th>
                         <th>반응지표</th>
@@ -295,51 +345,7 @@ function AdminBoardPage() {
             </table>
 
             {/* 페이지네이션 */}
-            {page && page.totalPage > 1 && (
-                <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-center">
-                        {/* 이전 버튼 */}
-                        <li className={`page-item ${page.startPage === 1 ? 'disabled' : ''}`}>
-                            <button
-                                className="page-link"
-                                onClick={() => handlePageChange(page.startPage - 1)}
-                                disabled={page.startPage === 1}
-                            >
-                                이전
-                            </button>
-                        </li>
-
-                        {/* 페이지 번호 */}
-                        {Array.from(
-                            { length: page.endPage - page.startPage + 1 },
-                            (_, i) => page.startPage + i
-                        ).map(num => (
-                            <li 
-                                key={num} 
-                                className={`page-item ${num === page.pageNum ? 'active' : ''}`}
-                            >
-                                <button
-                                    className="page-link"
-                                    onClick={() => handlePageChange(num)}
-                                >
-                                    {num}
-                                </button>
-                            </li>
-                        ))}
-
-                        {/* 다음 버튼 */}
-                        <li className={`page-item ${page.endPage >= page.totalPage ? 'disabled' : ''}`}>
-                            <button
-                                className="page-link"
-                                onClick={() => handlePageChange(page.endPage + 1)}
-                                disabled={page.endPage >= page.totalPage}
-                            >
-                                다음
-                            </button>
-                        </li>
-                    </ul>
-                </nav>
-            )}
+            {page && <Pagination page={page} onPageChange={handlePageChange} />}
         </div>
     );
 }

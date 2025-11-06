@@ -1,3 +1,5 @@
+import type { PageRequest, PageResponse } from "../../../global/types/Paginationtypes";
+
 export interface AdminAccommodation {
     accommodationId?: number;
     name: string;
@@ -16,11 +18,16 @@ export interface AdminAccommodation {
     updatedAt?: string;
 }
 
-export interface AdminAccommodationSearchParams {
+export interface AdminAccommodationSearchParams extends PageRequest {
     regionCode?: string;
     acType?: string;
     keyword?: string;
     deletedYn?: 'Y' | 'N';
+}
+
+export interface AdminAccommodationListResponse {
+    accommodations: AdminAccommodationListData[];
+    page: PageResponse;
 }
 
 export interface AdminAccommodationListData {

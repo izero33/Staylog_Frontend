@@ -2,7 +2,7 @@
 import { useMemo, useRef, useCallback } from 'react';
 import ReactQuill from 'react-quill-new';
 import "../css/quill.custom.css";
-import { imageApi } from '../api/imageApi';
+import { imageUploadApi } from '../api/imageApi';
 import { handleImageUpload } from '../utils/imageHandler';
 
 interface ReactQuillEditorProps {
@@ -10,7 +10,7 @@ interface ReactQuillEditorProps {
   value: string;
   onChange: (value: string) => void;
   targetType: string;   // 예: "BOARD" | "PROFILE" | "TEMP"
-  targetId: number;     // 게시글/사용자 ID, 없으면 TEMP=0 식으로
+  targetId: string;     
 }
 
 function ReactQuillEditor({ style, value, onChange, targetType, targetId }: ReactQuillEditorProps) {
@@ -36,9 +36,9 @@ function ReactQuillEditor({ style, value, onChange, targetType, targetId }: Reac
       const index = editor.getSelection()?.index ?? editor.getLength();
 
       try {
-        // ✅ 백 스펙대로 호출
-        const resp = await imageApi({ img: file, targetType, targetId });
-        const imgUrl = resp.data?.[0]?.imageUrl; // 배열 첫 항목 사용
+        // 백 스펙대로 호출
+        const resp = await imageUploadApi({ imgs: file, targetType, targetId });
+        const imgUrl = resp[0]?.imageUrl; // 배열 첫 항목 사용
 
         if (!imgUrl) {
           console.error("응답에 imageUrl 없음:", resp);

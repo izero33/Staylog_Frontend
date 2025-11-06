@@ -3,37 +3,58 @@
 //분리해서 게시판, 프로필에서 사용가능
 // src/global/api/imageApi.ts
 // src/global/api/imageApi.ts
-import axios from "axios";
+import api from ".";
 
 type UploadParams = {
-  img: File;
+  // 단일 파일 또는 파일 배열 모두 받을 수 있게
+  imgs: File | File[];
   targetType: string; // 예: "BOARD" | "PROFILE" | "TEMP"
-  targetId: number;   // 게시글 ID 또는 임시 ID(0/음수)
+  targetId: string;   // 게시글 ID 또는 임시 ID(0/음수)
 };
 
-// SuccessResponse<List<ImageServeDto>>
-type SuccessResponse<T> = { code: string; message: string; data: T };
-type ImageServeDto = {
+type UpdateParams = {
+  img: File;
   imageId: number;
-  imageUrl: string;   // 백엔드가 "/images/..." 로 내려줌
+}
+
+type ImageResponse = {
+  imageId: number;
   targetType: string;
-  targetId: number;
+  targetId: string;
   displayOrder: number;
-};
+  imageUrl: string;
+}
 
-export async function imageApi({ img, targetType, targetId }: UploadParams) {
-  if (!targetType || targetId === undefined || targetId === null) {
-    throw new Error("imageApi: targetType/targetId는 필수입니다.");
+export async function imageUploadApi({ imgs, targetType, targetId }: UploadParams) {
+  const formData = new FormData();
+
+  if (Array.isArray(imgs)) {
+    imgs.forEach(img => formData.append("files", img));
+  } else {
+    formData.append("files", imgs);
   }
-  const form = new FormData();
-  form.append("files", img);                 // ✅ 백엔드가 files(복수)로 받음
-  form.append("targetType", targetType);
-  form.append("targetId", String(targetId));
+  formData.append("targetType", targetType);
+  formData.append("targetId", targetId);
 
-  const { data } = await axios.post<SuccessResponse<ImageServeDto[]>>(
-    "/api/v1/images/upload",
-    form,
-    { headers: { "Content-Type": "multipart/form-data" }, withCredentials: true }
+  const imageRes = await api.post<ImageResponse[]>("/v1/images/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    withCredentials: true
+  }
   );
-  return data; // { code, message, data:[{ imageUrl, ...}] }
+  console.log(imageRes);
+  
+  return imageRes;
+}
+
+export async function imageUpdateApi({ img, imageId }: UpdateParams) {
+  const formData = new FormData();
+  formData.append("files", img);
+  formData.append("imageId", String(imageId));
+
+  const imageRes = await api.patch<ImageResponse[]>("/v1/image/update", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    withCredentials: true
+  }
+  );
+  return imageRes;
 }

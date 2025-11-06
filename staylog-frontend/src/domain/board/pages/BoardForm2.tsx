@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import api from "../../../global/api"; // baseURL이 서버(9090)로 또는 Vite proxy 사용
 
 function BoardForm2() {
-  const [targetId, setTargetId] = useState<number | null>(null);
+  const [targetId, setTargetId] = useState<string | null>(null);
   const [content, setContent] = useState("");
   const targetType = "BOARD";
 
@@ -13,7 +13,7 @@ function BoardForm2() {
       try {
         const res = await api.post( "v1/images/imageId/draft" );
         console.log("boardId(targetId):", res);
-        if (typeof res !== "number") throw new Error("invalid id");
+        if (typeof res !== "string") throw new Error("invalid id");
         setTargetId(res); // 숫자만 저장
       } catch (err) {
         console.error("boardId 요청 실패:", err);

@@ -12,6 +12,9 @@ type Props = {
 // 예약 상세 데이터 타입 정의 
 type ReservationDetail = {
   bookingId: number;
+  /** ✅ 추가: 예약번호 */
+  bookingNum: string | null;
+
   userName: string | null;
   guestName: string | null;
   phone: string | null;
@@ -24,7 +27,17 @@ type ReservationDetail = {
   checkOut: string;    // 체크아웃
 
   status: string;      // PENDING | CONFIRMED | CANCELED | COMPLETED ...
+
+  /** ✅ 추가: 인원 관련 */
+  adults: number | null;
+  children: number | null;
+  infants: number | null;
+  totalGuestCount: number | null;
+
+  /** ✅ 결제 금액(서버가 amount 또는 price를 줄 수 있어 둘 다 고려) */
+  amount: number | null;
   price: number | null;
+
   paymentMethod: string | null;
   paidAt: string | null;
 
@@ -49,9 +62,44 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
     api
       .get(`/v1/admin/reservations/${bookingId}`)
       .then((res) => {
-        const data: ReservationDetail =
-          (res as any)?.data?.data ?? (res as any)?.data ?? (res as any);
-        if (mounted) setDetail(data);
+        const root = (res as any)?.data?.data ?? (res as any)?.data ?? (res as any);
+
+        // ✅ 서버 키 불일치 대비: 안전 변환
+        const normalized: ReservationDetail = {
+          bookingId: root.bookingId,
+          bookingNum: root.bookingNum ?? null,
+
+          userName: root.userName ?? null,
+          guestName: root.guestName ?? null,
+          phone: root.phone ?? null,
+
+          accommodationName: root.accommodationName ?? null,
+          roomName: root.roomName ?? null,
+
+          createdAt: root.createdAt,
+          checkIn: root.checkIn,
+          checkOut: root.checkOut,
+
+          status: root.status,
+
+          // ✅ 인원
+          adults: root.adults ?? null,
+          children: root.children ?? null,
+          infants: root.infants ?? null,
+          totalGuestCount: root.totalGuestCount ?? null,
+
+          // ✅ 금액 (amount 우선, 없으면 price)
+          amount: root.amount ?? null,
+          price: root.price ?? null,
+
+          paymentMethod: root.paymentMethod ?? null,
+          paidAt: root.paidAt ?? null,
+
+          statusLogs: root.statusLogs ?? [],
+          paymentLogs: root.paymentLogs ?? [],
+        };
+
+        if (mounted) setDetail(normalized);
       })
       .catch((e) => {
         console.error("예약 상세 조회 실패:", e);
@@ -80,13 +128,20 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
 
   if (!open) return null;
 
+  //  표시용 유틸: 결제 금액 우선순위 (amount > price)
+  const displayAmount = (d?: ReservationDetail | null) => {
+    if (!d) return "—";
+    const val = d.amount ?? d.price;
+    return val != null ? `${val.toLocaleString()}원` : "—";
+  };
+
   return (
     <>
-      {/* 뒤 배경만 어둡게 (원하면 0.25~0.35로 조절) */}
+      {/* 뒤 배경 어둡게  */}
       <div
         className="modal-backdrop fade show"
         style={{ opacity: 0.25 }}
-        onClick={onClose}         // 바깥 클릭으로 닫기 원치 않으면 이 줄 제거
+        onClick={onClose}
         aria-hidden="true"
       />
 
@@ -95,7 +150,10 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
         <div className="modal-dialog modal-lg modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">예약 상세 {bookingId ? `#${bookingId}` : ""}</h5>
+              {/* 제목에 예약번호 표시 */}
+              <h5 className="modal-title">
+                예약 상세 {bookingId ? `#${bookingId}` : ""} {detail?.bookingNum ? `· ${detail.bookingNum}` : ""}
+              </h5>
               <button type="button" className="btn-close" aria-label="Close" onClick={onClose} />
             </div>
 
@@ -117,7 +175,11 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
                     <table className="table table-sm">
                       <tbody>
                         <tr>
-                          <th style={{ width: 140 }}>예약자</th>
+                          <th style={{ width: 160 }}>예약번호</th>
+                          <td>{detail.bookingNum ?? "—"}</td>
+                        </tr>
+                        <tr>
+                          <th>예약자</th>
                           <td>{detail.userName ?? detail.guestName ?? "—"}</td>
                         </tr>
                         <tr>
@@ -140,7 +202,7 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
                     <table className="table table-sm">
                       <tbody>
                         <tr>
-                          <th style={{ width: 140 }}>예약일</th>
+                          <th style={{ width: 160 }}>예약일</th>
                           <td>{formatKST(detail.createdAt)}</td>
                         </tr>
                         <tr>
@@ -159,20 +221,43 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
                     </table>
                   </section>
 
+                  {/* ✅ 인원 */}
+                  <section className="mb-3">
+                    <h6 className="mb-2">인원</h6>
+                    <table className="table table-sm">
+                      <tbody>
+                        <tr>
+                          <th style={{ width: 160 }}>성인</th>
+                          <td>{detail.adults ?? "—"}</td>
+                        </tr>
+                        <tr>
+                          <th>어린이</th>
+                          <td>{detail.children ?? "—"}</td>
+                        </tr>
+                        <tr>
+                          <th>유아</th>
+                          <td>{detail.infants ?? "—"}</td>
+                        </tr>
+                        <tr>
+                          <th>총 인원</th>
+                          <td>{detail.totalGuestCount ?? "—"}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </section>
+
                   {/* 결제 */}
                   <section className="mb-3">
                     <h6 className="mb-2">결제</h6>
                     <table className="table table-sm">
                       <tbody>
                         <tr>
-                          <th style={{ width: 140 }}>결제수단</th>
+                          <th style={{ width: 160 }}>결제수단</th>
                           <td>{detail.paymentMethod ?? "—"}</td>
                         </tr>
                         <tr>
                           <th>결제금액</th>
-                          <td>
-                            {detail.price != null ? `${detail.price.toLocaleString()}원` : "—"}
-                          </td>
+                          <td>{displayAmount(detail)}</td>
                         </tr>
                         <tr>
                           <th>결제일시</th>

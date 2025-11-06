@@ -14,17 +14,17 @@
 /* Option A: 폰트 크기를 화면 너비(Viewport Width)에 따라 유동적으로 설정 */
 .custom-table th {
     /* 1vw는 뷰포트 너비의 1%입니다. */
-    font-size: clamp(8px, 1.2vw, 18px);
+    font-size: clamp(12px, 1.2vw, 18px);
 }
 
 .custom-table td {
     /* 1vw는 뷰포트 너비의 1%입니다. */
-    font-size: clamp(8px, 1.2vw, 16px);
+    font-size: clamp(12px, 1.2vw, 16px);
 }
 
 .custom-table td button {
     /* 1vw는 뷰포트 너비의 1%입니다. */
-    font-size: clamp(8px, 1.2vw, 16px);
+    font-size: clamp(12px, 1.2vw, 16px);
 }
 
 .select-bg {

@@ -32,6 +32,7 @@ import TestForm from "../pages/TestForm"; // Import TestForm
 import TestLoadImage from "../pages/TestLoadImage";
 import AdminBoardPage from "../../domain/admin/pages/AdminBoardPage";
 import AdminBoardDetail from "../../domain/admin/pages/AdminBoardDetail";
+import AdminRoomUpdate from "../../domain/admin/pages/AdminRoomUpdate";
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin, Mypage 라우트 객체는 분리)
@@ -65,6 +66,7 @@ const adminRoute: RouteObject = {
       { path: "accommodations/:accommodationId/update", element: <AdminAccommodationUpdate /> },  // /admin/accommodations/:accommodationId/update
       { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },  // /admin/accommodations/:accommodationId/rooms
       { path: "accommodations/:accommodationId/rooms/:roomId", element: <AdminRoomDetail /> },  // /admin/accommodations/:accommodationId/rooms/:roomId
+      { path: "accommodations/:accommodationId/rooms/:roomId/update", element: <AdminRoomUpdate /> },  // /admin/accommodations/:accommodationId/rooms/:roomId/update
       { path: "reservations", element: <AdminReservationPage /> },  // /admin/reservations
       { path: "boards", element: <AdminBoardPage /> },  // /admin/boards
       { path: "boards/:boardId", element: <AdminBoardDetail /> },  // /admin/boards/:boardId

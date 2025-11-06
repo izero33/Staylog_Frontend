@@ -8,7 +8,7 @@ import api from "../../../global/api";
 import BookingPanel from "../components/BookingPanel";
 import { Card, Col, Container, Offcanvas, Row, Spinner } from "react-bootstrap";
 import FloatingReserveBubble from "../components/FloatingReserveBubble";
-import '../css/Accommodation.css';
+import '../css/room.css';
 import AccommodationInfo from "../components/AccommodationInfo";
 
 function RoomDetail() {
@@ -100,22 +100,32 @@ function RoomDetail() {
   return <>
     <Container className="my-4 accommodationAll">
       <Card className="mb-4">
-        <Card.Img variant="top"
-          src={"https://picsum.photos/1400/500"}
-          alt="숙소 이미지">
-        </Card.Img>
+        <div className="hero-wrap">
+          <img
+            src="https://picsum.photos/1200/500"
+            alt="숙소 이미지"
+            className="hero-img"
+          />
+        </div>
       </Card>
+
 
       <Row>
         <Col lg={8}>
-          <h3>{roomDetail.name}</h3>
+          <h4>{roomDetail.name}</h4>
           <section className="md-4">
-            <h5>객실 규정</h5>
-            <ul >
-              <li>체크인 시간 : {roomDetail.checkInTime}</li>
-              <li>체크아웃 시간 : {roomDetail.checkOutTime}</li>
-              <li>기준 인원 : 성인 {roomDetail.maxAdult}, 어린이 {roomDetail.maxChildren}, 영유아 {roomDetail.maxInfant}</li>
-            </ul>
+            <div className="room-rule-box">
+              <h5>객실 규정</h5>
+              <ul className="room-rules">
+                <li>체크인 {roomDetail.checkInTime} / 체크아웃 {roomDetail.checkOutTime}</li>
+                <li>기준 {roomDetail.maxAdult} 명 (최대 {roomDetail.maxAdult + roomDetail.maxChildren + roomDetail.maxInfant} 명)</li>
+              </ul>
+            </div>
+
+            <div className="room-price">
+              ₩{roomDetail.price}
+            </div>
+
             <section className="mt-4">
               <h3 className="h5 mb-3">편의시설</h3>
               <div className="d-flex flex-wrap gap-4 fs-6">
@@ -165,7 +175,7 @@ function RoomDetail() {
     {isMobile && !openReserve && (
       <FloatingReserveBubble onClick={() => setOpenReserve(true)} />
     )}
-    
+
     {/* 모바일: 바텀시트 Offcanvas */}
     <Offcanvas
       show={openReserve}

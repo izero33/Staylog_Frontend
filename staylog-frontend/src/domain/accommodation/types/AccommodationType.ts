@@ -9,6 +9,7 @@ export interface AccommodationReviewListType {
     rating : number;
     reviewCount : number;
     createdAt : string;
+    images?: string[];
 
 }
 export interface AccommodationRoomListType {
@@ -21,7 +22,6 @@ export interface AccommodationRoomListType {
     rmTypeNameEn : string;
     rmTypeName : string;
     price : number;
-    disabledDates?: string[];
 }
 
 export interface AccommodationDetailType {

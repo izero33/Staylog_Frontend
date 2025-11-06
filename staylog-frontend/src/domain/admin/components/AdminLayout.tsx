@@ -33,7 +33,7 @@ function AdminLayout() {
     };
 
     return <>
-        <Container fluid className="container-fluid admin-container">
+        <Container fluid className="container-fluid admin-container px-0">
             {/* md 이하에서 상단 고정 가로 네비게이션 */}
             <div className="d-lg-none sticky-top w-100" style={{ top: "58px", zIndex: 1020 }}>
                 <div className="bg-white border rounded mb-3">

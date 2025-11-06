@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import Comments from "../../domain/board/components/comment/Comments";
 // import ImageUploader from "../components/ImageUploader"; // ImageUploader moved to TestForm
 
 
 function Home() {
+    const boardId = 1; // ← 여기에 선언
   async function handleSubmit() {
 
       try {
@@ -38,7 +40,9 @@ function Home() {
       <button onClick={()=>navigate("/test-form")}>이미지 업로드 폼으로 이동</button>
       <button onClick={()=>navigate("/test-load")}>이미지 로드 페이지로 이동</button>
       <button onClick={()=>navigate("/bord")}>에디터</button>
-      <br />
+      <button onClick={() => navigate("/comments/1")}>
+        댓글 페이지로 이동
+      </button>
     </>
   );
 }

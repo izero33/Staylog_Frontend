@@ -7,11 +7,21 @@ import AdminReservationDetailModal from "../components/AdminReservationDetailMod
 import AdminStatusPill from "../components/AdminStatusPill";
 import useCommonCodeSelector from "../../common/hooks/useCommonCodeSelector";
 import type { CommonCodeDto } from "../../common/types";
+import Pagination from "../../../global/components/Pagination";
+import type { PageResponse } from "../../../global/types/Paginationtypes";
 
 
 
 
 function AdminReservationPage() {
+
+      //  페이지 상태 
+      const [searchParams, setSearchParams] = useState({
+        pageNum: 1,
+        pageSize: 10,
+      });
+      const [page, setPage] = useState<PageResponse | null>(null);
+
 
     // DB 공통 코드 1. Redux의 공통 코드 스토어에서 특정 그룹 불러오기
     const reservationStatusList = useCommonCodeSelector("reservationStatus"); 
@@ -25,7 +35,7 @@ function AdminReservationPage() {
       return m;
     },[reservationStatusList]);
 
-    // 서버가 "CONFIRM" 처럼 단축형으로 줄 수 있어서 통일 시키기
+    
     const normalizeStatus = (code? : string | null ) => 
       !code ? "" : code.startsWith("RES_") ? code : `RES_${code}`;
     
@@ -39,6 +49,7 @@ function AdminReservationPage() {
       color: statusColor ?? cc?.attr1 ?? "#6c757d", // attr1을 색상 HEX로 사용한다는 전제
     };
   };
+  
     // 예약 목록 상태 관리
     const [reservations, setReservations] = useState<AdminReservation[]>([]);
     // 상세 모달 상태 관리
@@ -54,11 +65,15 @@ function AdminReservationPage() {
         setLoading(true);
         setErrorMsg(null);
         api
-          .get<AdminReservation[]>("/v1/admin/reservations", { params: { pageNum: 1 } })
+          .get<AdminReservation[]>("/v1/admin/reservations", { params : searchParams } )
           .then((res) => {
-            const list = Array.isArray(res) ? res : [];
+            const root = (res as any)?.data?.data ?? (res as any)?.data ?? (res as any);
+            const list = Array.isArray(root?.reservations) ? root.reservations : [];
+            const pageObj = root?.page ?? null;
             console.log("✅ 응답 구조", res);
-            if (mounted) setReservations(list);
+            if (mounted)
+              setReservations(list);
+              setPage(pageObj)
           })
           .catch((err) => {
             console.error("예약 목록 조회 불가:", err);
@@ -69,7 +84,7 @@ function AdminReservationPage() {
         return () => {
           mounted = false;
         };
-      }, []);
+      }, [searchParams]);
 
       // 예약 상세 모달 * 이름 클릭 → 상세 모달 열기
     const openDetail = (bookingId: number) => {
@@ -82,10 +97,24 @@ function AdminReservationPage() {
     setTargetBookingId(null);
   };
 
+    // 페이지 변경 핸들러 
+  const handlePageChange = (nextPageNum: number) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      pageNum: nextPageNum,
+    }));
+  };
 
   return (
     <div className="container-fluid py-3">
         <h1>예약 관리 페이지</h1>
+
+        {/* 요약 정보 */}
+      {page && (
+        <div className="text-end text-muted mt-2">
+          전체 {page.totalCount}건 ({page.pageNum}/{page.totalPage} 페이지)
+        </div>
+      )}
         <div className="table-responsive">
         {/* 로딩 / 에러 상태 */}
         {loading && (
@@ -137,6 +166,8 @@ function AdminReservationPage() {
                   })}
               </tbody>
             </table>
+            {/* 페이지네이션 */}
+            {page && <Pagination page={page} onPageChange={handlePageChange} />}
         </div>
           {/* 상세 모달 */}
       <AdminReservationDetailModal

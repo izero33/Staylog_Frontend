@@ -139,11 +139,11 @@ function AdminAccommodationDetail() {
                 </div>
                 <div className="">
                     <button
-                        className="btn btn-sm btn-outline-danger me-1"
+                        className="btn btn-sm btn-outline-secondary me-1"
                         title="숙소 목록으로 돌아가기"
                         onClick={handleGoToList} // 이동 함수 연결
                     >
-                        <i className="bi bi-arrow-left"></i>
+                        <i className="bi bi-arrow-left"></i> 뒤로가기
                     </button>
 
                 </div>
@@ -169,7 +169,7 @@ function AdminAccommodationDetail() {
                     객실 목록 <i className="bi bi-list"></i>
                 </button>
             </div>
-            
+
             <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed' }}>
                 <colgroup>
                     <col style={{ width: '15%' }} />

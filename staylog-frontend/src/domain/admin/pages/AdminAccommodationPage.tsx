@@ -7,7 +7,7 @@ import type { AdminAccommodationListData, AdminAccommodationSearchParams } from 
 import { formatKST } from "../../../global/utils/date";
 import type { CommonCodeNameList } from "../types/CommonCodeNameList";
 import type { PageResponse } from "../../../global/types/Paginationtypes";
-import type { AdminAccommodationListResponse } from "../types/AdminAccommodatiomTypes";
+import type { AdminAccommodationListResponse } from "../types/AdminAccommodationTypes";
 import Pagination from "../../../global/components/Pagination";
 
 // 상태 업데이트 API 호출 함수 (컴포넌트 외부에 정의하여 재사용)
@@ -247,7 +247,10 @@ function AdminAccommodationListPage() {
                             </button>
                             <button title="모든 검색조건 제거" className="btn border-secondary border-1 btn-sm" onClick={() => {
                                 setInputKeyword('');
-                                setSearchParams({});
+                                setSearchParams({
+                                    pageNum: 1,
+                                    pageSize: 10
+                                });
                             }}>
                                 <i className="bi bi-arrow-counterclockwise"></i>
                             </button>

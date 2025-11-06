@@ -23,8 +23,8 @@ interface Props {
   
     return (
       <aside className="region-sidebar shadow-sm">
-        <h5 className="fw-bold mb-3">지역 선택</h5>
-        <ul className="list-unstyled m-0">
+        {/* <h5 className="fw-bold mb-3 d-flex justify-content-center" >지역 선택</h5> */}
+        <ul className="list-unstyled">
           {regions.map((region) => {
             const isSelected = selectedRegions.includes(region.codeId);
             return (

@@ -1,4 +1,4 @@
-// reducer.ts
+// src/global/store/reducer.ts
 
 import type { AppAction, RootState } from "./types";
 
@@ -24,6 +24,11 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
    switch (action.type) {
       case 'USER_INFO':
          return { ...state, userInfo: action.payload };
+      // 변경된 닉네임만 즉시 업데이트 (마이페이지 수정 시)
+      case 'UPDATE_NICKNAME':
+         if (!state.userInfo) return state; // userInfo가 null이면 아무 작업 안함
+         return { ...state, userInfo: { ...state.userInfo, nickname: action.payload, }
+         };
       case 'SET_TOKEN':
          return { ...state, token: action.payload };
       case 'SET_COMMON_CODES':
@@ -36,6 +41,7 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
          }
          localStorage.removeItem("token");
          return { ...initState };
+      
 
       
       // ==================================

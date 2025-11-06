@@ -15,9 +15,8 @@ function Navbar() {
    const dispatch = useDispatch();
    const navigate = useNavigate();
 
-   const nickname = useSelector((state: RootState) => {
-      return state.userInfo?.nickname // 없을 수도 있으니 -> ?.
-   })
+   const nickname = useSelector((state: RootState) => state.userInfo?.nickname); // 없을 수도 있으니 -> ?.
+
 
    const notiUnreadCount = useSelector((state: RootState) => state.notiUnreadCount);
 
@@ -112,7 +111,7 @@ function Navbar() {
                         <NavLink to="/stay" className="nav-link" aria-current="page">STAY</NavLink>
                      </li>
                      <li className="nav-item">
-                        <NavLink to="/community" className="nav-link">COMMUNITY</NavLink>
+                        <NavLink to="/review" className="nav-link">COMMUNITY</NavLink>
                      </li>
                      <li className="nav-item">
                         <NavLink to="/journal" className="nav-link">JOURNAL</NavLink>

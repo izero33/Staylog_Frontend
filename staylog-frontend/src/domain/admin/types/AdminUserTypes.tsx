@@ -1,3 +1,5 @@
+import type { PageResponse } from "../../../global/types/Paginationtypes";
+
 // 서버에서 받아오는 원본 Dto
 export interface AdminUserDto {
   
@@ -53,5 +55,18 @@ export function mapDtoToAdminUser(dto: AdminUserDto): AdminUser {
     lastLogin: dto.lastLogin,
     status: dto.status as MemberStatus,
   };
+
+}
+
+export type AdminUserSearchParams = {
+  pageNum: number;
+  pageSize: number;
+
+
+}
+
+export type AdminUserListResponse = {
+  users: AdminUserDto[];
+  page: PageResponse;
 
 }

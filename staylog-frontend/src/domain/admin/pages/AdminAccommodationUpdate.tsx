@@ -179,16 +179,16 @@ function AdminAccommodationDetail() {
     // 전체 화면 너비 사용 : Container fluid
     return <>
         <Container fluid className="p-0">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3 className="mb-0">
-                    {data.name}
-                    <span
-                        className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`}
-                        style={{ fontSize: '0.8rem' }}
-                    >
-                        {data.deletedYn === 'N' ? '활성화' : '비활성화'}
-                    </span>
-                </h3>
+            <h3 className="mb-0">
+                {data.name}
+                <span
+                    className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`}
+                    style={{ fontSize: '0.8rem' }}
+                >
+                    {data.deletedYn === 'N' ? '활성화' : '비활성화'}
+                </span>
+            </h3>
+            <div className="mt-5 justify-content-end d-flex">
                 <button
                     className="btn btn-outline-secondary btn-sm"
                     onClick={() => navigate(`/admin/accommodations/${accommodationId}`)}
@@ -198,10 +198,10 @@ function AdminAccommodationDetail() {
             </div>
 
             <form onSubmit={handleSubmit}>
-                <table className="table table-bordered mt-5">
+                <table className="table table-bordered mt-3">
                     <tbody>
                         <tr>
-                            <th className="bg-light" style={{ width: '150px' }}>숙소명</th>
+                            <th className="bg-light text-center" style={{ width: '150px' }}>숙소명</th>
                             <td>
                                 <input
                                     type="text"
@@ -213,7 +213,7 @@ function AdminAccommodationDetail() {
                             </td>
                         </tr>
                         <tr>
-                            <th className="bg-light">유형</th>
+                            <th className="bg-light text-center">유형</th>
                             <td>
                                 <select
                                     name="acType"
@@ -239,7 +239,7 @@ function AdminAccommodationDetail() {
                             </td>
                         </tr>
                         <tr>
-                            <th className="bg-light">지역</th>
+                            <th className="bg-light text-center">지역</th>
                             <td>
                                 <select
                                     name="regionCode"
@@ -264,7 +264,7 @@ function AdminAccommodationDetail() {
                             </td>
                         </tr>
                         <tr>
-                            <th className="bg-light">주소</th>
+                            <th className="bg-light text-center">주소</th>
                             <td>
                                 <input
                                     type="text"
@@ -276,13 +276,13 @@ function AdminAccommodationDetail() {
                             </td>
                         </tr>
                         <tr>
-                            <th className="bg-light">체크인</th>
+                            <th className="bg-light text-center">체크인</th>
                             <td>
                                 <input
                                     type="time"
                                     className="form-control form-control-sm"
                                     value={data?.checkInTime}
-                                    onChange={(e) => setData({...data, checkInTime: e.target.value})}
+                                    onChange={(e) => setData({ ...data, checkInTime: e.target.value })}
                                 />
                                 <small className="text-muted d-block mt-1">
                                     저장된 값: {data?.checkInTime || '미설정'}
@@ -290,13 +290,13 @@ function AdminAccommodationDetail() {
                             </td>
                         </tr>
                         <tr>
-                            <th className="bg-light">체크아웃</th>
+                            <th className="bg-light text-center">체크아웃</th>
                             <td>
                                 <input
                                     type="time"
                                     className="form-control form-control-sm"
                                     value={data?.checkOutTime}
-                                    onChange={(e) => setData({...data, checkOutTime: e.target.value})}
+                                    onChange={(e) => setData({ ...data, checkOutTime: e.target.value })}
                                 />
                                 <small className="text-muted d-block mt-1">
                                     저장된 값: {data?.checkOutTime || '미설정'}

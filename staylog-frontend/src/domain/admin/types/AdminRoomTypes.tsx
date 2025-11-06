@@ -12,8 +12,8 @@ export interface AdminRoom {
     maxAdult?: number;
     maxChildren?: number;
     maxInfant?: number;
-    checkInTime?: string;
-    checkOutTime?: string;
+    checkIn?: string;
+    checkOut?: string;
     area?: number;
     deletedYn: 'Y' | 'N';
     singleBed?: number;

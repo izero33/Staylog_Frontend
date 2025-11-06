@@ -124,6 +124,11 @@ function AdminAccommodationDetail() {
         }
     };
 
+    //객실 수정 페이지 이동 핸들러
+    const handleGoToUpdate = (roomId: number) => {
+        navigate(`/admin/accommodations/${accommodationId}/rooms/${roomId}/update`);
+    }
+
 
     // 전체 화면 너비 사용 : Container fluid
     return <>
@@ -137,11 +142,11 @@ function AdminAccommodationDetail() {
                 </div>
                 <div className="">
                     <button
-                        className="btn btn-sm btn-outline-danger me-1"
+                        className="btn btn-sm btn-outline-secondary me-1"
                         title="객실 목록으로 돌아가기"
                         onClick={handleGoToList} // 이동 함수 연결
                     >
-                        <i className="bi bi-arrow-left"></i>
+                        <i className="bi bi-arrow-left"></i> 뒤로가기
                     </button>
 
                 </div>
@@ -152,7 +157,7 @@ function AdminAccommodationDetail() {
             </div>
 
             <div className="justify-content-end d-flex mt-5 gap-1">
-                <button title="수정하기" className="btn btn-sm btn-primary" onClick={() => navigate(-1)}>수정하기</button>
+                <button title="수정하기" className="btn btn-sm btn-primary" onClick={() => handleGoToUpdate(data.roomId!)}>수정하기</button>
                 {data.deletedYn === 'N' ? (
                     <button title="비활성화하기" className="btn btn-sm btn-danger text-white" onClick={() => updateRoomStatus(data.roomId!, 'Y')}>비활성화하기</button>
                 ) : (
@@ -246,16 +251,16 @@ function AdminAccommodationDetail() {
                         <th className="bg-light text-center">면적</th>
                         <td>{data.area} m²</td>
                     </tr>
-                    {data.checkInTime && (
+                    {data.checkIn && (
                         <tr>
                             <th className="bg-light">체크인</th>
-                            <td>{data.checkInTime}</td>
+                            <td>{data.checkIn}</td>
                         </tr>
                     )}
-                    {data.checkOutTime && (
+                    {data.checkOut && (
                         <tr>
                             <th className="bg-light">체크아웃</th>
-                            <td>{data.checkOutTime}</td>
+                            <td>{data.checkOut}</td>
                         </tr>
                     )}
                     <tr>

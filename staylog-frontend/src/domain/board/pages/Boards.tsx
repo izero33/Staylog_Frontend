@@ -1,17 +1,17 @@
-// src/domain/board/Review.tsx
+// src/omain/board/Review.tsx
 
 import { useEffect, useState } from "react";
-import { Button, Card, Col, Container, ListGroup, Pagination, Row, Table } from "react-bootstrap";
+import { Card, Col, Container, Row, Table } from "react-bootstrap";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
-import type { BoardDto } from "../types/boardtypes";
 import api from "../../../global/api";
+import type { BoardDto } from "../types/boardtypes";
 
-import "./Board.css";
 import "../components/RegionSidebar.css";
+import "./Board.css";
 
-import RegionsSideBar from "../components/RegionSideBar";
-import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import PaginationBar from "../../../global/components/PaginationBar";
+import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
+import RegionsSideBar from "../components/RegionSideBar";
 
 
 
@@ -21,20 +21,17 @@ function Boards() {
     // 게시판 카테고리 boardType
     const { boardType } = useParams<{ boardType: string }>();
 
+    
+    // boardType /journal => apiBoardType BOARD_JOURNAL (공통코드-백엔드)
+    const apiBoardType =
+      boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
 
 
     // 게시글 목록 상태값 관리
     const [boards, setBoards] = useState<BoardDto[]>([]);
-
+    
+    // 지역 선택
     const [selectedRegions, setSelectedRegions] = useState<string[]>(["전체"]);
-
-    const [pageInfo, setPageInfo] = useState({
-      pageNum: 1,
-      // startPage: 1,
-      // endPage: 1,
-      // totalPage: 1,
-      pageSize: boardType === "journal" ? 9 : 10
-    });
 
 
     // USER 상태값 관리
@@ -42,50 +39,64 @@ function Boards() {
 
     const navigate = useNavigate();
 
-    
-    
+    // 페이지네이션
+        const [pageInfo, setPageInfo] = useState({
+          boardType: apiBoardType,  // BOARD_JOURNAL or BOARD_REVIEW
+          pageNum: 1,               // 현재 페이지
+          startPage: 1,
+          endPage: 5,
+          totalPage: 10,
+          totalCount: 0,
+          pageSize: boardType === "journal" ? 9 : 10, // 페이지 크기
+          regionCodes: [] as string[]  // 지역 필터 (배열)
+        });
+
+    // 게시글 목록 가져오기      
     const fetchBoards = async (pageNum: number = 1) =>{
+
       try {
+
         // 전체 선택이면 필터 제거
         const validRegions = selectedRegions.includes("전체") 
           ? [] 
           : selectedRegions;
-        
-          const apiBoardType =
-            boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
+               
+        // 게시글 목록 조회 api
+        const res = await api.get(`/v1/boards`, {
+          params: {
+            boardType: apiBoardType,
+            pageNum,
+            regionCodes: validRegions
+          }
+        });
 
-          const res = await api.get(`/v1/boards`, {
-            params: {
-              boardType: apiBoardType,      // BOARD_JOURNAL or BOARD_REVIEW
-              pageNum,                      // 현재 페이지
-              pageSize: pageInfo.pageSize,  // 페이지 크기
-              regionCodes: validRegions,    // 지역 필터 (배열)
-            },
-          });
+        // SucessResponse.of(code, message, data) 형태로 -> res
+        const list = res.boardList || res?.data?.data?.boardList || [];
+        const page = res.pageResponse || res?.data?.data?.pageResponse || {};
 
-          console.log("➡️ 요청 파라미터:", { pageNum, validRegions });
+        setBoards(list);
+        setPageInfo({
+          ...pageInfo,
+          pageNum: page.pageNum || 1,
+          startPage: page.startPage || 1,
+          endPage: page.endPage || 1,
+          totalPage: page.totalPage || 1,
+          totalCount: page.totalCount || 0,
+          pageSize: page.pageSize || 10
+        })
           
-          // SucessResponse.of(code, message, data) 형태로 -> res
-          // 실제 데이터 경로
-          const list = res?.data?.boardList || res?.boardList ||[];
-              console.log("📦 불러온 게시글 목록:", list);
-          setBoards(list);
-          setPageInfo({
-            pageNum: res?.pageNum || 1,
-            startPage: res?.startPage || 1,
-            endPage: res?.endPage || 1,
-            totalPage: res?.totalPage || 1,
-            pageSize: res?.pageSize || 10
-          })
+          console.log("📦 불러온 게시글 목록:", res);
+          
+
 
       }catch(err) {
           console.error("게시글 목록 조회 불가:", err);
       }   
     }
 
-    useEffect(()=>{
-          
-        fetchBoards();
+    
+    useEffect(()=>{  
+        fetchBoards(1);
     },[selectedRegions, boardType]);
 
     
@@ -188,6 +199,7 @@ function Boards() {
 
               <Row className="g-4 px-4">
                 {boards.length > 0 ? (
+                
                   boards.map((board) => (
                     <Col key={board.boardId} md={4}>
                       <Card

@@ -19,6 +19,7 @@ function AdminLayout() {
         { path: 'accommodations', label: '숙소관리' },
         { path: 'reservations', label: '예약관리' },
         { path: 'boards', label: '게시판 관리' },
+        { path: 'coupon', label: '쿠폰 관리' },
     ];
     // 현재 활성화된 메뉴 찾기
     const getCurrentMenu = () => {
@@ -32,7 +33,7 @@ function AdminLayout() {
     };
 
     return <>
-        <Container fluid className="container-fluid admin-container">
+        <Container fluid className="container-fluid admin-container px-0">
             {/* md 이하에서 상단 고정 가로 네비게이션 */}
             <div className="d-lg-none sticky-top w-100" style={{ top: "58px", zIndex: 1020 }}>
                 <div className="bg-white border rounded mb-3">
@@ -84,6 +85,9 @@ function AdminLayout() {
                                 </li>
                                 <li className="nav-item mb-1">
                                     <NavLink to="boards" className={navLinkClass}>게시판 관리</NavLink>
+                                </li>
+                                <li className="nav-item mb-1">
+                                    <NavLink to="coupon" className={navLinkClass}>쿠폰 관리</NavLink>
                                 </li>
                             </ul>
                         </div>

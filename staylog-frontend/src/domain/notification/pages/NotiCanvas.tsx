@@ -1,6 +1,6 @@
 
 import { Button, Offcanvas } from 'react-bootstrap';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import NotificationCard from "../components/NotificationCard";
 import type { responseNotificationsType } from '../types/NotificationCardType';
 import useGetLoginIdFromToken from '../../auth/hooks/useGetLoginIdFromToken';
@@ -33,15 +33,22 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
    const userId: number | undefined = useGetUserIdFromToken();
    const loginId = useGetLoginIdFromToken();
 
+   
+   // 로딩 / 에러 메시지 상태 관리 
+   const [loading, setLoading] = useState(true);
+   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
 
 
    // 알림 리스트 요청
    useEffect(() => {
+      setLoading(true)
 
       // 이미 값을 가져왔다면 리소스 아끼기
       if(notiList.length != 0) {
          console.log("이미 값이 있으므로 재요청하지 않고 return");
          console.log(notiList);
+         setLoading(false)
          return
       }
       
@@ -60,6 +67,9 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
          } catch (err) {
             console.log(err);
+            setErrorMsg("알림 정보를 불러오지 못했습니다.")
+         } finally {
+            setLoading(false)
          }
       })()
    }, [userId])
@@ -133,6 +143,20 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
          </Offcanvas.Header>
 
          <Offcanvas.Body>
+
+            {/* 로딩 / 에러 상태 */}
+            {loading && (
+               <div className="d-flex align-items-center gap-2 text-muted">
+                  <div className="spinner-border spinner-border-sm" role="status" />
+                  <span>불러오는 중…</span>
+               </div>
+            )}
+            {!loading && errorMsg && (
+               <div className="alert alert-danger" role="alert">
+                  {errorMsg}
+               </div>
+            )}
+            
             {
                notiList.length > 0
                   ? (

@@ -1,0 +1,61 @@
+.room-rule {
+  list-style: none;
+  padding-left: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .room-rules {
+    list-style: none;
+    padding-left: 0;
+    font-size: 0.85rem;
+  }
+}
+
+.room-rule-box {
+  background: #f9f9f9;
+  border-radius: 6px;
+  padding: 0.9rem 1.4rem;
+  margin-top: 1rem;
+}
+
+.room-price {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #333333;
+  margin: 1.4rem 0 1.2rem;
+  line-height: 1.2;
+  display: inline-block;
+  position: relative;
+}
+
+.room-price::after {
+  content: " /박";
+  font-size: 1rem;
+  font-weight: 400;
+  color: #666;
+  margin-left: 6px;
+}
+
+.accommodationAll {
+    max-width : 75rem; /* 최대 너비 제한 */
+    margin : 0 auto;     /* 화면 가운데 정렬 */
+}
+
+/* 이미지용 래퍼: 비율+오버플로 관리 */
+.hero-wrap{
+  width:100%;
+  aspect-ratio:21/9;   /* 원하는 비율 (모바일에서 4/3로 바꿔도 됨) */
+  overflow:hidden;      /* 넘치는 부분 잘라내기 */
+  border-radius:.5rem;  /* Card 모서리와 맞추고 싶으면 */
+}
+
+/* 이미지를 래퍼에 정확히 맞춤 */
+.hero-img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;          /* 핵심: 여백 없이 꽉 채우기 */
+  object-position:center;    /* 잘리는 기준점 */
+}

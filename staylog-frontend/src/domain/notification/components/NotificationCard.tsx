@@ -37,7 +37,7 @@ function NotificationCard({ notiId, targetId, details, isRead, createdAt, handle
 
   return (
     <>
-      <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseReave} style={{ width: '90%', borderRadius: '10px 45px 10px 10px' }} className="mx-auto position-relative bg-secondary-subtle border-0 shadow-sm cursor-pointer mb-4">
+      <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseReave} style={{ width: '90%', borderRadius: '10px 45px 10px 10px', backgroundColor: '#ebebebe8' }} className="mx-auto position-relative border-0 shadow-sm cursor-pointer mb-4">
         {isRead &&
           <span className="position-absolute" style={{ top: '2px', right: '2px', width: '10px', height: '10px', backgroundColor: '#ee6f6fff', borderRadius: '50%', opacity: (!mouseOver && isRead == 'N') ? 1 : 0, transition: 'opacity 0.2s ease-in-out', pointerEvents: 'none' }} />
         }
@@ -48,7 +48,7 @@ function NotificationCard({ notiId, targetId, details, isRead, createdAt, handle
           <div className="flex-grow-1">
             <Card.Text as="small" className="text-muted mb-1 d-block ms-3 fs-8">{details.date}</Card.Text>
             <div className="d-flex justify-content-between align-items-baseline mb-1">
-              <Card.Title as="h6" className="fw-bold mb-0 ms-3 text-semiblack">{details.title}</Card.Title>
+              <Card.Title as="h6" style={{ color: 'rgba(54, 54, 54, 1)' }} className="fw-bold mb-0 ms-3">{details.title}</Card.Title>
               <Card.Text as="small" className="mb-0 text-secondary fs-9">{details.typeName}</Card.Text>
             </div>
 

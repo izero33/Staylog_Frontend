@@ -38,7 +38,7 @@ function AvailableCouponCard({ coupon, onUseCoupon }: CouponCardProps) {
 
                {/* 오른쪽: 쿠폰 상세 */}
                <Col xs={9}>
-                  <Card.Title className="fw-bold mb-1 fs-6">{coupon.name}</Card.Title>
+                  <Card.Title style={{ color: 'rgba(71, 71, 71, 1)' }} className="fw-bold mb-1 fs-6">{coupon.name}</Card.Title>
                   <Card.Text as="small" className="text-muted">
                      <i className="bi bi-calendar-check"></i>
                      {format(expiryDate, 'yyyy. MM. dd')} 까지

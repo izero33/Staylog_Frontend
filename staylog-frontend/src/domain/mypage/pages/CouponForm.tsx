@@ -16,14 +16,20 @@ interface CouponFormProps {
 
 // 💡 props에 mode와 onSelect 추가, mode의 기본값은 'view'
 function CouponForm({ onClose, mode, onUseCoupon }: CouponFormProps) {
-   
+
    const userId = useGetUserIdFromToken();
 
    const [availableCoupon, setAvailableCoupon] = useState<couponType[]>([]);
    const [unavailableCoupon, setUnavailableCoupon] = useState<couponType[]>([]);
 
+
+   // 로딩 / 에러 메시지 상태 관리 
+   const [loading, setLoading] = useState(true);
+   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
    // 쿠폰 목록 조회
    useEffect(() => {
+      setLoading(true)
       if (!userId) {
          return;
       }
@@ -36,6 +42,9 @@ function CouponForm({ onClose, mode, onUseCoupon }: CouponFormProps) {
             setUnavailableCoupon(unavailableResponse);
          } catch (err) {
             console.log(err);
+            setErrorMsg("쿠폰 정보를 불러오지 못했습니다.")
+         } finally {
+            setLoading(false)
          }
       })()
    }, [userId]);
@@ -46,11 +55,24 @@ function CouponForm({ onClose, mode, onUseCoupon }: CouponFormProps) {
 
          <Tabs defaultActiveKey="available" id="coupon-tabs" className="mb-3" fill>
 
+            {/* 로딩 / 에러 상태 */}
+            {loading && (
+               <div className="d-flex align-items-center gap-2 text-muted">
+                  <div className="spinner-border spinner-border-sm" role="status" />
+                  <span>불러오는 중…</span>
+               </div>
+            )}
+            {!loading && errorMsg && (
+               <div className="alert alert-danger" role="alert">
+                  {errorMsg}
+               </div>
+            )}
+
             {/* 1. 사용 가능 쿠폰 탭 */}
             <Tab
                eventKey="available"
                title={
-                  <span>
+                  <span className='text-semiblack'>
                      <i className="bi bi-ticket-perforated"></i> 사용 가능 쿠폰{' '}
                      <Badge pill bg="primary">{availableCoupon.length}</Badge>
                   </span>
@@ -58,7 +80,7 @@ function CouponForm({ onClose, mode, onUseCoupon }: CouponFormProps) {
             >
                <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
                   {availableCoupon.length === 0 ? (
-                     <Alert variant="secondary" className="text-center mt-3">
+                     <Alert variant="secondary" className="text-center mt-3 text-semiblack">
                         <i className="bi bi-emoji-frown"></i> 사용 가능한 쿠폰이 없습니다.
                      </Alert>
                   ) : (

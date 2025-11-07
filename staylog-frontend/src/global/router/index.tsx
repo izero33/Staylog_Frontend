@@ -34,6 +34,7 @@ import Boards from "../../domain/board/pages/Boards";
 import CheckoutForm from "../../domain/payment/pages/CheckoutForm";
 import AdminCouponPage from "../../domain/admin/pages/AdminCouponPage";
 import AdminRoomUpdate from "../../domain/admin/pages/AdminRoomUpdate";
+import TestEditorPage from "../pages/TestEditorPage";
 import Home2 from "../pages/Home2";
 
 
@@ -56,6 +57,7 @@ const routes: RouteObject[] = [
   { path: "/bord", element: <Board/>},//에디터 테스트
   { path: "/checkout", element: <CheckoutForm/>},//에디터 테스트
   { path: "/comments/:boardId", element: <CommentsPage /> },
+  { path: "/testEditor", element: <TestEditorPage /> },
   { path: "/home", element: <Home2 />}
 ];
 

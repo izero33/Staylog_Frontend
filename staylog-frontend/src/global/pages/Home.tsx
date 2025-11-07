@@ -43,6 +43,7 @@ function Home() {
       <button onClick={() => navigate("/comments/1")}>
         댓글 페이지로 이동
       </button>
+      <button onClick={(()=>navigate("/home"))}>Home</button>
     </>
   );
 }

@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../global/api";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import type { BoardDto } from "../types/boardtypes";
+import Comments from "../components/comment/Comments";
 
 
 
@@ -232,6 +233,11 @@ function BoardDetail() {
         
 
         
+    </div>
+
+    {/* 댓글 */}
+    <div style={{ padding: "1rem" }}>
+        <Comments boardId={Number(boardId)} userId={userId} />
     </div>
 
     </>

@@ -143,7 +143,7 @@ function AdminAccommodationDetail() {
                         (<i title='리뷰' className="bi bi-person"></i> {data.reviewCount}개)
                     </div>
                 ) : (
-                    '등록된 리뷰가 없습니다.'
+                    <span style={{fontSize : '1rem'}}>등록된 리뷰가 없습니다.</span>
                 )}
             </h3>
 

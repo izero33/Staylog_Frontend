@@ -12,8 +12,8 @@ export interface AdminAccommodation {
     deletedYn: 'Y' | 'N';
     checkInTime?: string;
     checkOutTime?: string;
-    longitude?: number;
-    latitude?: number;
+    longitude: number | null;
+    latitude: number | null;
     createdAt: string;
     updatedAt?: string;
 }

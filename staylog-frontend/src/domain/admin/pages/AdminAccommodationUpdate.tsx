@@ -7,12 +7,13 @@ import axios from 'axios';
 import '../css/AdminAccommodationDetail.css';
 import type { CommonCodeNameList } from '../types/CommonCodeNameList';
 import type { AdminAccommodation } from '../types/AdminAccommodationTypes';
+import AddressSearch from '../../../global/components/AddressSearch';
 /*
     Carousel : 숙소 대표 이미지
     Accordion : 클릭 시 펼쳐지는 기능
 */
 
-function AdminAccommodationDetail() {
+function AdminAccommodationUpdate() {
     // 예비용 이미지
     const img1 = "https://picsum.photos/1400/500";
     const img2 = "https://picsum.photos/1400/500?grayscale";
@@ -23,6 +24,11 @@ function AdminAccommodationDetail() {
     const { accommodationId: accommodationIdStr } = useParams();
     // 경로 변수를 숫자로 변환
     const accommodationId = Number(accommodationIdStr);
+
+    //주소 검색 모달 상태
+    const [showAddressModal, setShowAddressModal] = useState(false);
+    //상세 주소 상태
+    const [detailAddress, setDetailAddress] = useState<string>('');
 
     // 숙소 상세 데이터
     const [data, setData] = useState<AdminAccommodation | null>(null);
@@ -118,7 +124,7 @@ function AdminAccommodationDetail() {
                     <i className="bi bi-exclamation-circle me-2"></i>
                     {error}
                 </div>
-                <button className="btn btn-primary" onClick={() => navigate('/admin/accommodations')}>
+                <button className="btn btn-secondary" onClick={() => navigate('/admin/accommodations')}>
                     숙소 목록으로 돌아가기
                 </button>
             </Container>
@@ -133,7 +139,7 @@ function AdminAccommodationDetail() {
                     <i className="bi bi-info-circle me-2"></i>
                     숙소 정보를 찾을 수 없습니다
                 </div>
-                <button className="btn btn-primary" onClick={() => navigate('/admin/accommodations')}>
+                <button className="btn btn-secondary" onClick={() => navigate('/admin/accommodations')}>
                     숙소 목록으로 돌아가기
                 </button>
             </Container>
@@ -266,12 +272,36 @@ function AdminAccommodationDetail() {
                         <tr>
                             <th className="bg-light text-center">주소</th>
                             <td>
-                                <input
-                                    type="text"
-                                    className="form-control form-control-sm"
-                                    value={data.address}
-                                    onChange={(e) => setData({ ...data, address: e.target.value })}
-                                    placeholder="주소를 입력하세요"
+                                <div className='input-group input-group-sm align-items-start'>
+                                    <div className='d-flex flex-column flex-grow-1'>
+                                        <input
+                                            type="text"
+                                            className="form-control form-control-sm"
+                                            value={data.address}
+                                            onChange={(e) => setData({ ...data, address: e.target.value })}
+                                            placeholder="기본 주소를 검색하세요"
+                                            readOnly
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary btn-sm"
+                                        onClick={() => setShowAddressModal(true)}
+                                    >
+                                        주소검색
+                                    </button>
+                                </div>
+                                <small className='d-block mt-1 text-secondary text-opacity-50' style={{fontSize : '10px'}}>
+                                    좌표: Lat {data.latitude?.toFixed(6) ?? 'N/A'}, Lng {data.longitude?.toFixed(6) ?? 'N/A'}
+                                </small>
+                                {/* 모달 표시 */}
+                                <AddressSearch
+                                    show={showAddressModal}
+                                    onClose={() => setShowAddressModal(false)}
+                                    onAddressSelect={(address, coords) => {
+                                        setData({ ...data, address, latitude: coords.lat, longitude: coords.lng });
+                                        setShowAddressModal(false);
+                                    }}
                                 />
                             </td>
                         </tr>
@@ -307,10 +337,10 @@ function AdminAccommodationDetail() {
                 </table>
                 <div>이미지, 설명</div>
                 <button className="btn btn-primary btn-sm me-1" type="submit">저장</button>
-                <button className="btn btn-danger btn-sm" type='reset' onClick={handleReset}>초기화</button>
+                <button className="btn btn-danger btn-sm" type='button' onClick={handleReset}>초기화</button>
             </form>
         </Container>
     </>
 }
 
-export default AdminAccommodationDetail;
+export default AdminAccommodationUpdate;

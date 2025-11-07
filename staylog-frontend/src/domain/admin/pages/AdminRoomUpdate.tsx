@@ -8,13 +8,14 @@ import '../css/AdminAccommodationDetail.css';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminRoom } from '../types/AdminRoomTypes';
 import type { CommonCodeNameList } from '../types/CommonCodeNameList';
+import type AdminRoomDetail from './AdminRoomDetail';
 
 /*
     Carousel : 숙소 대표 이미지
     Accordion : 클릭 시 펼쳐지는 기능
 */
 
-function AdminAccommodationDetail() {
+function AdminRoomUpdate() {
     // 예비용 이미지
     const img1 = "https://picsum.photos/1400/500";
     const img2 = "https://picsum.photos/1400/500?grayscale";
@@ -213,7 +214,7 @@ function AdminAccommodationDetail() {
                 <table className="table table-bordered mt-3">
                     <tbody>
                         <tr>
-                            <th className="bg-light text-center align-middle" style={{ width: '30%' }}>객실명</th>
+                            <th className="bg-light text-center align-middle" style={{ width: '25%' }}>객실명</th>
                             <td>
                                 <input
                                     type="text"
@@ -407,4 +408,4 @@ function AdminAccommodationDetail() {
     </>
 }
 
-export default AdminAccommodationDetail;
+export default AdminRoomUpdate;

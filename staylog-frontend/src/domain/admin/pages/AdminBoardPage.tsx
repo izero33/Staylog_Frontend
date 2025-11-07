@@ -278,9 +278,9 @@ function AdminBoardPage() {
 
             {/* 게시글 테이블 */}
             <table className="table table-striped text-center mt-3 custom-table">
-                <thead>
+                <thead className="table-light">
                     <tr>
-                        <th style={{ width: '6%' }}>번호</th>
+                        <th style={{ width: '8%' }}>번호</th>
                         <th>숙소명</th>
                         <th>제목</th>
                         <th style={{ width: '12%' }}>작성자</th>

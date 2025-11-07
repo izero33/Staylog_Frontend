@@ -12,7 +12,7 @@ import type { AdminRoom } from '../types/AdminRoomTypes';
     Accordion : 클릭 시 펼쳐지는 기능
 */
 
-function AdminAccommodationDetail() {
+function AdminRoomDetail() {
     // 예비용 이미지
     const img1 = "https://picsum.photos/1400/500";
     const img2 = "https://picsum.photos/1400/500?grayscale";
@@ -174,12 +174,12 @@ function AdminAccommodationDetail() {
 
             <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed' }}>
                 <colgroup>
-                    <col style={{ width: '30%' }} />
-                    <col style={{ width: '70%' }} />
+                    <col style={{ width: '25%' }} />
+                    <col style={{ width: '75%' }} />
                 </colgroup>
                 <tbody>
                     <tr>
-                        <th className="bg-light text-center align-middle">유형</th>
+                        <th className="bg-light text-center align-middle" style={{ width: '30%' }}>유형</th>
                         <td>{data.typeName}</td>
                     </tr>
                     <tr>
@@ -187,7 +187,7 @@ function AdminAccommodationDetail() {
                         <td>{data.price}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light text-center align-middle" style={{ width: '30%' }}>최대 인원</th>
+                        <th className="bg-light text-center align-middle">최대 인원</th>
                         <td>
                             <table className="table table-sm mb-0" style={{ width: '30%' }}>
                                 <tbody>
@@ -289,4 +289,4 @@ function AdminAccommodationDetail() {
     </>
 }
 
-export default AdminAccommodationDetail;
+export default AdminRoomDetail;

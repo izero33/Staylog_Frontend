@@ -9,6 +9,7 @@ import type { CommonCodeNameList } from "../types/CommonCodeNameList";
 import type { PageResponse } from "../../../global/types/Paginationtypes";
 import type { AdminAccommodationListResponse } from "../types/AdminAccommodationTypes";
 import Pagination from "../../../global/components/Pagination";
+import '../css/AdminTable.css';
 
 // 상태 업데이트 API 호출 함수 (컴포넌트 외부에 정의하여 재사용)
 const updateAccommodationStatus = async (accommodationId: number, status: 'Y' | 'N') => {
@@ -268,10 +269,10 @@ function AdminAccommodationListPage() {
                 </div>
             )}
 
-            <table className="table table-striped text-center mt-5">
-                <thead>
+            <table className="table table-striped text-center mt-5 custom-table">
+                <thead className="table-light">
                     <tr>
-                        <th style={{ width: '5%' }}>번호</th>
+                        <th style={{ width: '8%' }}>번호</th>
                         <th style={{ width: '10%' }}>지역</th>
                         <th>숙소명</th>
                         <th style={{ width: '10%' }}>유형</th>

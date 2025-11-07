@@ -27,8 +27,6 @@ function AdminAccommodationUpdate() {
 
     //주소 검색 모달 상태
     const [showAddressModal, setShowAddressModal] = useState(false);
-    //상세 주소 상태
-    const [detailAddress, setDetailAddress] = useState<string>('');
 
     // 숙소 상세 데이터
     const [data, setData] = useState<AdminAccommodation | null>(null);
@@ -207,7 +205,7 @@ function AdminAccommodationUpdate() {
                 <table className="table table-bordered mt-3">
                     <tbody>
                         <tr>
-                            <th className="bg-light text-center" style={{ width: '150px' }}>숙소명</th>
+                            <th className="bg-light text-center" style={{ width: '25%' }}>숙소명</th>
                             <td>
                                 <input
                                     type="text"
@@ -273,25 +271,24 @@ function AdminAccommodationUpdate() {
                             <th className="bg-light text-center">주소</th>
                             <td>
                                 <div className='input-group input-group-sm align-items-start'>
-                                    <div className='d-flex flex-column flex-grow-1'>
-                                        <input
-                                            type="text"
-                                            className="form-control form-control-sm"
-                                            value={data.address}
-                                            onChange={(e) => setData({ ...data, address: e.target.value })}
-                                            placeholder="기본 주소를 검색하세요"
-                                            readOnly
-                                        />
-                                    </div>
+                                    <input
+                                        type="text"
+                                        className="form-control form-control-sm"
+                                        value={data.address}
+                                        onChange={(e) => setData({ ...data, address: e.target.value })}
+                                        placeholder="기본 주소를 검색하세요"
+                                        readOnly
+                                    />
                                     <button
                                         type="button"
                                         className="btn btn-outline-secondary btn-sm"
+                                        style={{ border: '1px solid #ced4da' }}
                                         onClick={() => setShowAddressModal(true)}
                                     >
                                         주소검색
                                     </button>
                                 </div>
-                                <small className='d-block mt-1 text-secondary text-opacity-50' style={{fontSize : '10px'}}>
+                                <small className='d-block mt-1 text-secondary text-opacity-50' style={{ fontSize: '10px' }}>
                                     좌표: Lat {data.latitude?.toFixed(6) ?? 'N/A'}, Lng {data.longitude?.toFixed(6) ?? 'N/A'}
                                 </small>
                                 {/* 모달 표시 */}

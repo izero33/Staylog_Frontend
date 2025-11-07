@@ -172,8 +172,8 @@ function AdminAccommodationDetail() {
 
             <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed' }}>
                 <colgroup>
-                    <col style={{ width: '30%' }} />
-                    <col style={{ width: '70%' }} />
+                    <col style={{ width: '25%' }} />
+                    <col style={{ width: '75%' }} />
                 </colgroup>
                 <tbody>
                     <tr>

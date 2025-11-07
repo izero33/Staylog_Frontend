@@ -86,7 +86,7 @@ export default function QuillEditor({ value, onChange, style }: QuillEditorProps
    */
   const formats = [
     'header', 'bold', 'italic', 'underline', 'strike',
-    'list', 'bullet', 'blockquote', 'code-block', 'link', 'image',
+    'list', 'blockquote', 'code-block', 'link', 'image',
     'align' // 이미지 정렬을 위한 'align' 포맷 추가
   ];
 

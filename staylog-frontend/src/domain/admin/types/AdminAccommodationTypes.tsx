@@ -3,6 +3,8 @@ import type { PageRequest, PageResponse } from "../../../global/types/Pagination
 export interface AdminAccommodation {
     accommodationId?: number;
     name: string;
+    avgRating?: number;
+    reviewCount?: number;
     acType: string;
     typeName: string;
     regionCode: string;

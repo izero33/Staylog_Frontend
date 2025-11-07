@@ -117,6 +117,11 @@ function AdminRoomPage() {
         });
     };
 
+    //숙소 상세 페이지 이동 핸들러
+    const handleGoToAccommDetail = (accommodationId: number) => {
+        navigate(`/admin/accommodations/${accommodationId}`);
+    };
+
     //객실 등록 페이지 이동 핸들러
     const handleToAddPage = (accommodationId: number) => {
         navigate(`/admin/accommodations/${accommodationId}/rooms/new`);
@@ -150,7 +155,11 @@ function AdminRoomPage() {
     return <>
         <div className="container-fluid py-3">
             <div className="d-flex justify-content-between align-items-center">
-                <h3><span className="fw-bold">{rooms[0]?.accommodationName}</span> 객실 목록</h3>
+                <h3>
+                    <span className="fw-bold" onClick={()=>handleGoToAccommDetail(accommodationId)} style={{cursor:'pointer', textDecoration:'underline'}}>
+                        {rooms[0]?.accommodationName}
+                    </span> 객실 목록
+                </h3>
                 <button className="btn btn-outline-light text-dark mt-2 fw-bold" style={{ backgroundColor: '#ebebebff' }} onClick={() => handleToAddPage(accommodationId)}>
                     <i className="bi bi-plus-lg"></i> 객실 등록
                 </button>
@@ -167,9 +176,9 @@ function AdminRoomPage() {
                 >
                     검색 필터 설정 <i className="bi bi-funnel"></i>
                 </button>
-
+                
                 {/* 필터 내용 (Collapse) */}
-                <div className="collapse d-md-flex mt-3" id="filterCollapse">
+                <div className="collapse d-md-flex mt-5" id="filterCollapse">
                     {/* 상태/정렬 필터 그룹 */}
                     <div className="gap-1 flex-wrap d-flex">
                         <select
@@ -242,7 +251,7 @@ function AdminRoomPage() {
                 </div>
             </div>
 
-            <table className="table table-striped text-center mt-5 custom-table">
+            <table className="table table-striped text-center mt-3 custom-table">
                 <thead className="table-light">
                     <tr>
                         <th style={{ width: '8%' }}>번호</th>
@@ -298,7 +307,7 @@ function AdminRoomPage() {
                         )))}
                 </tbody>
             </table>
-            
+
             {/* 페이지네이션 */}
             {page && <Pagination page={page} onPageChange={handlePageChange} />}
         </div>

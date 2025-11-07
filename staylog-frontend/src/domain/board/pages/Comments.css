@@ -1,0 +1,44 @@
+@media (max-width : 36rem) {
+    .commentForm textarea {
+        min-height : 5rem; /* 모바일에서는 작게 */
+        font-size : 0.85rem; /* 글자도 약간 줄임 */
+    }
+
+    .commentForm button {
+        font-size : 0.85rem;
+        padding : 0.35rem 0.6rem;
+    }
+
+    .commentList .profileImage {
+        width : 2rem;
+        height : 2rem;
+    }
+
+    .commentList .nickname {
+        font-size : 0.9rem;
+    }
+
+    .commentList .date {
+        font-size : 0.7rem;
+    }
+
+    .commentList p {
+        font-size : 0.85rem;
+    }
+
+    .commentList .btnGroup {
+        flex-wrap : wrap;
+        gap : 0.25rem;
+    }
+
+    .commentList button {
+        font-size : 0.85rem;
+    }
+
+    /* 답글 박스 */
+    .reply-comment {
+        margin-left : 2rem !important; 
+        margin-right : 0 !important; /* 오른쪽 정렬 */
+        width : calc(100% - 2rem) !important; /* 답글 박스 크기 줄이기*/
+    }
+}

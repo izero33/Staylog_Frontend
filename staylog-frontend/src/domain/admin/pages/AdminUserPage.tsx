@@ -2,57 +2,59 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import api from "../../../global/api";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { formatKST } from "../../../global/utils/date";
-import type { AdminUserDto, AdminUser, Role, MemberStatus } from "../types/AdminUserTypes";
+import type { AdminUser, Role, MemberStatus, AdminUserSearchParams, AdminUserListResponse } from "../types/AdminUserTypes";
 import { roleOptions, statusOptions, mapDtoToAdminUser } from "../types/AdminUserTypes";
 import AdminUserDetailModal from "../components/AdminUserDetailModal";
 import useCommonCodeSelector from "../../common/hooks/useCommonCodeSelector";
 import type { CommonCodeDto } from "../../common/types";
+import Pagination from "../../../global/components/Pagination";
+import '../css/AdminTable.css';
+import type { PageResponse } from "../../../global/types/Paginationtypes";
 
 function AdminUserPage() {
+  // 공통코드 → 상태 라벨/색상
 
-
-  // DB 공통 코드 1. Redux의 공통 코드 스토어에서 특정 그룹 불러오기
+   // DB 공통 코드 1. Redux의 공통 코드 스토어에서 특정 그룹 불러오기
   const userStatusList = useCommonCodeSelector("userStatus") as CommonCodeDto[];
-
   // 빠른 조회를 위한 codeId = CommonCodeDto Mapping 2. 그 리스트를 Map 형태로 변환 
   const userStatusMap = useMemo(() => {
     const m = new Map<string, CommonCodeDto>();
     for (const row of userStatusList ?? []) m.set(row.codeId, row);
     return m;
   }, [userStatusList]);
-
-  //  codeId 포맷 함수 s = status
+  // 서버가 "CONFIRM" 처럼 단축형으로 줄 수 있어서 통일 시키기
   const toStatusCodeId = (s?: MemberStatus | null) =>
     s ? `USER_STATUS_${String(s).toUpperCase()}` : "";
-
-  // 상태(공통코드 기반 라벨 + 색상)
   const getStatusView = (status?: MemberStatus | null) => {
+    // 3. 예약 목록 렌더링 시, 상태 코드에 해당하는 공통코드(label, color) 참조
     const cc = userStatusMap.get(toStatusCodeId(status));
-    return {
-      label: cc?.codeName ?? status ?? "—", // 한글명 없으면 영문 fallback
-      color: cc?.attr1 ?? "#6c757d", // attr1에 HEX 색상 저장
-    };
+    return { label: cc?.codeName ?? status ?? "—", color: cc?.attr1 ?? "#6c757d" };
   };
 
-  //  상태값 관리
+  //  페이지 상태 
+  const [searchParams, setSearchParams] = useState<AdminUserSearchParams>({
+    pageNum: 1,
+    pageSize: 10,
+  });
+  // 목록 / 페이징 정보 상태 관리
   const [users, setUsers] = useState<AdminUser[]>([]);
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [updatingUserId, setUpdatingUserId] = useState<number | null>(null);
+  const [page, setPage] = useState<PageResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  //  목록 조회
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
     setErrorMsg(null);
-
+  
+    // 유저 목록 조회
     api
-      .get<{ users: AdminUserDto[] }>("/v1/admin/users", { params: { pageNum: 1 } })
+      .get<AdminUserListResponse>("/v1/admin/users", { params: searchParams })
       .then((res) => {
-        const list = Array.isArray(res.users) ? res.users : [];
-        if (mounted) setUsers(list.map(mapDtoToAdminUser));
+        if (!mounted) return;
+        setUsers((res.users ?? []).map(mapDtoToAdminUser));
+        setPage(res.page);
       })
       .catch((err) => {
         console.error("유저 목록 조회 불가:", err);
@@ -63,186 +65,157 @@ function AdminUserPage() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [searchParams]);
 
-  // 상세 모달 열기 / 닫기
-  const openDetail = useCallback((userId: number) => {
-    setSelectedUserId(userId);
-    setDetailOpen(true);
-  }, []);
+  // 상세 모달
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const openDetail = useCallback((userId: number) => { setSelectedUserId(userId); setDetailOpen(true); }, []);
+  const closeDetail = useCallback(() => { setDetailOpen(false); setSelectedUserId(null); }, []);
 
-  const closeDetail = useCallback(() => {
-    setDetailOpen(false);
-    setSelectedUserId(null);
-  }, []);
+  // 권한/상태 변경
+  const [updatingUserId, setUpdatingUserId] = useState<number | null>(null);
 
-  // 권한 변경
+  // 권한 변경 (ADMIN / VIP / USER)
   async function onChangeRole(userId: number, nextRole: Role) {
     const prev = users.find((u) => u.userId === userId)?.role;
     setUpdatingUserId(userId);
-    setUsers((list) =>
-      list.map((u) => (u.userId === userId ? { ...u, role: nextRole } : u))
-    );
-
+    setUsers((list) => list.map((u) => (u.userId === userId ? { ...u, role: nextRole } : u)));
     try {
       await api.patch(`/v1/admin/users/${userId}/role`, { role: nextRole });
-    } catch (err) {
+    } catch { 
       console.log("유저 권한 변경 실패");
-      setUsers((list) =>
-        list.map((u) =>
-          u.userId === userId ? { ...u, role: prev ?? u.role } : u
-        )
-      );
+      setUsers((list) => list.map((u) => (u.userId === userId ? { ...u, role: prev ?? u.role } : u)));
     } finally {
       setUpdatingUserId(null);
     }
   }
-
-  // 상태 변경
+  // 상태 변경 (ACTIVE / INACTIVE / WITHDRAWN)
   async function onChangeStatus(userId: number, nextStatus: MemberStatus) {
     const prev = users.find((u) => u.userId === userId)?.status;
     setUpdatingUserId(userId);
-    setUsers((list) =>
-      list.map((u) => (u.userId === userId ? { ...u, status: nextStatus } : u))
-    );
-
+    setUsers((list) => list.map((u) => (u.userId === userId ? { ...u, status: nextStatus } : u)));
     try {
       await api.patch(`/v1/admin/users/${userId}/status`, { status: nextStatus });
-    } catch (err) {
-      console.log("유저 상태 변경 실패");
-      setUsers((list) =>
-        list.map((u) =>
-          u.userId === userId ? { ...u, status: prev ?? u.status } : u
-        )
-      );
+    } catch {
+      setUsers((list) => list.map((u) => (u.userId === userId ? { ...u, status: prev ?? u.status } : u)));
     } finally {
       setUpdatingUserId(null);
     }
   }
+
+
+  // 페이지 변경 핸들러 
+  const handlePageChange = (nextPageNum: number) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      pageNum: nextPageNum,
+    }));
+  };
 
   return (
     <div className="container-fluid py-3">
       <h1>회원 관리 페이지</h1>
 
-      {/* 로딩 / 에러 처리 */}
+      {/* 요약 정보 */}
+      {page && (
+        <div className="text-end text-muted mt-2">
+          전체 {page.totalCount}건 ({page.pageNum}/{page.totalPage} 페이지)
+        </div>
+      )}
+
+      {/* 로딩/에러 */}
       {loading && (
         <div className="d-flex align-items-center gap-2 text-muted">
           <div className="spinner-border spinner-border-sm" role="status" />
           <span>불러오는 중…</span>
         </div>
       )}
-      {!loading && errorMsg && (
-        <div className="alert alert-danger" role="alert">
-          {errorMsg}
+      {!loading && errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
+
+      {!loading && !errorMsg && (
+        <div className="table-responsive mt-3">
+          <table className="table table-striped align-middle">
+            <thead className="table-light">
+              <tr>
+                <th style={{ minWidth: 140 }}>회원 이름</th>
+                <th style={{ minWidth: 200 }}>이메일</th>
+                <th style={{ width: 140 }}>Role</th>
+                <th style={{ width: 160 }}>가입일</th>
+                <th style={{ width: 160 }} className="d-none d-lg-table-cell">수정일</th>
+                <th style={{ width: 160 }} className="d-none d-xl-table-cell">마지막 로그인</th>
+                <th style={{ width: 160 }}>회원 상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-5 text-muted">
+                    <i className="bi bi-inbox fs-1 d-block mb-3"></i>
+                    <p className="mb-0">등록된 회원이 없습니다.</p>
+                  </td>
+                </tr>
+              ) : (
+                users.map((user) => (
+                  <tr key={user.userId}>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn btn-link p-0 text-decoration-none"
+                        onClick={() => openDetail(user.userId)}
+                      >
+                        {user.name}
+                      </button>
+                    </td>
+                    <td className="text-truncate" style={{ maxWidth: 260 }}>{user.email}</td>
+                    <td>
+                      <select
+                        value={user.role}
+                        disabled={updatingUserId === user.userId}
+                        onChange={(e) => onChangeRole(user.userId, e.target.value as Role)}
+                        className="form-select form-select-sm"
+                      >
+                        {roleOptions.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>{formatKST(user.createdAt)}</td>
+                    <td className="d-none d-lg-table-cell">{formatKST(user.updatedAt)}</td>
+                    <td className="d-none d-xl-table-cell">{formatKST(user.lastLogin)}</td>
+                    <td>
+                      <select
+                        value={user.status}
+                        disabled={updatingUserId === user.userId}
+                        onChange={(e) => onChangeStatus(user.userId, e.target.value as MemberStatus)}
+                        className="form-select form-select-sm"
+                      >
+                        {statusOptions.map((opt) => {
+                          const view = getStatusView(opt);
+                          return <option key={opt} value={opt}>{view.label}</option>;
+                        })}
+                      </select>
+                      {(() => {
+                        const view = getStatusView(user.status);
+                        return (
+                          <span className="badge ms-2" style={{ backgroundColor: view.color, color: "#fff" }}>
+                            {view.label}
+                          </span>
+                        );
+                      })()}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          {/* 페이지네이션 */}
+          {page && <Pagination page={page} onPageChange={handlePageChange} />}
         </div>
       )}
 
-      {!loading && !errorMsg && (
-        <>
-          {/* 반응형 UI  */}
-          <div className="d-none d-md-block">
-            <div className="table-responsive">
-              <table className="table table-striped align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th style={{ minWidth: 140 }}>회원 이름</th>
-                    <th style={{ minWidth: 200 }}>이메일</th>
-                    <th style={{ width: 140 }}>Role</th>
-                    <th style={{ width: 160 }}>가입일</th>
-                    <th style={{ width: 160 }} className="d-none d-lg-table-cell">
-                      수정일
-                    </th>
-                    <th style={{ width: 160 }} className="d-none d-xl-table-cell">
-                      마지막 로그인
-                    </th>
-                    <th style={{ width: 160 }}>회원 상태</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user.userId}>
-                      <td>
-                        <button
-                          type="button"
-                          className="btn btn-link p-0 text-decoration-none"
-                          onClick={() => openDetail(user.userId)}
-                        >
-                          {user.name}
-                        </button>
-                      </td>
-                      <td className="text-truncate" style={{ maxWidth: 260 }}>
-                        {user.email}
-                      </td>
-                      <td>
-                        <select
-                          value={user.role}
-                          disabled={updatingUserId === user.userId}
-                          onChange={(e) =>
-                            onChangeRole(user.userId, e.target.value as Role)
-                          }
-                          className="form-select form-select-sm"
-                        >
-                          {roleOptions.map((opt) => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-
-                      <td>{formatKST(user.createdAt)}</td>
-                      <td className="d-none d-lg-table-cell">
-                        {formatKST(user.updatedAt)}
-                      </td>
-                      <td className="d-none d-xl-table-cell">
-                        {formatKST(user.lastLogin)}
-                      </td>
-                      <td>
-                        <select
-                          value={user.status}
-                          disabled={updatingUserId === user.userId}
-                          onChange={(e) => 
-                          onChangeStatus(user.userId, e.target.value as MemberStatus)
-                          }
-                          className="form-select form-select-sm"
-                        >
-                          {statusOptions.map((opt) => {
-                            const view = getStatusView(opt);
-                            return (
-                              <option key={opt} value={opt}>
-                                {view.label}
-                              </option>
-                            );
-                          })}
-                        </select>
-                        {(() => {
-                          const view = getStatusView(user.status);
-                          return (
-                            <span
-                              className="badge ms-2"
-                              style={{
-                                backgroundColor: view.color,
-                                color: "#fff",
-                              }}
-                            >
-                              {view.label}
-                            </span>
-                          );
-                        })()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </>
-      )}
-      <AdminUserDetailModal
-        userId={selectedUserId}
-        open={detailOpen}
-        onClose={closeDetail}
-      />
+      <AdminUserDetailModal userId={selectedUserId} open={detailOpen} onClose={closeDetail} />
     </div>
   );
 }

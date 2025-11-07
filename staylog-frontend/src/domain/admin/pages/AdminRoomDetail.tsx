@@ -1,6 +1,6 @@
 
 import { Container, Carousel, Image } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
@@ -31,8 +31,10 @@ function AdminAccommodationDetail() {
     const [loading, setLoading] = useState(true);
     // 에러 메세지
     const [error, setError] = useState<string | null>(null);
+
     // 페이지 이동
     const navigate = useNavigate();
+    const location = useLocation();
 
     // 객실 상세데이터를 가져오는 API 호출
     useEffect(() => {
@@ -87,11 +89,6 @@ function AdminAccommodationDetail() {
         return <div style={{ padding: "40px", textAlign: "center" }}>객실 정보를 찾을 수 없습니다</div>;
     }
 
-    //숙소 상세 페이지 이동 핸들러
-    const handleGoToAccommDetail = (accommodationId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}`);
-    };
-
     // 상태 업데이트 API 호출 함수
     const updateRoomStatus = async (roomId: number, status: 'Y' | 'N') => {
         try {
@@ -106,36 +103,78 @@ function AdminAccommodationDetail() {
         }
     };
 
+    //숙소 상세 페이지 이동 핸들러
+    const handleGoToAccommDetail = (accommodationId: number) => {
+        navigate(`/admin/accommodations/${accommodationId}`);
+    };
+
+    // 객실 목록 페이지 이동 핸들러
+    const handleGoToList = () => {
+        if (location.state?.from) {
+            // 저장된 검색 상태와 함께 목록으로 돌아가기
+            navigate(location.state.from, {
+                state: {
+                    searchParams: location.state.searchParams,
+                    inputKeyword: location.state.inputKeyword
+                }
+            });
+        } else {
+            // state가 없으면 그냥 뒤로가기
+            navigate(-1);
+        }
+    };
+
+    //객실 수정 페이지 이동 핸들러
+    const handleGoToUpdate = (roomId: number) => {
+        navigate(`/admin/accommodations/${accommodationId}/rooms/${roomId}/update`);
+    }
+
+
     // 전체 화면 너비 사용 : Container fluid
     return <>
         <Container fluid className="p-0">
-            <h3>{data.name}
-                <span className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '0.8rem' }}>
-                    {data.deletedYn === 'N' ? '활성화' : '비활성화'}
-                </span>
+            <h3 className="justify-content-between d-flex">
+                <div>
+                    {data.name}
+                    <span className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '0.8rem' }}>
+                        {data.deletedYn === 'N' ? '활성화' : '비활성화'}
+                    </span>
+                </div>
+                <div className="">
+                    <button
+                        className="btn btn-sm btn-outline-secondary me-1"
+                        title="객실 목록으로 돌아가기"
+                        onClick={handleGoToList} // 이동 함수 연결
+                    >
+                        <i className="bi bi-arrow-left"></i> 뒤로가기
+                    </button>
+
+                </div>
             </h3>
-            <div className="text-end text-muted">
+            <div className="text-muted ">
                 <span className='me-2'>등록일 : {formatKST(data.createdAt)}</span>
                 <span>수정일 : {formatKST(data.updatedAt)}</span>
             </div>
 
-            <div className="mt-3 justify-content-end d-flex gap-2">
-                <button title="수정하기" className="btn btn-sm btn-primary mb-3" onClick={() => navigate(-1)}>수정하기</button>
+            <div className="justify-content-end d-flex mt-5 gap-1">
+                <button title="수정하기" className="btn btn-sm btn-primary" onClick={() => handleGoToUpdate(data.roomId!)}>수정하기</button>
                 {data.deletedYn === 'N' ? (
-                    <button title="비활성화하기" className="btn btn-sm btn-danger text-white mb-3" onClick={() => updateRoomStatus(data.roomId!, 'Y')}>비활성화하기</button>
+                    <button title="비활성화하기" className="btn btn-sm btn-danger text-white" onClick={() => updateRoomStatus(data.roomId!, 'Y')}>비활성화하기</button>
                 ) : (
-                    <button title="활성화하기" className="btn btn-sm btn-success mb-3" onClick={() => updateRoomStatus(data.roomId!, 'N')}>활성화하기</button>
+                    <button title="활성화하기" className="btn btn-sm btn-success" onClick={() => updateRoomStatus(data.roomId!, 'N')}>활성화하기</button>
                 )}
                 <button
-                    className="btn btn-sm btn-outline-primary mb-3"
+                    className="btn btn-sm btn-outline-primary"
                     title="숙소 상세 보기"
                     onClick={() => handleGoToAccommDetail(data.accommodationId!)} // 이동 함수 연결
-                >숙소 상세
-                    <i className="bi bi-arrow-left ms-1"></i> </button>
+                >
+                    숙소 상세 <i className="bi bi-arrow-left"></i>
+                </button>
             </div>
-            <table className="table table-bordered mt-5" style={{ tableLayout: 'fixed' }}>
+
+            <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed' }}>
                 <colgroup>
-                    <col style={{ width: '15%'}} />
+                    <col style={{ width: '15%' }} />
                     <col style={{ width: '85%' }} />
                 </colgroup>
                 <tbody>
@@ -150,7 +189,7 @@ function AdminAccommodationDetail() {
                     <tr>
                         <th className="bg-light text-center" style={{ width: '30%' }}>최대 인원</th>
                         <td>
-                             <table className="table table-sm mb-0" style={{ width: '30%' }}>
+                            <table className="table table-sm mb-0" style={{ width: '30%' }}>
                                 <tbody>
                                     {data.maxAdult !== 0 && (
                                         <tr>
@@ -177,7 +216,7 @@ function AdminAccommodationDetail() {
                     <tr>
                         <th className="bg-light text-center">침대</th>
                         <td>
-                             <table className="table table-sm mb-0" style={{ width: '30%' }}>
+                            <table className="table table-sm mb-0" style={{ width: '30%' }}>
                                 <tbody>
                                     {data.singleBed !== 0 && (
                                         <tr>
@@ -212,16 +251,16 @@ function AdminAccommodationDetail() {
                         <th className="bg-light text-center">면적</th>
                         <td>{data.area} m²</td>
                     </tr>
-                    {data.checkInTime && (
+                    {data.checkIn && (
                         <tr>
                             <th className="bg-light">체크인</th>
-                            <td>{data.checkInTime}</td>
+                            <td>{data.checkIn}</td>
                         </tr>
                     )}
-                    {data.checkOutTime && (
+                    {data.checkOut && (
                         <tr>
                             <th className="bg-light">체크아웃</th>
-                            <td>{data.checkOutTime}</td>
+                            <td>{data.checkOut}</td>
                         </tr>
                     )}
                     <tr>

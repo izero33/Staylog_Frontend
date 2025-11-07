@@ -230,8 +230,24 @@ function SignupForm() {
    }
 
 
+
+   const isAllValid = Object.values(valid).every(value => value === true);
+   const isAllDirty = Object.values(dirty).every(value => value === true);
+   const isButtonEnabled = isAllValid && isAllDirty;
+
+
    // 회원가입 요청 함수
    async function handleSubmit() {
+
+      setDirty({
+         loginId: true,
+         password: true,
+         password2: true,
+         nickname: true,
+         name: true,
+         email: true,
+         phone: true
+      })
 
       // valid 값 검증
       const allValid = Object.values(valid).every(value => value === true);
@@ -289,6 +305,7 @@ function SignupForm() {
                      (!valid.loginId &&
                         <p className="form-text text-danger mt-1">유효하지 않은 아이디입니다. 영문을 포함하여 4~16글자 입력해주세요</p>
                      )}
+                  {confirm.loginId && <p className="form-text text-success mt-1 fw-semibold">사용 가능</p>}
                </div>
 
 
@@ -326,6 +343,7 @@ function SignupForm() {
                      (!valid.nickname &&
                         <p className="form-text text-danger mt-1">닉네임을 입력해주세요</p>
                      )}
+                  {confirm.nickname && <p className="form-text text-success mt-1 fw-semibold">사용 가능</p>}
                </div>
 
 
@@ -378,7 +396,7 @@ function SignupForm() {
 
 
                <div className="mt-5">
-                  <button onClick={handleSubmit} type="button" className="btn btn-dark w-100 py-2">
+                  <button onClick={handleSubmit} type="button" disabled={!isButtonEnabled} className="btn btn-dark w-100 py-2">
                      가입 하기
                   </button>
                </div>

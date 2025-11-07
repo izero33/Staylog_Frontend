@@ -51,7 +51,7 @@ function BookingPanel({
   const [monthsShown, setMonthsShown] = useState(2);
 
   // 인원 수 상태 (성인, 어린이, 유아 순서)
-  const [adultCount, setAdultCount] = useState(2);
+  const [adultCount, setAdultCount] = useState(1);
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
 
@@ -81,8 +81,8 @@ function BookingPanel({
   // 숙박일 계산
   const nights = checkIn && checkOut
     ? Math.round(
-      ((new Date(checkOut).setHours(0, 0, 0, 0) - new Date(checkIn).setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
-    )
+        ((new Date(checkOut).setHours(0, 0, 0, 0) - new Date(checkIn).setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
+      )
     : 0;
 
   // 총 인원 계산
@@ -93,9 +93,10 @@ function BookingPanel({
   const totalPrice = roomPrice > 0 ? Math.round(roomPrice * nights) : 0;
 
   // 예약 불가일 -> Date 배열
-  const excludeDates = (disabledDates ?? []).map(
-    d => new Date(d + "T00:00:00")
-  );
+  const excludeDates = (disabledDates ?? []).map(d => {
+    const date = new Date(d + "T00:00:00");
+    return date;
+  });
   // 화면 넓이에 따라 1/2개월 자동 전환
   useEffect(() => {
     const recalc = () => {

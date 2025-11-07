@@ -20,10 +20,8 @@ import AccommodationInfo from '../components/AccommodationInfo';
 
 function AccommodationDetail() {
     // 예비용 이미지
-    const img1 = "https://picsum.photos/1400/500";
-    const img2 = "https://picsum.photos/1400/500?grayscale";
-    const img3 = "https://picsum.photos/200/300/?blur";
-    const img4 = "https://picsum.photos/id/237/200/300";
+    const img1 = "https://picsum.photos/2100/900"; // 21:9 비율
+    const img2 = "https://picsum.photos/2100/900/?grayscale";
 
     // URL 파라미터에서 숙소 ID 추출
     const { id: idString } = useParams<{ id: string }>();
@@ -160,22 +158,21 @@ function AccommodationDetail() {
 
     // 전체 화면 너비 사용 : Container fluid
     return <>
-        <Container className="p-0 accommodationAll">
-            {/* 1. 숙소 대표 이미지 영역 */}
-            <div className="accommodationImages images-slider">
-                <Carousel className="w-100">
-                    <Carousel.Item>
-                        {/* 이미지 비율에 맞게 나오게 함*/}
-                        <Image src={img1} alt="숙소 이미지 1" className="d-block w-100" style={{ height: "36rem", objectFit: "cover" }} />
-                    </Carousel.Item>
-                    <Carousel.Item>
-                        <Image src={img2} alt="숙소 이미지 2" className="d-block w-100" style={{ height: "36rem", objectFit: "cover" }} />
-                    </Carousel.Item>
-                </Carousel>
-            </div>
+        {/* 숙소 대표 이미지 영역 */}
+        <div className="accommodationImages images-slider ratio ratio-21x9 mb-3">
+            <Carousel className="w-100 h-100">
+                <Carousel.Item>
+                    <img src={img1} alt="숙소 이미지 1" className="carousel-img" />
+                </Carousel.Item>
+                <Carousel.Item>
+                    <img src={img2} alt="숙소 이미지 2" className="carousel-img" />
+                </Carousel.Item>
+            </Carousel>
+        </div>
 
+        <Container className="p-0 accommodationAll">
             {/* 숙소 상세 내용, 객실 목록, 리뷰 목록, 위치 지도, 안내사항, 예약폼 영역 */}
-            <Container className="mt-4 mb-5">
+            <Container className="mb-5 mt-0">
                 <Row>
                     {/* 왼쪽 : 숙소 상세페이지 영역*/}
                     <Col lg={8}>
@@ -240,7 +237,7 @@ function AccommodationDetail() {
                             {/* 해당 숙소 리뷰 목록 컴포넌트 */}
                             <div className="accommodationReviewList mb-4" id="reviewList">
                                 <h5 className="mb-0">
-                                    방문자 리뷰 <small style={{ fontSize: "0.8em", color: "rgba(101, 101, 101, 1)" }}>({data.reviews?.length || 0})</small>
+                                    방문자 리뷰 <small style={{ fontSize: "0.8rem", color: "rgba(101, 101, 101, 1)" }}>({data.reviews?.length || 0})</small>
                                 </h5>
                                 {data.reviews && data.reviews.length > 0 ? (
                                     <ReviewList reviews={data.reviews.slice(0, 7)} />
@@ -278,8 +275,8 @@ function AccommodationDetail() {
                                 onClickGuests={() => alert("인원 선택창 열림")}
                                 showRoomSelect={true}
                                 disabledDates={blockedDates} // 선택된 객실 기준 블락 날짜 전달
-                                onSelectRoom={(room) => setBookingSelectedRoom(room)} // 객실 선택 시 블락 날짜 업데이트
-                            />
+                                // 객실 선택 시 블락 날짜 업데이트
+                                onSelectRoom={(room) => setBookingSelectedRoom(room)} />
                         </div>
                     </Col>
                 </Row>
@@ -298,7 +295,7 @@ function AccommodationDetail() {
                 onHide={() => setOpenReserve(false)}
                 placement="bottom"
                 className="d-lg-none"
-                style={{ height: "75vh" }}
+                style={{ maxHeight: "70vh", minHeight: "fit-content" }}
                 aria-labelledby="reserve-panel-title">
                 <Offcanvas.Header closeButton>
                     <Offcanvas.Title id="reserve-panel-title">예약</Offcanvas.Title>

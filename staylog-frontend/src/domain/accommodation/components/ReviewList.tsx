@@ -69,10 +69,13 @@ const ReviewList = ({ reviews}: ReviewListProps) => {
                         <Row className="g-2 mb-3">
                             {[0, 1, 2].map((i) => (
                                 <Col key={i} xs={4}>
-                                    <Image
-                                        src = {`https://picsum.photos/300/200?random=${i + review.boardId}`}
-                                        className = "w-100"
-                                        style={{ height:"180px", objectFit:"cover" }}/>
+                                    <div style={{ width: "100%", aspectRatio: "1 / 1", overflow: "hidden", borderRadius: "0.25rem"}}>
+                                        <Image
+                                        src={`https://picsum.photos/300/300?random=${i + review.boardId}`} // 예시 이미지
+                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                        alt={`review-img-${i}`}
+                                        fluid/>
+                                    </div>
                                 </Col>
                             ))}
                         </Row>
@@ -97,13 +100,13 @@ const ReviewList = ({ reviews}: ReviewListProps) => {
                                     onClick={() => toggleContent(review.boardId)}
                                     onFocus={(e) => e.currentTarget.blur()} // 포커스 제거
                                     style={{
-                                        fontSize: "0.9rem",
-                                        color: "#000",
-                                        fontWeight: 600,
-                                        textDecoration: "none",
-                                        backgroundColor: "transparent",  // 기본 배경 색상 없애기
-                                        border: "none",                  // 테두리 없애기
-                                        boxShadow: "none",               // 클릭시 생기는 그림자 제거
+                                        fontSize : "0.9rem",
+                                        color : "#000",
+                                        fontWeight : 600,
+                                        textDecoration : "none",
+                                        backgroundColor : "transparent", // 기본 배경 색상 없애기
+                                        border : "none", // 테두리 없애기
+                                        boxShadow : "none" // 클릭시 생기는 그림자 제거
                                     }}>
                                     {isOpened ? "닫기 " : "더보기 "}
                                     <i className={`bi ${isOpened ? "bi-chevron-up" : "bi-chevron-down"}`} style={{ color: "#000" }}></i>

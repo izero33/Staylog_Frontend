@@ -13,7 +13,7 @@ import AdminReservationDetailModal from '../components/AdminReservationDetailMod
     Accordion : 클릭 시 펼쳐지는 기능
 */
 
-function AdminAccommodationDetail() {
+function AdminBoardDetail() {
     // 게시글 번호  /admin/board/:boardId 에서 boardId경로 변수 얻어내기
     const { boardId: boardIdIdStr } = useParams();
     // 경로 변수를 숫자로 변환
@@ -156,10 +156,10 @@ function AdminAccommodationDetail() {
                 </button>
             </div>
 
-            <table className="table table-bordered mt-5" style={{ tableLayout: 'fixed' }}>
+            <table className="table table-bordered mt-5">
                 <colgroup>
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '85%' }} />
+                    <col style={{ width: '25%' }} />
+                    <col style={{ width: '75%' }} />
                 </colgroup>
                 <tbody>
                     <tr>
@@ -229,4 +229,4 @@ function AdminAccommodationDetail() {
     </>
 }
 
-export default AdminAccommodationDetail;
+export default AdminBoardDetail;

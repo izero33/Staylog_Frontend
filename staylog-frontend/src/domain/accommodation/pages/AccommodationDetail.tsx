@@ -237,7 +237,7 @@ function AccommodationDetail() {
                             {/* 해당 숙소 리뷰 목록 컴포넌트 */}
                             <div className="accommodationReviewList mb-4" id="reviewList">
                                 <h5 className="mb-0">
-                                    방문자 리뷰 <small style={{ fontSize: "0.8rsem", color: "rgba(101, 101, 101, 1)" }}>({data.reviews?.length || 0})</small>
+                                    방문자 리뷰 <small style={{ fontSize: "0.8rem", color: "rgba(101, 101, 101, 1)" }}>({data.reviews?.length || 0})</small>
                                 </h5>
                                 {data.reviews && data.reviews.length > 0 ? (
                                     <ReviewList reviews={data.reviews.slice(0, 7)} />
@@ -275,8 +275,8 @@ function AccommodationDetail() {
                                 onClickGuests={() => alert("인원 선택창 열림")}
                                 showRoomSelect={true}
                                 disabledDates={blockedDates} // 선택된 객실 기준 블락 날짜 전달
-                                onSelectRoom={(room) => setBookingSelectedRoom(room)} // 객실 선택 시 블락 날짜 업데이트
-                            />
+                                // 객실 선택 시 블락 날짜 업데이트
+                                onSelectRoom={(room) => setBookingSelectedRoom(room)} />
                         </div>
                     </Col>
                 </Row>

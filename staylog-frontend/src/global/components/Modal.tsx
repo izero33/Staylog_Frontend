@@ -3,7 +3,7 @@ import CouponForm from "../../domain/mypage/pages/CouponForm";
 import type { ModalProps } from "../types/ModalMode";
 
 
-function Modal({ isOpen, onClose, mode, onUseCoupon }: ModalProps) {
+function Modal({ isOpen, onClose, mode, onUseCoupon, children }: ModalProps) {
 
    // 배경 클릭시 모달창 비활성화
    function handleBackgroundClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -32,7 +32,7 @@ function Modal({ isOpen, onClose, mode, onUseCoupon }: ModalProps) {
                   {/* 타입이 추가될 때마다 항목 추가해서 사용하면 됩니다. */}
                   {mode == 'login' && <LoginForm onClose={onClose} />}
                   {mode === 'coupon' && <CouponForm onClose={onClose} mode={mode} onUseCoupon={onUseCoupon} />}
-
+                  {children}
                </div>
             </div>
          </div>

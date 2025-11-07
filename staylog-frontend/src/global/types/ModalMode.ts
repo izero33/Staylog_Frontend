@@ -5,7 +5,7 @@
 import type { couponType } from "../../domain/mypage/types/couponTypes";
 
 // (타입이 추가될 때마다 항목 추가해서 사용하면 됩니다.)
-export type ModalMode = 'none' | 'login' | 'search' | 'coupon';
+export type ModalMode = 'none' | 'login' | 'search' | 'coupon' | 'delete';
 
 
 
@@ -13,6 +13,7 @@ export type ModalMode = 'none' | 'login' | 'search' | 'coupon';
 export interface ModalProps {
    isOpen: boolean;
    onClose: () => void;
-   mode: ModalMode;
+   mode?: ModalMode;
    onUseCoupon?: (coupon: couponType) => void;
+   children?: React.ReactNode;
 }

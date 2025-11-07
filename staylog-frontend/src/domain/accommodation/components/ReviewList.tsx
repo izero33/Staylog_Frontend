@@ -104,9 +104,9 @@ const ReviewList = ({ reviews}: ReviewListProps) => {
                                         color : "#000",
                                         fontWeight : 600,
                                         textDecoration : "none",
-                                        backgroundColor : "transparent",  // 기본 배경 색상 없애기
-                                        border : "none",                  // 테두리 없애기
-                                        boxShadow : "none",               // 클릭시 생기는 그림자 제거
+                                        backgroundColor : "transparent", // 기본 배경 색상 없애기
+                                        border : "none", // 테두리 없애기
+                                        boxShadow : "none" // 클릭시 생기는 그림자 제거
                                     }}>
                                     {isOpened ? "닫기 " : "더보기 "}
                                     <i className={`bi ${isOpened ? "bi-chevron-up" : "bi-chevron-down"}`} style={{ color: "#000" }}></i>

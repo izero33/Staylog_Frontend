@@ -21,14 +21,21 @@ const CommentForm = ({ parentId, OriginalContent = "", onSubmit, onCancel } : Co
     };
 
     return <>
-        <form onSubmit={handleSubmit} className="mb-3 w-100">
+        <form onSubmit={handleSubmit} className="commentForm mb-2 w-100">
             {/* 댓글과 답글을 입력*/}
-            <textarea className="form-control mb-2" rows={4} value={content}
-                onChange={(e) => setContent(e.target.value)}
+            <textarea className="form-control mb-2" value={content}
+                onChange={(e) => {
+                    setContent(e.target.value);
+                    const el = e.target;
+                    el.style.height = "auto";
+                    el.style.height = el.scrollHeight + "px";
+                }}
                 placeholder={parentId ? "답글 내용을 입력하세요" : "댓글 내용을 입력하세요"}
-                style={{ resize : "none" }}/>
-            <div className="d-flex justify-content-end gap-2">
-                <Button type="submit" variant="dark" size="sm">등록</Button>
+                style={{ fontSize : "0.9rem", resize: "none", overflow: "hidden", minHeight: "8rem" }}/>
+            <div className="d-flex justify-content-end gap-2 mt-3">
+                <Button type="submit" variant="dark" size="sm">
+                    등록
+                </Button>
                 {/* 수정하는 경우 취소 버튼 보여주기 */}
                 {onCancel && 
                     <Button type="button" variant="secondary" size="sm" onClick={onCancel}>

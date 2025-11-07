@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { type AdminReservation} from "../types/AdminReservationTypes";
+import { type AdminReservation } from "../types/AdminReservationTypes";
 import { useEffect, useMemo, useState } from "react";
 import { formatKST } from "../../../global/utils/date";
 import api from "../../../global/api";
@@ -8,9 +8,8 @@ import AdminStatusPill from "../components/AdminStatusPill";
 import useCommonCodeSelector from "../../common/hooks/useCommonCodeSelector";
 import type { CommonCodeDto } from "../../common/types";
 import Pagination from "../../../global/components/Pagination";
+import '../css/AdminTable.css';
 import type { PageResponse } from "../../../global/types/Paginationtypes";
-
-
 
 
 function AdminReservationPage() {
@@ -59,6 +58,37 @@ function AdminReservationPage() {
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+    // 이번달 예약 / 매출 통계 타입 정의
+    type AdminMonthlyStats = {
+      totalCount: number;
+      confirmedCount: number;
+      canceledCount: number;
+      monthlyRevenue: number;
+    };
+
+    // 상태 관리
+    const [stats, setStats] = useState<AdminMonthlyStats | null>(null);
+    const [statsLoading, setStatsLoading] = useState<boolean>(true);
+    
+    // 페이지 첫 렌더링 시 월간 통계 조회 하기
+    useEffect(() => {
+      let mounted = true;
+      setStatsLoading(true);
+      api
+        .get<AdminMonthlyStats>("/v1/admin/reservations/stats/monthly")
+        .then((res) => {
+          const root = (res as any)?.data?.data ?? (res as any)?.data ?? (res as any);
+          if (mounted) setStats(root as AdminMonthlyStats);
+        })
+        .catch((err) => {
+          if (mounted) setStats(null);
+            console.error("월간 통계 조회 실패:", err);
+        })
+        .finally(() => mounted && setStatsLoading(false));
+        
+      return () => { mounted = false; };
+    }, []);
+
     // 목록 조회
       useEffect(() => {
         let mounted = true; // 컴포넌트가 현재 화면에 살아있는지 추적하기 위함
@@ -71,9 +101,10 @@ function AdminReservationPage() {
             const list = Array.isArray(root?.reservations) ? root.reservations : [];
             const pageObj = root?.page ?? null;
             console.log("✅ 응답 구조", res);
-            if (mounted)
+            if (mounted) {
               setReservations(list);
-              setPage(pageObj)
+              setPage(pageObj);
+            }
           })
           .catch((err) => {
             console.error("예약 목록 조회 불가:", err);
@@ -109,6 +140,44 @@ function AdminReservationPage() {
     <div className="container-fluid py-3">
         <h1>예약 관리 페이지</h1>
 
+        {/* 이번 달 요약 카드  ( 매출, 예약 건 , 취소 건, 확정 건 )*/}
+        <div className="row g-3 mt-2">
+          <div className="col-12 col-sm-6 col-xl-3">
+            <div className="card shadow-sm h-100">
+              <div className="card-body">
+                <div className="text-muted small">이번 달 총 예약</div>
+                <div className="fs-4">{statsLoading ? "—" : (stats?.totalCount ?? 0)}</div>
+              </div>
+            </div>
+          </div>
+          <div className="col-12 col-sm-6 col-xl-3">
+            <div className="card shadow-sm h-100">
+              <div className="card-body">
+                <div className="text-muted small">확정</div>
+                <div className="fs-4">{statsLoading ? "—" : (stats?.confirmedCount ?? 0)}</div>
+              </div>
+            </div>
+          </div>
+          <div className="col-12 col-sm-6 col-xl-3">
+            <div className="card shadow-sm h-100">
+              <div className="card-body">
+                <div className="text-muted small">취소</div>
+                <div className="fs-4">{statsLoading ? "—" : (stats?.canceledCount ?? 0)}</div>
+              </div>
+            </div>
+          </div>
+          <div className="col-12 col-sm-6 col-xl-3">
+            <div className="card shadow-sm h-100">
+              <div className="card-body">
+                <div className="text-muted small">이번 달 매출</div>
+                <div className="fs-4">
+                  {statsLoading ? "—" : `${(stats?.monthlyRevenue ?? 0).toLocaleString("ko-KR")}원`}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* 요약 정보 */}
       {page && (
         <div className="text-end text-muted mt-2">
@@ -128,23 +197,25 @@ function AdminReservationPage() {
         {errorMsg}
         </div>
       )}
-          <table className="table table-striped align-middle">
+          <table className="table table-striped align-middle text-center">
               <thead className="table-light">
                   <tr>
+                    <th style={{ width: '6%' }}>번호</th>
                       <th>회원이름</th>
                       <th>숙소명</th>
                       <th>예약일</th>
-                      {/* <th>결제일</th> */}
+                      <th>금액</th>
                       <th>체크인</th>
                       <th>체크아웃</th>
                       <th>예약 상태</th>
                   </tr>
               </thead>
               <tbody>
-                  {reservations.map((res) => {
+                  {reservations.map((res, index) => {
                     const view = getStatusView(res.status, res.statusName, res.statusColor);
                     return (
                       <tr key={res.bookingId}>
+                        <td>{page ? (page.pageNum - 1) * page.pageSize + index + 1 : index + 1}</td>
                           <td>
                             <button 
                             type="button"
@@ -156,6 +227,8 @@ function AdminReservationPage() {
                             </button></td>
                           <td>{res.accommodationName ?? res.roomName ?? "—"}</td>
                           <td>{formatKST(res.createdAt)}</td>
+                          <td className="text-center">{res.amount !== null && res.amount !== undefined
+                                ? res.amount.toLocaleString('ko-KR') : '-'}원</td>
                           <td>{formatKST(res.checkIn)}</td>
                           <td>{formatKST(res.checkOut)}</td>
                           <td className="text-center">

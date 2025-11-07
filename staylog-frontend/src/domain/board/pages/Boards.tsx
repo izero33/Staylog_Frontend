@@ -65,7 +65,7 @@ function Boards() {
 
 
     // 게시글 목록 가져오기      
-    const fetchBoards = async (pageNum: number = 1) =>{
+    const fetchBoards = async (pageNum: number = 1, sortOption?: "latest" | "likes" | "views") =>{
 
       try {
 
@@ -81,7 +81,7 @@ function Boards() {
             pageNum,
             pageSize: pageInfo.pageSize,
             regionCodes: validRegions,
-            sort: pageInfo.sort
+            sort: sortOption || pageInfo.sort 
           }
         });
 
@@ -91,17 +91,16 @@ function Boards() {
 
         // 게시글 목록에 넣기
         setBoards(list);
-        setPageInfo({
-          ...pageInfo,
+        setPageInfo((prev) =>({
+          ...prev,
           pageNum: page.pageNum || 1,
           startPage: page.startPage || 1,
           endPage: page.endPage || 1,
           totalPage: page.totalPage || 1,
           totalCount: page.totalCount || 0,
-          pageSize: page.pageSize,
-          sort: page.sort || "latest",
-          regionCodes: page.regionCodes || []
-        })
+          pageSize: page.pageSize || prev.pageSize,
+          regionCodes: page.regionCodes || prev.regionCodes
+        }))
           
           console.log("📦 불러온 게시글 목록:", res);
           
@@ -123,13 +122,11 @@ function Boards() {
       }));
       
       setIsSortOpen(false); // 선택 후 닫기
-      
-      // 다시 게시글 목록 조회
-      fetchBoards(1);    
+       
     };
     
     useEffect(()=>{  
-        fetchBoards(1);
+        fetchBoards(1, pageInfo.sort);
     },[selectedRegions, boardType, pageInfo.sort]);
     
 
@@ -235,7 +232,7 @@ function Boards() {
                       </td>
                       <td>{board.userNickName || board.userName || board.userId}</td>
                       <td>{board.viewsCount || 0}</td>
-                      <td>{board.likes || 0}</td>
+                      <td>{board.likesCount || 0}</td>
                       <td>{board.createdAt?.split("T")[0]}</td>
                     </tr>
                   ))

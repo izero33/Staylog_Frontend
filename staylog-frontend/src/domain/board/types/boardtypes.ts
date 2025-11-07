@@ -19,7 +19,7 @@ export type BoardDto = {
    title: string;             // 제목
    content: string;           // 내용
    rating?: number | 0;    // 평점
-   likes?: number;            // 좋아요 수
+   likesCount?: number;            // 좋아요 수
    viewsCount?: number;       // 조회수
    createdAt?: string;        // 작성일
 

@@ -72,7 +72,7 @@ const adminRoute: RouteObject = {
       { path: "reservations", element: <AdminReservationPage /> },  // /admin/reservations
       { path: "boards", element: <AdminBoardPage /> },  // /admin/boards
       { path: "boards/:boardId", element: <AdminBoardDetail /> },  // /admin/boards/:boardId
-      { path: "coupon", element: <AdminCouponPage /> },  // /admin/boards
+      { path: "coupon", element: <AdminCouponPage /> },  // /admin/coupon
     ],
 };
 

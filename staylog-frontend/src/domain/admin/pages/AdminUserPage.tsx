@@ -36,12 +36,13 @@ function AdminUserPage() {
     pageNum: 1,
     pageSize: 10,
   });
+  const [inputKeyword, setInputKeyword] = useState<string>("");
+
   // 목록 / 페이징 정보 상태 관리
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [page, setPage] = useState<PageResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
 
   useEffect(() => {
     let mounted = true;
@@ -103,7 +104,26 @@ function AdminUserPage() {
       setUpdatingUserId(null);
     }
   }
-
+  // 검색 핸들 추가
+  const handleSearch = () => {
+    if (!inputKeyword.trim()) {
+      alert("검색어를 입력해주세요.");
+      return;
+    }
+    setSearchParams(prev => ({
+      ...prev,
+      keyword: inputKeyword.trim(),
+      pageNum: 1,
+    }));
+  };
+  // 검색 초기화
+  const handleReset = () => {
+    setInputKeyword("");
+    setSearchParams({
+      pageNum: 1,
+      pageSize: 10,
+    });
+  };
 
   // 페이지 변경 핸들러 
   const handlePageChange = (nextPageNum: number) => {
@@ -116,6 +136,27 @@ function AdminUserPage() {
   return (
     <div className="container-fluid py-3">
       <h1>회원 관리 페이지</h1>
+
+      <div className="d-flex align-items-center mt-2">
+        <div className="ms-auto d-flex gap-2 flex-wrap">
+          <div className="input-group">
+            <input
+              type="text"
+              placeholder="회원 이름 검색"
+              className="form-control form-control-sm"
+              value={inputKeyword}
+              onChange={(e) => setInputKeyword(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+            />
+            <button title="검색" className="btn btn-sm btn-outline-secondary" onClick={handleSearch}>
+              <i className="bi bi-search" />
+            </button>
+            <button title="모든 검색조건 제거" className="btn btn-sm btn-outline-secondary" onClick={handleReset}>
+              <i className="bi bi-arrow-counterclockwise" />
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* 요약 정보 */}
       {page && (
@@ -135,9 +176,10 @@ function AdminUserPage() {
 
       {!loading && !errorMsg && (
         <div className="table-responsive mt-3">
-          <table className="table table-striped align-middle">
+          <table className="table table-striped align-middle text-center">
             <thead className="table-light">
               <tr>
+                <th style={{ width: '6%' }}>번호</th>
                 <th style={{ minWidth: 140 }}>회원 이름</th>
                 <th style={{ minWidth: 200 }}>이메일</th>
                 <th style={{ width: 140 }}>Role</th>
@@ -156,8 +198,9 @@ function AdminUserPage() {
                   </td>
                 </tr>
               ) : (
-                users.map((user) => (
+                users.map((user, index) => (
                   <tr key={user.userId}>
+                    <td>{page ? (page.pageNum - 1) * page.pageSize + index + 1 : index + 1}</td>
                     <td>
                       <button
                         type="button"

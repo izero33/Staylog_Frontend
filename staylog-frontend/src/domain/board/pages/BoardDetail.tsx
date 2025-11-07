@@ -20,7 +20,7 @@ function BoardDetail() {
     const [dto, setDto] = useState<BoardDto | null>(null);
 
 
-
+    // 페이지네이션
 
     const navigate = useNavigate();
 
@@ -34,8 +34,6 @@ function BoardDetail() {
                     boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
                 const res = await api.get(`/v1/boards/${boardId}`, {params: userId ? {userId : Number(userId)} : {} });
                 console.log("📦 불러온 게시글 상세:", res);
-                console.log("userId:", userId);
-                console.log("요청 URL", `/v1/boards/${boardId}`, {params: userId ? {userId : Number(userId)} : {} });
                 
                 setDto(res);
 
@@ -57,7 +55,7 @@ function BoardDetail() {
         try {
             await api.delete(`/v1/boards/${boardId}`);
             alert("게시글이 성공적으로 삭제되었습니다.");
-            navigate("/review"); // 삭제 후 목록으로
+            navigate(`/${boardType}`); // 삭제 후 목록으로
         } catch (err) {
             
             console.error("게시글 삭제 실패:", err);
@@ -117,11 +115,11 @@ function BoardDetail() {
 
         // ✅ 프론트 상태 업데이트만 내부에서 처리
         if (!liked) {
-        setLikes((prev) => prev + 1);
-        setLiked(true);
+            setLikes((prev) => prev + 1);
+            setLiked(true);
         } else {
-        setLikes((prev) => (prev > 0 ? prev - 1 : 0));
-        setLiked(false);
+            setLikes((prev) => (prev > 0 ? prev - 1 : 0));
+            setLiked(false);
         }
 
     } catch (err) {
@@ -155,6 +153,7 @@ function BoardDetail() {
 
         {/* 별점 - 리뷰에서만 보기 */}
         {boardType === "review" && (
+        <>
         <div className="d-flex justify-content-center align-items-center mt-5 mb-5">
             
             {[1, 2, 3, 4, 5].map((star) => (
@@ -167,6 +166,22 @@ function BoardDetail() {
             </span>
             ))}
         </div>
+
+        {/* 숙소 링크 */}
+        <div className="d-flex justify-content-center mb-5">
+            <button
+                className="btn btn-secondary"
+                onClick={() => {
+                    if (dto?.accommodationId) {
+                        navigate(`/accommodations/${dto.accommodationId}`);
+                    }
+                }}
+            >
+                숙소 보러가기
+            </button>
+        </div>
+
+        </>
         )}
         
 
@@ -175,19 +190,7 @@ function BoardDetail() {
     </div>
     
 
-    {/* 숙소 링크 */}
-    <div className="d-flex justify-content-center mb-5">
-        <button
-            className="btn btn-secondary"
-            onClick={() => {
-                if (dto?.accommodationId) {
-                    navigate(`/accommodations/${dto.accommodationId}`);
-                }
-            }}
-        >
-            숙소 보러가기
-        </button>
-    </div>
+    
 
     {/* 좋아요 */}
     <div className="d-flex justify-content-center mb-3">
@@ -200,7 +203,7 @@ function BoardDetail() {
     </div>
 
     {/* 게시글 삭제 */}
-    {userId === dto?.userId && (
+    { Number(userId) === dto?.userId && (
 
     <div className="d-flex justify-content-end">
         <button
@@ -223,7 +226,7 @@ function BoardDetail() {
         
         <button
             className="btn btn-outline-secondary"
-            onClick={() => navigate(-1)}>
+            onClick={() => navigate(`/${boardType}`)}>
             목록
         </button>
         

@@ -1,7 +1,7 @@
 // src/omain/board/Review.tsx
 
 import { useEffect, useState } from "react";
-import { Card, Col, Container, Row, Table } from "react-bootstrap";
+import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import api from "../../../global/api";
 import type { BoardDto } from "../types/boardtypes";
@@ -12,6 +12,7 @@ import "./Board.css";
 import PaginationBar from "../../../global/components/PaginationBar";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import RegionsSideBar from "../components/RegionSideBar";
+import SortModal, { type SortOption } from "../../../global/components/SortModal";
 
 
 
@@ -39,17 +40,29 @@ function Boards() {
 
     const navigate = useNavigate();
 
-    // 페이지네이션
-        const [pageInfo, setPageInfo] = useState({
-          boardType: apiBoardType,  // BOARD_JOURNAL or BOARD_REVIEW
-          pageNum: 1,               // 현재 페이지
-          startPage: 1,
-          endPage: 5,
-          totalPage: 10,
-          totalCount: 0,
-          pageSize: boardType === "journal" ? 9 : 10, // 페이지 크기
-          regionCodes: [] as string[]  // 지역 필터 (배열)
-        });
+    // 페이징 + 정렬 => pageInfo 로 상태값 관리
+    const [pageInfo, setPageInfo] = useState({
+      boardType: apiBoardType,  // BOARD_JOURNAL or BOARD_REVIEW
+      pageNum: 1,               // 현재 페이지
+      startPage: 1,
+      endPage: 5,
+      totalPage: 10,
+      totalCount: 0,
+      pageSize: boardType === "journal" ? 9 : 10, // 페이지 크기
+      regionCodes: [] as string[],  // 지역 필터 (배열),
+      sort: "latest" as "latest" | "likes" | "views" // 정렬
+    });
+    
+    // 정렬 옵션 배열
+    const sortOption: SortOption<string>[] = [
+      { value: "latest", label: "최신순" },
+      { value: "views", label: "조회순" },
+      { value: "likes", label: "추천순" },
+    ];
+    
+    // 정렬 모달 열림
+    const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
+
 
     // 게시글 목록 가져오기      
     const fetchBoards = async (pageNum: number = 1) =>{
@@ -66,7 +79,9 @@ function Boards() {
           params: {
             boardType: apiBoardType,
             pageNum,
-            regionCodes: validRegions
+            pageSize: pageInfo.pageSize,
+            regionCodes: validRegions,
+            sort: pageInfo.sort
           }
         });
 
@@ -74,6 +89,7 @@ function Boards() {
         const list = res.boardList || res?.data?.data?.boardList || [];
         const page = res.pageResponse || res?.data?.data?.pageResponse || {};
 
+        // 게시글 목록에 넣기
         setBoards(list);
         setPageInfo({
           ...pageInfo,
@@ -82,7 +98,9 @@ function Boards() {
           endPage: page.endPage || 1,
           totalPage: page.totalPage || 1,
           totalCount: page.totalCount || 0,
-          pageSize: page.pageSize || 10
+          pageSize: page.pageSize,
+          sort: page.sort || "latest",
+          regionCodes: page.regionCodes || []
         })
           
           console.log("📦 불러온 게시글 목록:", res);
@@ -95,9 +113,25 @@ function Boards() {
     }
 
     
+    // 정렬 선택 핸들러
+    const handleSelectSort = (newValue: string) => {
+      const sortValue = newValue as "latest" | "likes" | "views";
+      setPageInfo((prev) => ({ 
+        ...prev, 
+        sort: sortValue, 
+        pageNum: 1
+      }));
+      
+      setIsSortOpen(false); // 선택 후 닫기
+      
+      // 다시 게시글 목록 조회
+      fetchBoards(1);    
+    };
+    
     useEffect(()=>{  
         fetchBoards(1);
-    },[selectedRegions, boardType]);
+    },[selectedRegions, boardType, pageInfo.sort]);
+    
 
     
     return <>
@@ -129,11 +163,31 @@ function Boards() {
             </div>
           </Col>
 
-          {/* 메인 게시글 목록 영역 */}
-          
           <Col md={10}>
+          {/* 메인 게시글 목록 영역 */}
+          {/* 정렬 */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <Button
+              variant="outline-secondary"
+              onClick={() => setIsSortOpen((prev) => !prev)}
+            >
+              {sortOption.find((opt) => opt.value === pageInfo.sort)?.label || "정렬"} ▾
+            </Button>
+          </div>
+          <div className="position-absolute mt-1" style={{ zIndex: 1000 }}>
+            <SortModal 
+              isOpen={isSortOpen}
+              onClose={()=> setIsSortOpen(false)}
+              options={sortOption}
+              selectedValue={pageInfo.sort}
+              onSelectSort={handleSelectSort}
+              title='정렬'
+            /> 
+          </div>
+          
+          
           <div className="d-flex justify-content-end mb-3">
-            {/* 리뷰 게시판은 로그인한 누구나 등록 가능 */}
+            {/* 리뷰 게시판은 로그인 사용자 등록 가능 */}
             {boardType === "review" && userId && (
               <button
                 className="btn btn-primary"
@@ -144,7 +198,7 @@ function Boards() {
             )}
 
             {/* 저널 게시판은 VIP만 등록 가능 */}
-            {boardType === "journal" && (
+            {boardType === "journal" && userId && (
               <button
                 className="btn btn-success"
                 onClick={() => navigate(`/form/${boardType}`)}

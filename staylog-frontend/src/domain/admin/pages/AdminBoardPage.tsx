@@ -337,6 +337,9 @@ function AdminBoardPage() {
                                         <option value="N">공개</option>
                                         <option value="Y">숨김</option>
                                     </select>
+                                    <span className={`badge bg-${item.deleted === 'N' ? 'success' : 'danger'}`}>
+                                        {item.deleted === 'N' ? '공개' : '숨김'}
+                                    </span>
                                 </td>
                             </tr>
                         ))

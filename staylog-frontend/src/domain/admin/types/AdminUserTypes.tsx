@@ -61,6 +61,7 @@ export function mapDtoToAdminUser(dto: AdminUserDto): AdminUser {
 export type AdminUserSearchParams = {
   pageNum: number;
   pageSize: number;
+  keyword?: string;
 
 
 }

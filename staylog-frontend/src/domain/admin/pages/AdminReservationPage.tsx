@@ -8,6 +8,7 @@ import AdminStatusPill from "../components/AdminStatusPill";
 import useCommonCodeSelector from "../../common/hooks/useCommonCodeSelector";
 import type { CommonCodeDto } from "../../common/types";
 import Pagination from "../../../global/components/Pagination";
+import '../css/AdminTable.css';
 import type { PageResponse } from "../../../global/types/Paginationtypes";
 
 
@@ -128,23 +129,25 @@ function AdminReservationPage() {
         {errorMsg}
         </div>
       )}
-          <table className="table table-striped align-middle">
+          <table className="table table-striped align-middle text-center">
               <thead className="table-light">
                   <tr>
+                    <th style={{ width: '6%' }}>번호</th>
                       <th>회원이름</th>
                       <th>숙소명</th>
                       <th>예약일</th>
-                      {/* <th>결제일</th> */}
+                      <th>금액</th>
                       <th>체크인</th>
                       <th>체크아웃</th>
                       <th>예약 상태</th>
                   </tr>
               </thead>
               <tbody>
-                  {reservations.map((res) => {
+                  {reservations.map((res, index) => {
                     const view = getStatusView(res.status, res.statusName, res.statusColor);
                     return (
                       <tr key={res.bookingId}>
+                        <td>{page ? (page.pageNum - 1) * page.pageSize + index + 1 : index + 1}</td>
                           <td>
                             <button 
                             type="button"
@@ -156,6 +159,8 @@ function AdminReservationPage() {
                             </button></td>
                           <td>{res.accommodationName ?? res.roomName ?? "—"}</td>
                           <td>{formatKST(res.createdAt)}</td>
+                          <td className="text-center">{res.amount !== null && res.amount !== undefined
+                                ? res.amount.toLocaleString('ko-KR') : '-'}원</td>
                           <td>{formatKST(res.checkIn)}</td>
                           <td>{formatKST(res.checkOut)}</td>
                           <td className="text-center">

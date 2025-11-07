@@ -6,6 +6,8 @@ import api from "../../../global/api";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import type { BoardDto } from "../types/boardtypes";
 import Comments from "../components/comment/Comments";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../global/store/types";
 
 
 
@@ -15,7 +17,8 @@ function BoardDetail() {
     const { boardType, boardId } = useParams<{ boardType: string; boardId: string }>();
 
     // USER 상태값 관리
-    const userId = useGetUserIdFromToken();
+    // const userId = useGetUserIdFromToken();
+    const userId = useSelector((state: RootState) => state.userInfo?.userId)
 
     // DTO 상태값 관리
     const [dto, setDto] = useState<BoardDto | null>(null);
@@ -171,7 +174,7 @@ function BoardDetail() {
         {/* 숙소 링크 */}
         <div className="d-flex justify-content-center mb-5">
             <button
-                className="btn btn-secondary"
+                className="btn btn-outline-secondary"
                 onClick={() => {
                     if (dto?.accommodationId) {
                         navigate(`/accommodations/${dto.accommodationId}`);

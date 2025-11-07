@@ -67,7 +67,7 @@ function AdminAccommodationListPage() {
         api.get<CommonCodeNameList[]>("/v1/commonCode", { params: { codeId: 'REGION_TYPE' } })
             .then(res => setRegionCodeList(res))
             .catch(err => console.log("지역 코드 로드 실패", err));
-    }, [searchParams]);
+    }, [searchParams, searchParams.acType]);
 
     // 상태 변경 API 호출 핸들러 (원래 값 롤백 기능 포함)
     const handleStatusChange = async (
@@ -180,13 +180,14 @@ function AdminAccommodationListPage() {
                     <div className="gap-1 flex-wrap d-flex">
                         <select
                             name="acType"
-                            className="form-select-sm border-secondary"
+                            className="form-select form-select-sm border-light w-auto"
                             value={searchParams.acType || ''}
                             onChange={(e) => {
                                 const value = e.target.value;
+                                const filterValue = (value === 'ACCOMMODATION_TYPE' || value === '') ? undefined : value;
                                 setSearchParams(prev => ({
                                     ...prev,
-                                    acType: value || undefined
+                                    acType: filterValue
                                 }));
                             }}
                         >
@@ -196,13 +197,14 @@ function AdminAccommodationListPage() {
                         </select>
                         <select
                             name="regionCode"
-                            className="form-select-sm border-secondary"
+                            className="form-select form-select-sm border-light w-auto"
                             value={searchParams.regionCode || ''}
                             onChange={(e) => {
                                 const value = e.target.value;
+                                const filterValue = (value === 'REGION_TYPE' || value === '') ? undefined : value;
                                 setSearchParams(prev => ({
                                     ...prev,
-                                    regionCode: value || undefined
+                                    regionCode: filterValue
                                 }));
                             }}
                         >
@@ -212,7 +214,7 @@ function AdminAccommodationListPage() {
                         </select>
                         <select
                             name="status"
-                            className="form-select-sm border-secondary"
+                            className="form-select form-select-sm border-light w-auto"
                             value={searchParams.deletedYn || ''}
                             onChange={(e) => {
                                 const value = e.target.value as 'Y' | 'N' | '';

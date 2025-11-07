@@ -175,7 +175,7 @@ function AdminBoardPage() {
                     <div className="gap-1 flex-wrap d-flex gap-2 flex-wrap d-flex align-items-center">
                         <select
                             name="status"
-                            className="form-select-sm border-secondary"
+                            className="form-select form-select-sm border-light w-auto"
                             value={searchParams.deleted || ''}
                             onChange={(e) => {
                                 const value = e.target.value as 'Y' | 'N' | '';
@@ -192,7 +192,7 @@ function AdminBoardPage() {
                         </select>
 
                         <select
-                            className="form-select-sm"
+                            className="form-select form-select-sm border-light w-auto"
                             name="orderBy"
                             onChange={(e) => {
                                 const [sortBy, sortOrder] = e.target.value.split('_') as ['createdAt' | 'viewsCount' | 'rating' | 'likes', 'ASC' | 'DESC'];

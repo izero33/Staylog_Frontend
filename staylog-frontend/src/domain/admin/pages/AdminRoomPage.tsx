@@ -174,13 +174,14 @@ function AdminRoomPage() {
                     <div className="gap-1 flex-wrap d-flex">
                         <select
                             name="rmType"
-                            className="form-select-sm border-secondary"
+                            className="form-select form-select-sm border-light w-auto"
                             value={searchParams.rmType || ''}
                             onChange={(e) => {
                                 const value = e.target.value;
+                                const filterValue = (value === 'ROOM_TYPE' || value === '') ? undefined : value;
                                 setSearchParams(prev => ({
                                     ...prev,
-                                    rmType: value || undefined
+                                    rmType: filterValue
                                 }));
                             }}
                         >
@@ -190,7 +191,7 @@ function AdminRoomPage() {
                         </select>
                         <select
                             name="status"
-                            className="form-select-sm border-secondary"
+                            className="form-select form-select-sm border-light w-auto"
                             value={searchParams.deletedYn || ''}
                             onChange={(e) => {
                                 const value = e.target.value as 'Y' | 'N' | '';

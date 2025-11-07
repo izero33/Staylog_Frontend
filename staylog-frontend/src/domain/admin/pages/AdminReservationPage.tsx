@@ -10,6 +10,8 @@ import type { CommonCodeDto } from "../../common/types";
 import Pagination from "../../../global/components/Pagination";
 import '../css/AdminTable.css';
 import type { PageResponse } from "../../../global/types/Paginationtypes";
+
+
 function AdminReservationPage() {
 
       //  페이지 상태 
@@ -138,7 +140,7 @@ function AdminReservationPage() {
     <div className="container-fluid py-3">
         <h1>예약 관리 페이지</h1>
 
-        {/* 이번 달 요약 카드 */}
+        {/* 이번 달 요약 카드  ( 매출, 예약 건 , 취소 건, 확정 건 )*/}
         <div className="row g-3 mt-2">
           <div className="col-12 col-sm-6 col-xl-3">
             <div className="card shadow-sm h-100">

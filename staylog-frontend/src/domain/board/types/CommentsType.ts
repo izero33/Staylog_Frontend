@@ -9,4 +9,5 @@ export type CommentsType = {
     content : string; // 댓글 내용
     createdAt : string; // 작성일
     upatedAt?: string; // 수정일
+    deleted : 'Y'|'N'; // 삭제 여부
 }

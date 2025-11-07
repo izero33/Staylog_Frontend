@@ -26,6 +26,18 @@ export type BoardDto = {
 
 }
 
+export type PageInfo = {
+      boardType: string;
+      pageNum: number;
+      startPage: number;
+      endPage: number;
+      totalPage: number;
+      totalCount: number;
+      pageSize: number;
+      regionCodes: string[];
+      sort: "latest" | "likes" | "views";
+}
+
 export type LikesDto = {
       
       likeId?: number;            // 좋아요 ID

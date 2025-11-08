@@ -35,7 +35,7 @@ type ReservationDetail = {
   totalGuestCount: number | null;
 
   /** ✅ 결제 금액(서버가 amount 또는 price를 줄 수 있어 둘 다 고려) */
-  amount: number | null;
+  finalAmount: number | null;
   price: number | null;
 
   paymentMethod: string | null;
@@ -64,7 +64,7 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
       .then((res) => {
         const root = (res as any)?.data?.data ?? (res as any)?.data ?? (res as any);
 
-        // ✅ 서버 키 불일치 대비: 안전 변환
+        // 서버 키 불일치 대비: 안전 변환
         const normalized: ReservationDetail = {
           bookingId: root.bookingId,
           bookingNum: root.bookingNum ?? null,
@@ -82,14 +82,14 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
 
           status: root.status,
 
-          // ✅ 인원
+          // 인원
           adults: root.adults ?? null,
           children: root.children ?? null,
           infants: root.infants ?? null,
           totalGuestCount: root.totalGuestCount ?? null,
 
-          // ✅ 금액 (amount 우선, 없으면 price)
-          amount: root.amount ?? null,
+          // 금액 (finalAmount 우선, 없으면 price)
+          finalAmount: root.finalAmount ?? null,
           price: root.price ?? null,
 
           paymentMethod: root.paymentMethod ?? null,
@@ -128,10 +128,10 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
 
   if (!open) return null;
 
-  //  표시용 유틸: 결제 금액 우선순위 (amount > price)
+  //  표시용 유틸: 결제 금액 우선순위 (finalAmount > price)
   const displayAmount = (d?: ReservationDetail | null) => {
     if (!d) return "—";
-    const val = d.amount ?? d.price;
+    const val = d.finalAmount ?? d.price;
     return val != null ? `${val.toLocaleString()}원` : "—";
   };
 
@@ -152,7 +152,7 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
             <div className="modal-header">
               {/* 제목에 예약번호 표시 */}
               <h5 className="modal-title">
-                예약 상세 {bookingId ? `#${bookingId}` : ""} {detail?.bookingNum ? `· ${detail.bookingNum}` : ""}
+                예약 상세 {bookingId ? `#${bookingId}` : ""} 
               </h5>
               <button type="button" className="btn-close" aria-label="Close" onClick={onClose} />
             </div>
@@ -228,19 +228,13 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
                       <tbody>
                         <tr>
                           <th style={{ width: 160 }}>성인</th>
-                          <td>{detail.adults ?? "—"}</td>
-                        </tr>
-                        <tr>
+                          <td>{detail.adults ?? "—"} 명</td>
                           <th>어린이</th>
-                          <td>{detail.children ?? "—"}</td>
-                        </tr>
-                        <tr>
+                          <td>{detail.children ?? "—"} 명</td>
                           <th>유아</th>
-                          <td>{detail.infants ?? "—"}</td>
-                        </tr>
-                        <tr>
+                          <td>{detail.infants ?? "—"} 명</td>
                           <th>총 인원</th>
-                          <td>{detail.totalGuestCount ?? "—"}</td>
+                          <td>{detail.totalGuestCount ?? "—"} 명</td>
                         </tr>
                       </tbody>
                     </table>

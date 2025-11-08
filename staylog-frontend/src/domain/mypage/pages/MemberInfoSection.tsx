@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Form, Button, Image, InputGroup, Fade } from "react-bootstrap";
 import { fetchMemberInfo, updateMemberInfo } from "../api/mypageApi";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
-import useGetLoginIdFromToken from "../../auth/hooks/useGetLoginIdFromToken";
 import useGetNicknameFromToken from "../../auth/hooks/useGetNicknameFromToken";
 import type { MemberInfo } from "../types/mypageTypes";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,10 +15,10 @@ import { uploadProfileImage } from "../api/mypageApi";
 import { REGEX_PASSWORD } from "../../../global/constants/Validation";
 
 
+
 function MemberInfoSection() {
     // auth 훅은 컴포넌트 최상단에서 선언
     const userId = useGetUserIdFromToken(); // 사용자 PK
-    //const loginId = useGetLoginIdFromToken(); // 로그인 ID
     const nickname = useGetNicknameFromToken(); // 닉네임
     // Redux에도 로그인 정보가 있을 수 있지만, JWT 기반으로 갱신 보완
     const reduxNickname = useSelector((state: RootState) => state.userInfo?.nickname);
@@ -293,13 +292,10 @@ function MemberInfoSection() {
     return (
         <Card className="shadow-sm border-0 w-100">
         <Card.Body className="p-4">
-            {/* 상단 인삿말 영역 */}
-            <div className="mb-4 text-center text-md-center">
-                <h3 className="fw-bold"> {reduxNickname || member.nickname} 님 반가워요 👋 </h3>
-                <p className="text-muted mb-0">
-                    {new Date(member.createdAt).getFullYear()}년부터 StayLog를 함께하고 있어요.
-                </p>
-                <hr />
+            {/* 상단 섹션 제목 */}
+            <div className="mb-3 text-center text-md-center">
+                <h4 className="fw-bold">회원 정보</h4>
+                <hr className="mb-4" />
             </div>
 
             {/* 폼 + 프로필 */}

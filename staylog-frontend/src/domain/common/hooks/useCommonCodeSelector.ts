@@ -1,3 +1,4 @@
+// src/domain/common/hooks/useCommonCodeSelector.ts
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../global/store/types';
 import type { CommonCodeDto } from '../types';

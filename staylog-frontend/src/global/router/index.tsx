@@ -32,11 +32,14 @@ import AdminBoardPage from "../../domain/admin/pages/AdminBoardPage";
 import AdminBoardDetail from "../../domain/admin/pages/AdminBoardDetail";
 import Boards from "../../domain/board/pages/Boards";
 import CheckoutForm from "../../domain/payment/pages/CheckoutForm";
+import PaymentCompletePage from "../../domain/payment/pages/PaymentCompletePage";
 import AdminCouponPage from "../../domain/admin/pages/AdminCouponPage";
 import AdminRoomUpdate from "../../domain/admin/pages/AdminRoomUpdate";
 import TestEditorPage from "../pages/TestEditorPage";
 import Home2 from "../pages/Home2";
 import AccommodationReviewList from "../../domain/accommodation/pages/AccommodationReviewList";
+import AdminAccommodationRegisterPage from "../../domain/admin/pages/AdminAccommodationRegisterPage";
+import AdminRoomRegisterPage from "../../domain/admin/pages/AdminRoomRegisterPage";
 
 
 
@@ -58,7 +61,8 @@ const routes: RouteObject[] = [
   { path: "/test-load", element: <TestLoadImage /> },
   { path: "/quill", element: <BoardForm2/>}, //에디터 테스트
   { path: "/bord", element: <Board/>},//에디터 테스트
-  { path: "/checkout", element: <CheckoutForm/>},//에디터 테스트
+  { path: "/checkout", element: <CheckoutForm/>}, // 결제 페이지
+  { path: "/payment/complete", element: <PaymentCompletePage/>}, // 결제 완료 페이지
   { path: "/comments/:boardId", element: <CommentsPage /> },
   { path: "/testEditor", element: <TestEditorPage /> },
   { path: "/home", element: <Home2 />}
@@ -72,9 +76,11 @@ const adminRoute: RouteObject = {
       { index: true, element: <AdminUserPage /> },  // /admin 기본 페이지
       { path: "user", element: <AdminUserPage /> },  // /admin/user
       { path: "accommodations", element: <AdminAccommodationPage /> },  // /admin/accommodations
+      { path: "accommodations/new", element: <AdminAccommodationRegisterPage /> }, // /admin/accommodations/new
       { path: "accommodations/:accommodationId", element: <AdminAccommodationDetail /> },  // /admin/accommodations/:accommodationId
       { path: "accommodations/:accommodationId/update", element: <AdminAccommodationUpdate /> },  // /admin/accommodations/:accommodationId/update
       { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },  // /admin/accommodations/:accommodationId/rooms
+      { path: "accommodations/:accommodationId/rooms/new", element: <AdminRoomRegisterPage /> },  // /admin/accommodations/:accommodationId/rooms/new
       { path: "accommodations/:accommodationId/rooms/:roomId", element: <AdminRoomDetail /> },  // /admin/accommodations/:accommodationId/rooms/:roomId
       { path: "accommodations/:accommodationId/rooms/:roomId/update", element: <AdminRoomUpdate /> },  // /admin/accommodations/:accommodationId/rooms/:roomId/update
       { path: "reservations", element: <AdminReservationPage /> },  // /admin/reservations

@@ -12,7 +12,7 @@ export interface MemberInfo {
    gender?: 'M' | 'F' | 'O'; // 성별 (선택적 필드)
    createdAt: string; // 회원가입일
    updatedAt: string; // 회원정보 수정일
-}
+};
 
 export interface Reservations {
    reservationId: number;
@@ -20,23 +20,64 @@ export interface Reservations {
    checkIn: string;
    checkOut: string;
    status: 'upcoming' | 'completed' | 'cancelled'; //'pending' | 'confirmed' | 'canceled';
-}
+};
 
+export type ReservationModalProps = {
+   open: boolean;
+   bookingId: number | null;
+   onClose: () => void;
+};
+
+export type ReservationDetail = {
+   bookingId: number;
+   bookingNum: string | null; // 회원에게 보여지는 예약번호
+   
+   userName: string | null;
+   guestName: string | null;
+   phone: string | null;
+
+   accommodationName: string | null;
+   roomName: string | null;
+
+   createdAt: string; // 예약일
+   checkIn: string; // 체크인
+   checkOut: string; // 체크아웃
+
+   status: string; // RES_PENDING | RES_CONFIRMED | RES_CANCELED | RES_COMPLETED
+
+   /** 투숙 인원 */
+   adults: number | null;
+   children: number | null;
+   infants: number | null;
+   totalGuestCount: number | null;
+
+   /** 결제 금액 및 결제 방식 */
+   amount: number | null;
+   paymentMethod: string | null;
+   paidAt: string | null;
+   statusLogs?: Array<{ at: string; from?: string | null; to: string; by?: string | null }>;
+   paymentLogs?: Array<{ at: string; action: string; amount?: number | null; note?: string | null }>;
+};
+
+
+
+// 백엔드 ReviewInfoResponse DTO 와 필드명을 일치시킴.
+// 'myWrittenReview'와 'availableToWrite' 타입에 따라 필드가 다르므로, 타입 정의
 export interface Reviews {
-   reviewId: number;
-   stayName: string;
-   content: string;
-   rating: number;
-   isWrite: 'Y' | 'N';
+   // 공통
+   accommodationName: string;
+   bookingNum?: string;
+   // 'availableToWrite'
+   bookingId?: number;
+   checkIn?: string;
+   checkOut?: string;
+   // 'myWrittenReview'
+   reviewId?: number;
+   title?: string;
+   rating?: number;
+   createdAt?: string;
 }
 
-// export interface inquiries {
-//    inquiryId: number;
-//    category: string;
-//    title: string;
-//    content: string;
-//    createdAt: string;
-// }
 
 export interface Comments {
    commentId: number;

@@ -12,12 +12,14 @@ export type AdminReservation = {
   bookingNum: string;
   userName: string;
   guestName: string;
+  phone: string;
   accommodationName: string;
   roomName: string;
   checkIn: string | null;
   checkOut: string | null;
   createdAt: string | null;
   amount?: number | null;
+  finalAmount?: number | null;
   status: string;
   statusName?: string;   // 서버에서 내려주는 한글명
   statusColor?: string;  // COMMON_CODE.ATTR1

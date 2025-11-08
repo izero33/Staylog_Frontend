@@ -1,6 +1,6 @@
 // src/domain/mypage/pages/index.tsx
 import { useEffect, useState } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import MypageSideBar from "../components/MypageSideBar";
 import { fetchMemberInfo } from "../api/mypageApi";
 import type { MemberInfo } from "../types/mypageTypes";
@@ -17,6 +17,8 @@ function index() {
    const userId = useGetUserIdFromToken();
    //Redux 에서 로그인 한 상태 확인 (닉네임 가져오기)   
    const nickname = useSelector((state: RootState) => state.userInfo?.nickname);
+    // Redux에도 로그인 정보가 있을 수 있지만, JWT 기반으로 갱신 보완
+   const reduxNickname = useSelector((state: RootState) => state.userInfo?.nickname);   
    // 회원정보 상태값
    const [member, setMember] = useState<MemberInfo | null>(null);
    const [activeMenu, setActiveMenu] = useState("member");
@@ -40,9 +42,22 @@ function index() {
       }
 
    return (
+      <Card className="shadow-sm border-0 w-100">
+      <Card.Body className="p-4">
+         {/* 상단 인삿말 영역 */}
+         <div className="mb-4 text-center text-md-center">
+               <h3 className="fw-bold"> {reduxNickname || member.nickname} 님 반가워요 👋 </h3>
+               <p className="text-muted mb-0">
+                  {new Date(member.createdAt).getFullYear()}년부터 StayLog를 함께하고 있어요.
+               </p>
+               <hr />
+         </div>
+
+
       <div className="container my-5">
          <Container fluid className="bg-light min-vh-100">
             <Row>
+               
                {/* 왼쪽 사이드 메뉴 */}
                <Col xs={12} md={3} lg={2} className="p-0 bg-white border-end">
                   <MypageSideBar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
@@ -56,6 +71,8 @@ function index() {
             </Row>
          </Container>
       </div>
+      </Card.Body>
+      </Card>
    );
 }
 

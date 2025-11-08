@@ -8,7 +8,7 @@ import { formatKST } from '../../../global/utils/date';
 import type { AdminRoom } from '../types/AdminRoomTypes';
 
 /*
-    Carousel : 숙소 대표 이미지
+    Carousel : 객실 대표 이미지
     Accordion : 클릭 시 펼쳐지는 기능
 */
 
@@ -159,14 +159,11 @@ function AdminRoomDetail() {
                 </div>
             </div>
 
-            <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed' }}>
-                <colgroup>
-                    <col style={{ width: '25%' }} />
-                    <col style={{ width: '75%' }} />
-                </colgroup>
+            <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
                 <tbody>
+                    {/* 세로 헤더 (왼쪽이 헤더) */}
                     <tr>
-                        <th className="bg-light text-center align-middle" style={{ width: '30%' }}>유형</th>
+                        <th className="bg-light text-center align-middle" style={{ width: '25%' }}>유형</th>
                         <td>{data.typeName}</td>
                     </tr>
                     <tr>
@@ -250,25 +247,37 @@ function AdminRoomDetail() {
                             <td>{data.checkOut}</td>
                         </tr>
                     )}
+
+                    {/* 구분선 */}
                     <tr>
-                        <th className="bg-light text-center align-middle">이미지</th>
-                        <td>
+                        <td colSpan={2}></td>
+                    </tr>
+
+                    {/* 가로 헤더 (위쪽이 헤더) */}
+                    <tr>
+                        <th colSpan={2} className="bg-light text-center align-middle">이미지</th>
+                    </tr>
+                    <tr>
+                        <td colSpan={2}>
                             <div className="accommodationImages images-slider">
                                 <Carousel>
                                     <Carousel.Item>
                                         {/* 이미지 비율에 맞게 나오게 함*/}
-                                        <Image src={img1} alt="객실 이미지 1" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
+                                        <Image src={img1} alt="객실 이미지 1" className="d-block w-100" style={{ objectFit: "contain" }} />
                                     </Carousel.Item>
                                     <Carousel.Item>
-                                        <Image src={img2} alt="객실 이미지 2" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
+                                        <Image src={img2} alt="객실 이미지 2" className="d-block w-100" style={{ objectFit: "contain" }} />
                                     </Carousel.Item>
                                 </Carousel>
                             </div>
                         </td>
                     </tr>
+
                     <tr>
-                        <th className="bg-light text-center align-middle">설명</th>
-                        <td dangerouslySetInnerHTML={{ __html: data.description }} />
+                        <th colSpan={2} className="bg-light text-center align-middle">설명</th>
+                    </tr>
+                    <tr>
+                        <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.description }} />
                     </tr>
                 </tbody>
             </table>

@@ -33,6 +33,8 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
    const userId: number | undefined = useGetUserIdFromToken();
    const loginId = useGetLoginIdFromToken();
 
+   const [getData, setGetData] = useState<boolean>(false)
+
    
    // 로딩 / 에러 메시지 상태 관리 
    const [loading, setLoading] = useState(true);
@@ -45,7 +47,8 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
       setLoading(true)
 
       // 이미 값을 가져왔다면 리소스 아끼기
-      if(notiList.length != 0) {
+      // if(notiList.length != 0) {
+      if(getData) { // 이미 데이터를 가져왔다면
          console.log("이미 값이 있으므로 재요청하지 않고 return");
          console.log(notiList);
          setLoading(false)
@@ -64,6 +67,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
                type: "SET_NOTIFICATION_LIST",
                payload: response
             })
+            setGetData(true) // 데이터 유무 상태값 변경
 
          } catch (err) {
             console.log(err);

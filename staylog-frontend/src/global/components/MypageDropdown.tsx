@@ -78,7 +78,6 @@ function MypageDropdown({ onClose }: MypageDropdownProps) {
             <Dropdown.Item eventKey="member">회원 정보</Dropdown.Item>
             <Dropdown.Item eventKey="reservations">예약 정보</Dropdown.Item>
             <Dropdown.Item eventKey="reviews">리뷰 내역</Dropdown.Item>
-            <Dropdown.Item eventKey="inquiries">문의 내역</Dropdown.Item>
             <Dropdown.Item onClick={() => openModal('coupon')}>내 쿠폰함</Dropdown.Item>
 
             <Dropdown.Divider />

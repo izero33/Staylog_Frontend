@@ -227,8 +227,8 @@ function AdminReservationPage() {
                             </button></td>
                           <td>{res.accommodationName ?? res.roomName ?? "—"}</td>
                           <td>{formatKST(res.createdAt)}</td>
-                          <td className="text-center">{res.amount !== null && res.amount !== undefined
-                                ? res.amount.toLocaleString('ko-KR') : '-'}원</td>
+                          <td className="text-center">{res.finalAmount !== null && res.finalAmount !== undefined
+                                ? res.finalAmount.toLocaleString('ko-KR') : '-'}원</td>
                           <td>{formatKST(res.checkIn)}</td>
                           <td>{formatKST(res.checkOut)}</td>
                           <td className="text-center">

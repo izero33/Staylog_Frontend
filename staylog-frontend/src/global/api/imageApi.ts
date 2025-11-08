@@ -5,10 +5,32 @@
 import api from ".";
 import type { ImageResponse, ImageUpdateRequest } from "../types/image";
 
+
+/**
+ * 여러 이미지를 한 번에 업로드 (등록 시 사용).
+ * @param files - 업로드할 파일 목록
+ * @param targetType - 연결할 대상 타입
+ * @param targetId - 연결할 대상 ID
+ * @returns ImageResponse 객체를 반환하는 Promise
+ */
+export const uploadMultipleImages = (files: File[], targetType: string, targetId: number): Promise<ImageResponse> => {
+  const formData = new FormData();
+  files.forEach(file => {
+    formData.append('files', file);
+  });
+  formData.append('targetType', targetType);
+  formData.append('targetId', String(targetId));
+
+  return api.post<ImageResponse>('/v1/images', formData, {
+    headers: { 'Content-Type': 'multipart-form-data' },
+  });
+};
+
+
 /**
  * 특정 대상에 속한 이미지 목록을 조회.
- * @param targetType - e.g., "BOARD", "STAY"
- * @param targetId - e.g., 123
+ * @param targetType - 연결할 대상 타입 (e.g., "BOARD", "ACCOMMODATION_CONTENT")
+ * @param targetId - 연결할 대상 ID
  * @returns ImageResponse 객체를 반환하는 Promise
  */
 export const fetchImagesByTarget = (targetType: string, targetId: number): Promise<ImageResponse> => {
@@ -16,18 +38,21 @@ export const fetchImagesByTarget = (targetType: string, targetId: number): Promi
   return api.get(`/v1/images/${targetType}/${targetId}`);
 };
 
+// 기존 uploadSingleImageForEditor 함수가 아래 uploadSingleImage로 변경 및 일반화되었습니다.
+// 에디터뿐만 아니라 다른 곳에서도 단일 이미지 업로드가 필요할 때 재사용할 수 있도록 targetType과 targetId를 파라미터로 받습니다.
 /**
- * Quill Editor와 같은 에디터에서 단일 이미지를 업로드하는 데 사용.
+ * 단일 이미지를 업로드하는 범용 함수.
  * @param file - 업로드할 이미지 파일
+ * @param targetType - 연결할 대상 타입 (e.g., "BOARD", "ACCOMMODATION_CONTENT")
+ * @param targetId - 연결할 대상 ID
  * @returns 서버에 저장된 이미지의 전체 URL을 반환하는 Promise
  */
-export const uploadSingleImageForEditor = async (file: File): Promise<string> => {
+export const uploadSingleImage = async (file: File, targetType: string, targetId: number): Promise<string> => {
   const formData = new FormData();
   formData.append('files', file);
-  // 에디터에서 임시로 올리는 이미지는 특정 target을 가지지 않을 수 있음.
-  // 'TEMP' 타입과 임시 ID (e.g., 0)를 사용하는 규칙을 정함.
-  formData.append('targetType', 'TEMP');
-  formData.append('targetId', '0');
+  // 파라미터로 받은 targetType과 targetId를 그대로 사용합니다.
+  formData.append('targetType', targetType);
+  formData.append('targetId', String(targetId)); // 백엔드에서 long 타입으로 받으므로 문자열로
 
   // `saveImages` API는 ImageResponse를 반환.
   const response = await api.post<ImageResponse>('/v1/images', formData, {

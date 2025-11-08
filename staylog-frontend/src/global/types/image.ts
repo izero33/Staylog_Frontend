@@ -14,6 +14,7 @@ export interface ImageData {
   imageId: number;
   imageUrl: string;
   displayOrder: number;
+  originalName: string;
 }
 
 /**

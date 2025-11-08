@@ -225,7 +225,7 @@ function AdminAccommodationListPage() {
                             }}
                         >
                             <option value=''>전체</option>
-                            <option value="N">공개</option>
+                            <option value="N">활성</option>
                             <option value="Y">숨김</option>
                         </select>
                     </div>

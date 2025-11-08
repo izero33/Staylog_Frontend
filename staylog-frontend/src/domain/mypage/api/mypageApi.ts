@@ -1,4 +1,4 @@
-// mypageApi.ts
+// src/domain/mypage/api/mypageApi.ts
 import api from "../../../global/api";
 import type { MemberInfo, Reservations, Reviews } from "../types/mypageTypes";
 
@@ -32,6 +32,14 @@ export const uploadProfileImage = async (file: File, userId: number): Promise<st
 export const getReservationList = async (userId: number, status?: string) => {
   const res = await api.get(`/v1/mypage/reservations`, {
     params: { userId, status },
+  });
+  return res;
+};
+
+// 예약 상세 내역 조회(모달) 
+export const getReservationDetail = async (userId: number, bookingId: number) => {
+  const res = await api.get(`/v1/mypage/reservations/${bookingId}`, {
+    params: { userId }, // 쿼리 파라미터로 userId 전달
   });
   return res;
 };

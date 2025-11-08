@@ -136,19 +136,19 @@ function AdminBoardDetail() {
                     {data.deleted === 'N' ? '공개' : '숨김'}
                 </span>
             </h3>
-            <div className="text-end text-muted">
+            <div className="text-muted mt-3">
                 <span className='me-2'>등록일 : {formatKST(data.createdAt)}</span>
                 <span>수정일 : {formatKST(data.updatedAt)}</span>
             </div>
 
-            <div className="mt-3 justify-content-end d-flex gap-2">
+            <div className="mt-5 justify-content-end d-flex gap-2">
                 {data.deleted === 'N' ? (
-                    <button title="숨김처리" className="btn btn-sm btn-danger text-white mb-3" onClick={() => updateBoardStatus(data.boardId!, 'Y')}>숨김 처리</button>
+                    <button title="숨김처리" className="btn btn-sm btn-danger text-white" onClick={() => updateBoardStatus(data.boardId!, 'Y')}>숨김 처리</button>
                 ) : (
-                    <button title="공개처리" className="btn btn-sm btn-success mb-3" onClick={() => updateBoardStatus(data.boardId!, 'N')}>공개 처리</button>
+                    <button title="공개처리" className="btn btn-sm btn-success" onClick={() => updateBoardStatus(data.boardId!, 'N')}>공개 처리</button>
                 )}
                 <button
-                    className="btn btn-sm btn-outline-primary mb-3"
+                    className="btn btn-sm btn-outline-primary"
                     title="게시글 목록으로 이동"
                     onClick={handleGoToList} // 이동 함수 연결
                 >
@@ -156,7 +156,7 @@ function AdminBoardDetail() {
                 </button>
             </div>
 
-            <table className="table table-bordered mt-5">
+            <table className="table table-bordered mt-2">
                 <colgroup>
                     <col style={{ width: '25%' }} />
                     <col style={{ width: '75%' }} />

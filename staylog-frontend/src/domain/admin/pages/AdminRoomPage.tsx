@@ -156,7 +156,11 @@ function AdminRoomPage() {
         <div className="container-fluid py-3">
             <div className="d-flex justify-content-between align-items-center">
                 <h3>
-                    <span className="fw-bold" onClick={()=>handleGoToAccommDetail(accommodationId)} style={{cursor:'pointer', textDecoration:'underline'}}>
+                    <span
+                        className="fw-bold"
+                        title="숙소 상세보기로 이동"
+                        onClick={() => handleGoToAccommDetail(accommodationId)}
+                        style={{ cursor: 'pointer', textDecoration: 'underline' }}>
                         {rooms[0]?.accommodationName}
                     </span> 객실 목록
                 </h3>
@@ -176,9 +180,9 @@ function AdminRoomPage() {
                 >
                     검색 필터 설정 <i className="bi bi-funnel"></i>
                 </button>
-                
+
                 {/* 필터 내용 (Collapse) */}
-                <div className="collapse d-md-flex mt-5" id="filterCollapse">
+                <div className="collapse d-md-flex mt-3" id="filterCollapse">
                     {/* 상태/정렬 필터 그룹 */}
                     <div className="gap-1 flex-wrap d-flex">
                         <select
@@ -221,7 +225,7 @@ function AdminRoomPage() {
                         <div className="input-group h-75">
                             <input
                                 type="text"
-                                placeholder="숙소명 검색"
+                                placeholder="객실명 검색"
                                 className="form-control-sm border-1"
                                 value={inputKeyword}
                                 onChange={(e) => setInputKeyword(e.target.value)}
@@ -244,12 +248,31 @@ function AdminRoomPage() {
                             }}>
                                 <i className="bi bi-arrow-counterclockwise"></i>
                             </button>
-
                         </div>
                     </div>
-
                 </div>
             </div>
+
+            {/* 페이지 정보 */}
+            {page && (
+                <div className="text-end text-muted mt-3 d-flex justify-content-end align-items-center gap-1">
+                    전체 {page.totalCount}건 (
+                    <input
+                        type="number"
+                        className="form-control-sm form-control border-1 border-light text-center d-inline-block"
+                        value={page.totalPage === 0 ? 0 : page.pageNum}
+                        style={{ width: '55px' }}
+                        onChange={(e) => {
+                            const newPageNum = Number(e.target.value);
+                            if (newPageNum >= 0 && newPageNum <= page.totalPage) {
+                                setSearchParams(prev => ({
+                                    ...prev,
+                                    pageNum: newPageNum
+                                }));
+                            }
+                        }} /><span className="mx-1">/{page.totalPage} 페이지</span>)
+                </div>
+            )}
 
             <table className="table table-striped text-center mt-3 custom-table">
                 <thead className="table-light">

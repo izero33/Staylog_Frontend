@@ -156,7 +156,7 @@ function AdminAccommodationDetail() {
                 <div>
                     <button
                         className="btn btn-sm btn-outline-secondary me-1"
-                        title="숙소 목록으로 돌아가기"
+                        title="목록으로 돌아가기"
                         onClick={handleGoToList} // 이동 함수 연결
                     >
                         <i className="bi bi-arrow-left"></i> 뒤로가기

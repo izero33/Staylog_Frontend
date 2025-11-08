@@ -1,11 +1,17 @@
-// src/domain/board/pages/Board.css
-
-/* =========================================
+/* =========================================================
    🧭 Board 공통 스타일 (Review / Journal / Notice)
-   ========================================= */
+   ========================================================= */
 
-   
-/* ===== 게시글 목록 링크 ===== */
+/* ========== 기본 폰트 및 색상 ========== */
+.board-container {
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  color: #333;
+}
+
+/* =========================================================
+   📄 게시글 목록 / 링크
+   ========================================================= */
+
 .board-link {
   color: black !important;
   text-decoration: none !important;
@@ -16,85 +22,55 @@
   text-decoration: none !important;
 }
 
-/* ===== 게시글 상세보기 공통 ===== */
-.board-container {
-  font-family: "Pretendard", "Noto Sans KR", sans-serif;
-  color: #333;
-}
+/* =========================================================
+   🏷 제목 / 버튼
+   ========================================================= */
 
-/* 제목 */
 .board-title {
   font-size: 1.6rem;
   font-weight: 700;
 }
 
-/* ===== 좌측 지역 사이드바 ===== */
-.region-sidebar {
-  border-right: 1px solid #e5e5e5;
-}
-
-.region-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.region-item {
-  border: 1px solid #ccc;
-  border-radius: 30px;
-  padding: 8px 0;
-  text-align: center;
-  font-size: 0.95rem;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.region-item:hover {
-  background-color: #f3f3f3;
-}
-
-.region-item.active {
-  background-color: #333;
-  color: #fff;
-  font-weight: 600;
-}
-
-/* ===== 게시글 등록 버튼 ===== */
 .board-add-btn {
   border-radius: 20px;
   padding: 5px 18px;
   font-size: 0.9rem;
 }
 
-/* ===== 테이블 공통 ===== */
-.board-table {
+/* =========================================================
+   📊 테이블 공통
+   ========================================================= */
+
+.table-responsive-wrapper {
   width: 100%;
+  overflow-x: auto;             /* ✅ 가로 스크롤 허용 */
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+}
+
+.board-table {
+  min-width: 800px;             /* ✅ 테이블 최소 폭 */
   border-collapse: collapse;
+  font-size: 0.95rem;
   border-top: 2px solid #000;
   border-bottom: 2px solid #000;
-  font-size: 0.95rem;
 }
 
-.board-table thead th {
-  background-color: #f8f8f8;
-  border-bottom: 1px solid #ccc;
-  font-weight: 600;
-  padding: 12px 0;
-}
-
+.board-table thead th,
 .board-table tbody td {
-  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+  text-align: center;
   padding: 12px 8px;
-  word-break: keep-all;
 }
 
 .board-table tbody tr:hover {
   background-color: #fafafa;
 }
 
-/* ===== 페이지네이션 ===== */
+/* =========================================================
+   🔢 페이지네이션
+   ========================================================= */
+
 .pagination-custom .page-item .page-link {
   border: none;
   background: none;
@@ -105,7 +81,7 @@
 
 .pagination-custom .page-item.active .page-link {
   background-color: #000;
-  color: white;
+  color: #fff;
   border-radius: 50%;
 }
 
@@ -114,34 +90,39 @@
   border-radius: 50%;
 }
 
-/* ===== ✅ 반응형 스타일 ===== */
+/* =========================================================
+   📱 반응형 스타일
+   ========================================================= */
+
+/* ✅ 태블릿 (992px 이하) */
 @media (max-width: 992px) {
   .board-title {
     font-size: 1.4rem;
   }
 
-  .region-sidebar {
-    border-right: none;
-  }
-
-  .region-list {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 16px;
-  }
-
-  .region-item {
-    padding: 6px 14px;
+  .board-add-btn {
     font-size: 0.85rem;
+    padding: 4px 14px;
   }
 }
 
+/* ✅ 모바일 (768px 이하) */
 @media (max-width: 768px) {
+  /* 등록 버튼 크기 축소 */
   .board-add-btn {
     font-size: 0.8rem;
-    padding: 4px 14px;
+    padding: 4px 12px;
+  }
+
+  /* ✅ 테이블 → 카드형 변환 */
+  .table-responsive-wrapper {
+    margin-inline: -8px;
+    padding-inline: 8px;
+  }
+
+  .board-table {
+    font-size: 0.9rem;
+    min-width: 700px;
   }
 
   .board-table thead {

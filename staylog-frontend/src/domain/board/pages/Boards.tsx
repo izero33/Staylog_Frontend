@@ -143,79 +143,67 @@ function Boards() {
     return <>
 
     {/* 상단 제목 영역 */}
-    <div className="mt-4">
-      {boardType === "journal" &&(
-        
-        <h2 className="text-center fw-bold p-4">저널 게시판</h2>
-
-      )}
-
-      {boardType === "review" &&(
-      
-        <h2 className="text-center fw-bold p-4">리뷰 게시판</h2>
-
-      )}
+    <div className="mt-4 text-center">
+      <h2 className="fw-bold p-4">
+        {boardType === "journal" ? "저널 게시판" : "리뷰 게시판"}
+      </h2>
 
     </div>
 
-      <Container className="mt-4">
-        <Row>
+      <Container fluid="lg" className="mt-4">
+        <Row className="gy-4">
           {/* 좌측 지역 코드 */}
-          <Col md={2}>
-            <div className="m-4">
-              <RegionsSideBar 
-                selectedRegions={selectedRegions}
-                setSelectedRegions={setSelectedRegions} />
+          <Col xs={12} md={3} lg={2}>
+            <div className="px-3">
+              
+                <RegionsSideBar 
+                  selectedRegions={selectedRegions}
+                  setSelectedRegions={setSelectedRegions} />
+                           
             </div>
           </Col>
 
-          <Col md={10}>
           {/* 메인 게시글 목록 영역 */}
+          <Col xs={12} md={9} lg={10}>          
+            {/* 게시글 등록 버튼 */}
+            <div className="d-flex justify-content-end gap-3 mb-3">       
+              {userId && (
+                <button
+                  className={`btn ${
+                    boardType === "journal" ? "btn-success" : "btn-primary"
+                  }`}
+                  onClick={() => navigate(`/form/${boardType}`)}
+                >
+                  {boardType === "journal" ? "저널 등록" : "리뷰 등록"}
+                </button>
+              )}
+          
           {/* 정렬 */}
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <Button
+          <Button
               variant="outline-secondary"
               onClick={() => setIsSortOpen((prev) => !prev)}
+              className="fw-semibold"
             >
               {sortOption.find((opt) => opt.value === pageInfo.sort)?.label || "정렬"} ▾
             </Button>
           </div>
-          <div className="position-absolute mt-1" style={{ zIndex: 1000 }}>
-            <SortModal 
+          {isSortOpen && (
+          <div className="position-absolute mt-2" style={{ right: "2rem", zIndex: 1050 }}>
+            <SortModal
               isOpen={isSortOpen}
-              onClose={()=> setIsSortOpen(false)}
+              onClose={() => setIsSortOpen(false)}
               options={sortOption}
               selectedValue={pageInfo.sort}
               onSelectSort={handleSelectSort}
-              title='정렬'
-            /> 
+              title="정렬"
+            />
           </div>
-          
-          
-          <div className="d-flex justify-content-end mb-3">
-            {/* 리뷰 게시판은 로그인 사용자 등록 가능 */}
-            {boardType === "review" && userId && (
-              <button
-                className="btn btn-primary"
-                onClick={() => navigate(`/form/${boardType}`)}
-              >
-                리뷰 등록
-              </button>
-            )}
+          )}
 
-            {/* 저널 게시판은 VIP만 등록 가능 */}
-            {boardType === "journal" && userId && (
-              <button
-                className="btn btn-success"
-                onClick={() => navigate(`/form/${boardType}`)}
-              >
-                저널 등록
-              </button>
-            )}
-          </div>  
             
             {/* 리뷰 게시글 목록 테이블 */}
             {boardType === "review" &&(
+            <div className="table-responsive-wrapper">
             <Table className="review-table align-middle text-center m-4">
               <thead>
                 <tr>
@@ -235,7 +223,9 @@ function Boards() {
                     <tr key={board.boardId}>
                       <td>{board.boardId}</td>
                       <td>{board.regionName}</td>
-                      <td>{board.accommodationName}</td>
+                      <td>
+                        <NavLink to={`/accommodations/${board.accommodationId}`} className="text-dark text-decoration-none">{board.accommodationName}</NavLink>
+                      </td>
                       <td>
                         <NavLink to={`/review/${board.boardId}`} className="fw-bold text-dark text-decoration-none">{board.title}</NavLink>
                       </td>
@@ -252,6 +242,7 @@ function Boards() {
                 )}
               </tbody>
             </Table>
+            </div>
             )}
 
             {/* 저널 게시글 목록 테이블 */}

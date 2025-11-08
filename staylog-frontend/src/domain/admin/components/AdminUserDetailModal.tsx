@@ -15,6 +15,7 @@ export type AdminUserDetailDto = {
   phone: string | null;
   role: string;
   status: string;
+  nickname:string;
   gender: string | null;
   birthDate: string | null;
   profileImage: string | null;
@@ -97,6 +98,8 @@ export default function AdminUserDetailModal({ userId, open, onClose }: Props) {
                           <dl className="row mb-0">
                             <dt className="col-4">이름</dt>
                             <dd className="col-8">{data.name}</dd>
+                            <dt className="col-4">닉네임</dt>
+                            <dd className="col-8">{data.nickname}</dd>
                             <dt className="col-4">이메일</dt>
                             <dd className="col-8">{data.email}</dd>
                             <dt className="col-4">로그인 ID</dt>

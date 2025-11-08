@@ -12,6 +12,7 @@ export type AdminReservation = {
   bookingNum: string;
   userName: string;
   guestName: string;
+  phone: string;
   accommodationName: string;
   roomName: string;
   checkIn: string | null;

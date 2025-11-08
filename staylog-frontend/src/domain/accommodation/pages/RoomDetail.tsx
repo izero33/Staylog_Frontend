@@ -8,7 +8,7 @@ import api from "../../../global/api";
 import BookingPanel from "../components/BookingPanel";
 import { Card, Col, Container, Offcanvas, Row, Spinner } from "react-bootstrap";
 import FloatingReserveBubble from "../components/FloatingReserveBubble";
-import '../css/Room.css';
+import '../css/room.css';
 import AccommodationInfo from "../components/AccommodationInfo";
 
 function RoomDetail() {

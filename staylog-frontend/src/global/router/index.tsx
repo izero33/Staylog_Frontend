@@ -37,6 +37,7 @@ import AdminCouponPage from "../../domain/admin/pages/AdminCouponPage";
 import AdminRoomUpdate from "../../domain/admin/pages/AdminRoomUpdate";
 import TestEditorPage from "../pages/TestEditorPage";
 import Home2 from "../pages/Home2";
+import AccommodationReviewList from "../../domain/accommodation/pages/AccommodationReviewList";
 import AdminAccommodationRegisterPage from "../../domain/admin/pages/AdminAccommodationRegisterPage";
 import AdminRoomRegisterPage from "../../domain/admin/pages/AdminRoomRegisterPage";
 
@@ -53,7 +54,8 @@ const routes: RouteObject[] = [
   { path: "/:boardType/:boardId", element: <BoardDetail /> },
   { path: "/signup", element: <SignupForm /> },
   { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지
-  { path: "/accommodations/:id", element:<AccommodationDetail />},
+  { path: "/accommodations/:id", element: <AccommodationDetail />},
+  { path: "/accommodations/:id/reviews", element: <AccommodationReviewList/> },
   { path: "/room/:roomId", element: <RoomDetail />},
   { path: "/test-form", element: <TestForm /> },
   { path: "/test-load", element: <TestLoadImage /> },

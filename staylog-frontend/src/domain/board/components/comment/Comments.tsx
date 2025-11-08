@@ -100,13 +100,13 @@ const Comments = ({ boardId, userId }: CommentsProps) => {
         <CommentForm onSubmit={handleAdd} />
         <div className="mt-4 mb-4" style={{ borderBottom: "1px solid #dee2e6" }} />
         
-        {/* 댓글이 존재하지 않는다면 */}
         <Container className="p-2 shadow d-flex flex-column justify-content-center align-items-center"
             style={{
                 backgroundColor: "#f8f9fa",
                 borderRadius: 8,
                 minHeight: comments.length === 0 ? "7rem" : "auto"
             }}>
+            {/* 댓글이 존재하지 않는다면 */}
             {comments.length === 0 && (
                 <div className="text-center">
                     <i className="bi bi-chat-square-dots" style={{ fontSize : "1.5rem" , color: "#666e75ff" }}></i>

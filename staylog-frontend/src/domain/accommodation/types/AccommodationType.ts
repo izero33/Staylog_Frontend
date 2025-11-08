@@ -5,6 +5,7 @@ export interface AccommodationReviewListType {
     readonly userId : number;
     nickname : string;
     profileImage : string;
+    title : string;
     content : string;
     rating : number;
     reviewCount : number;

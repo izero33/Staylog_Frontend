@@ -273,7 +273,7 @@ function AccommodationDetail() {
                                     방문자 리뷰 <small style={{ fontSize: "0.8rem", color: "rgba(101, 101, 101, 1)" }}>({data.reviews?.length || 0})</small>
                                 </h5>
                                 {data.reviews && data.reviews.length > 0 ? (
-                                    <ReviewList reviews={data.reviews.slice(0, 7)} />
+                                    <ReviewList reviews={data.reviews.slice(0, 7)} accommodationId={Number(accommodationId)} />
                                 ) : (
                                     <div className="placeholder-box"><p>등록된 리뷰가 없습니다</p></div>
                                 )}  

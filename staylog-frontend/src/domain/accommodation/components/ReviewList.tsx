@@ -4,10 +4,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface ReviewListProps {
-  reviews: AccommodationReviewListType[]; 
+  reviews : AccommodationReviewListType[];
+  accommodationId : number;
 }
 
-const ReviewList = ({ reviews}: ReviewListProps) => {
+const ReviewList = ({ reviews, accommodationId }: ReviewListProps) => {
 
     // 리뷰 글 펼침 상태
     const [openReviews, setOpenReviews] = useState<Record<number,boolean>>({});
@@ -23,7 +24,8 @@ const ReviewList = ({ reviews}: ReviewListProps) => {
 
     return <>
          <div className="d-flex justify-content-end">
-            <Button className="p-0" onClick={() => navigate("")}
+            <Button className="p-0"
+                onClick={() => navigate(`/accommodations/${accommodationId}/reviews`)}
                 style={{
                     fontSize : "0.8rem",
                     color : "#5c6369ff",

@@ -138,12 +138,12 @@ function AdminAccommodationDetail() {
                     </span>
                 </div>
                 {data.avgRating ? (
-                    <div style={{fontSize : '1rem'}}>
+                    <div style={{ fontSize: '1rem' }}>
                         <i title='평균별점' className="bi bi-star-fill text-warning me-1"></i> {data.avgRating}&nbsp;
                         (<i title='리뷰' className="bi bi-person"></i> {data.reviewCount}개)
                     </div>
                 ) : (
-                    <span style={{fontSize : '1rem'}}>등록된 리뷰가 없습니다.</span>
+                    <span style={{ fontSize: '1rem' }}>등록된 리뷰가 없습니다.</span>
                 )}
             </h3>
 
@@ -179,15 +179,12 @@ function AdminAccommodationDetail() {
                     </button>
                 </div>
             </div>
-
-            <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed' }}>
-                <colgroup>
-                    <col style={{ width: '25%' }} />
-                    <col style={{ width: '75%' }} />
-                </colgroup>
+            
+            <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
                 <tbody>
+                    {/* 세로 헤더 (왼쪽이 헤더) */}
                     <tr>
-                        <th className="bg-light text-center">유형</th>
+                        <th className="bg-light text-center" style={{ width: '25%' }}>유형</th>
                         <td>{data.typeName}</td>
                     </tr>
                     <tr>
@@ -206,25 +203,37 @@ function AdminAccommodationDetail() {
                         <th className="bg-light text-center">체크아웃</th>
                         <td>{data.checkOutTime}</td>
                     </tr>
+
+                    {/* 구분선 */}
                     <tr>
-                        <th className="bg-light text-center">이미지</th>
-                        <td>
+                        <td colSpan={2}></td>
+                    </tr>
+
+                    {/* 가로 헤더 (위쪽이 헤더) */}
+                    <tr>
+                        <th colSpan={2} className="bg-light text-center">이미지</th>
+                    </tr>
+                    <tr>
+                        <td colSpan={2}>
                             <div className="accommodationImages images-slider">
                                 <Carousel>
                                     <Carousel.Item>
                                         {/* 이미지 비율에 맞게 나오게 함*/}
-                                        <Image src={img1} alt="숙소 이미지 1" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
+                                        <Image src={img1} alt="숙소 이미지 1" className="d-block w-100" style={{objectFit: "contain" }} />
                                     </Carousel.Item>
                                     <Carousel.Item>
-                                        <Image src={img2} alt="숙소 이미지 2" className="d-block w-100" style={{ height: "300px", objectFit: "contain" }} />
+                                        <Image src={img2} alt="숙소 이미지 2" className="d-block w-100" style={{objectFit: "contain" }} />
                                     </Carousel.Item>
                                 </Carousel>
                             </div>
                         </td>
                     </tr>
+
                     <tr>
-                        <th className="bg-light text-center">설명</th>
-                        <td dangerouslySetInnerHTML={{ __html: data.description }} />
+                        <th colSpan={2} className="bg-light text-center">설명</th>
+                    </tr>
+                    <tr>
+                        <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.description }} />
                     </tr>
                 </tbody>
             </table>

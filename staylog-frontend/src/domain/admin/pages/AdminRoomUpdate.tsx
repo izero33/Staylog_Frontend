@@ -1,17 +1,14 @@
 
-import { Container } from 'react-bootstrap';
+import { Carousel, Container, Image } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
-import '../css/AdminAccommodationDetail.css';
-import { formatKST } from '../../../global/utils/date';
 import type { AdminRoom } from '../types/AdminRoomTypes';
 import type { CommonCodeNameList } from '../types/CommonCodeNameList';
-import type AdminRoomDetail from './AdminRoomDetail';
 
 /*
-    Carousel : 숙소 대표 이미지
+    Carousel : 객실 대표 이미지
     Accordion : 클릭 시 펼쳐지는 기능
 */
 
@@ -211,8 +208,9 @@ function AdminRoomUpdate() {
             </div>
 
             <form onSubmit={handleSubmit} action="/v1/board">
-                <table className="table table-bordered mt-3">
+                <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
                     <tbody>
+                        {/* 세로 헤더 (왼쪽이 헤더) */}
                         <tr>
                             <th className="bg-light text-center align-middle" style={{ width: '25%' }}>객실명</th>
                             <td>
@@ -253,7 +251,7 @@ function AdminRoomUpdate() {
                         <tr>
                             <th className="bg-light text-center align-middle">가격</th>
                             <td className='d-flex align-items-center'>
-                                <input 
+                                <input
                                     type="number"
                                     className="form-control form-control-sm w-25 me-2 text-end pe-0"
                                     value={data.price}
@@ -398,9 +396,40 @@ function AdminRoomUpdate() {
                                 </small>
                             </td>
                         </tr>
+
+                        {/* 구분선 */}
+                        <tr>
+                            <td colSpan={2}></td>
+                        </tr>
+
+                        {/* 가로 헤더 (위쪽이 헤더) */}
+                        <tr>
+                            <th colSpan={2} className="bg-light text-center align-middle">이미지</th>
+                        </tr>
+                        <tr>
+                            <td colSpan={2}>
+                                <div className="accommodationImages images-slider">
+                                    <Carousel>
+                                        <Carousel.Item>
+                                            {/* 이미지 비율에 맞게 나오게 함*/}
+                                            <Image src={img1} alt="객실 이미지 1" className="d-block w-100" style={{ objectFit: "contain" }} />
+                                        </Carousel.Item>
+                                        <Carousel.Item>
+                                            <Image src={img2} alt="객실 이미지 2" className="d-block w-100" style={{ objectFit: "contain" }} />
+                                        </Carousel.Item>
+                                    </Carousel>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th colSpan={2} className="bg-light text-center align-middle">설명</th>
+                        </tr>
+                        <tr>
+                            <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.description }} />
+                        </tr>
                     </tbody>
                 </table>
-                <div>이미지, 설명</div>
                 <button className="btn btn-primary btn-sm me-1" type="submit">저장</button>
                 <button className="btn btn-danger btn-sm" type='reset' onClick={handleReset}>초기화</button>
             </form>

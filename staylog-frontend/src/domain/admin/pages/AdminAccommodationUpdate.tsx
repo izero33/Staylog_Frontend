@@ -1,10 +1,9 @@
 
-import { Container } from 'react-bootstrap';
+import { Carousel, Container, Image } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
-import '../css/AdminAccommodationDetail.css';
 import type { CommonCodeNameList } from '../types/CommonCodeNameList';
 import type { AdminAccommodation } from '../types/AdminAccommodationTypes';
 import AddressSearch from '../../../global/components/AddressSearch';
@@ -202,8 +201,9 @@ function AdminAccommodationUpdate() {
             </div>
 
             <form onSubmit={handleSubmit}>
-                <table className="table table-bordered mt-3">
+                <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
                     <tbody>
+                        {/* 세로 헤더 (왼쪽이 헤더) */}
                         <tr>
                             <th className="bg-light text-center" style={{ width: '25%' }}>숙소명</th>
                             <td>
@@ -330,9 +330,39 @@ function AdminAccommodationUpdate() {
                                 </small>
                             </td>
                         </tr>
+                        {/* 구분선 */}
+                        <tr>
+                            <td colSpan={2}></td>
+                        </tr>
+
+                        {/* 가로 헤더 (위쪽이 헤더) */}
+                        <tr>
+                            <th colSpan={2} className="bg-light text-center">이미지</th>
+                        </tr>
+                        <tr>
+                            <td colSpan={2}>
+                                <div className="accommodationImages images-slider">
+                                    <Carousel>
+                                        <Carousel.Item>
+                                            {/* 이미지 비율에 맞게 나오게 함*/}
+                                            <Image src={img1} alt="숙소 이미지 1" className="d-block w-100" style={{ objectFit: "contain" }} />
+                                        </Carousel.Item>
+                                        <Carousel.Item>
+                                            <Image src={img2} alt="숙소 이미지 2" className="d-block w-100" style={{ objectFit: "contain" }} />
+                                        </Carousel.Item>
+                                    </Carousel>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th colSpan={2} className="bg-light text-center">설명</th>
+                        </tr>
+                        <tr>
+                            <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.description }} />
+                        </tr>
                     </tbody>
                 </table>
-                <div>이미지, 설명</div>
                 <button className="btn btn-primary btn-sm me-1" type="submit">저장</button>
                 <button className="btn btn-danger btn-sm" type='button' onClick={handleReset}>초기화</button>
             </form>

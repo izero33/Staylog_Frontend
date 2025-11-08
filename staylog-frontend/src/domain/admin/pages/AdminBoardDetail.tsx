@@ -7,6 +7,7 @@ import axios from 'axios';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminBoard } from '../types/AdminBoardTypes';
 import AdminReservationDetailModal from '../components/AdminReservationDetailModal';
+import '../css/AdminDetailPageTable.css';
 
 /*
     Carousel : 게시글 대표 이미지
@@ -156,14 +157,11 @@ function AdminBoardDetail() {
                 </button>
             </div>
 
-            <table className="table table-bordered mt-2">
-                <colgroup>
-                    <col style={{ width: '25%' }} />
-                    <col style={{ width: '75%' }} />
-                </colgroup>
+            <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
                 <tbody>
+                    {/* 세로 헤더 (왼쪽이 헤더) */}
                     <tr>
-                        <th className="bg-light text-center">작성자</th>
+                        <th className="bg-light text-center" style={{ width: '25%' }}>작성자</th>
                         <td>{data.userNickName}</td>
                     </tr>
                     <tr>
@@ -213,13 +211,23 @@ function AdminBoardDetail() {
                         <th className="bg-light text-center">제목</th>
                         <td>{data.title}</td>
                     </tr>
+
+                    {/* 구분선 */}
                     <tr>
-                        <th className="bg-light text-center">내용</th>
-                        <td dangerouslySetInnerHTML={{ __html: data.content }} />
+                        <td colSpan={2}></td>
+                    </tr>
+
+                    {/* 가로 헤더 (위쪽이 헤더) */}
+                    <tr>
+                        <th colSpan={2} className="bg-light text-center">내용</th>
+                    </tr>
+                    <tr>
+                        <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.content }} />
                     </tr>
                 </tbody>
             </table>
-            {/* 상세 모달 */}
+
+            {/* 예약 상세 모달 */}
             <AdminReservationDetailModal
                 open={detailOpen}
                 bookingId={targetBookingId}

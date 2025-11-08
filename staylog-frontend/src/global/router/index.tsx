@@ -32,6 +32,7 @@ import AdminBoardPage from "../../domain/admin/pages/AdminBoardPage";
 import AdminBoardDetail from "../../domain/admin/pages/AdminBoardDetail";
 import Boards from "../../domain/board/pages/Boards";
 import CheckoutForm from "../../domain/payment/pages/CheckoutForm";
+import PaymentCompletePage from "../../domain/payment/pages/PaymentCompletePage";
 import AdminCouponPage from "../../domain/admin/pages/AdminCouponPage";
 import AdminRoomUpdate from "../../domain/admin/pages/AdminRoomUpdate";
 import TestEditorPage from "../pages/TestEditorPage";
@@ -56,7 +57,8 @@ const routes: RouteObject[] = [
   { path: "/test-load", element: <TestLoadImage /> },
   { path: "/quill", element: <BoardForm2/>}, //에디터 테스트
   { path: "/bord", element: <Board/>},//에디터 테스트
-  { path: "/checkout", element: <CheckoutForm/>},//에디터 테스트
+  { path: "/checkout", element: <CheckoutForm/>}, // 결제 페이지
+  { path: "/payment/complete", element: <PaymentCompletePage/>}, // 결제 완료 페이지
   { path: "/comments/:boardId", element: <CommentsPage /> },
   { path: "/testEditor", element: <TestEditorPage /> },
   { path: "/home", element: <Home2 />}

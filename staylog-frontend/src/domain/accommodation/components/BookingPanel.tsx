@@ -4,6 +4,18 @@ import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
 import type { AccommodationRoomListType } from "../types/AccommodationType";
 
+// 예약 정보 타입
+export interface BookingData {
+  roomId: number;
+  checkIn: Date | null;
+  checkOut: Date | null;
+  adults: number;
+  children: number;
+  infants: number;
+  totalPrice: number;
+  nights: number;
+}
+
 type Props = {
   // 상단 탭
   onClickSchedule?: () => void;
@@ -12,7 +24,7 @@ type Props = {
   name: string;
   imageUrl?: string;
   rooms?: AccommodationRoomListType[];
-  onReserve?: () => void;
+  onReserve?: (bookingData: BookingData) => void; // 예약 정보 전달
   // 예약 불가일
   disabledDates?: string[];
   onSelectRoom?: (room: AccommodationRoomListType) => void;
@@ -311,7 +323,20 @@ function BookingPanel({
 
         {/* 예약 버튼 */}
         <Button className="w-100 py-3 mt-2 fw-bold" variant="dark" style={{fontSize : "1.1rem"}}
-          onClick={onReserve} disabled={!selectedRoom || nights === 0}>
+          onClick={() => {
+            if (selectedRoom && checkIn && checkOut && nights > 0) {
+              onReserve?.({
+                roomId: selectedRoom.roomId,
+                checkIn,
+                checkOut,
+                adults: adultCount,
+                children: childCount,
+                infants: infantCount,
+                totalPrice,
+                nights,
+              });
+            }
+          }} disabled={!selectedRoom || nights === 0}>
           예약하기
         </Button>
       </Card.Body>

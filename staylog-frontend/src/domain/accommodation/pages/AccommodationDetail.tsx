@@ -7,11 +7,13 @@ import axios from 'axios';
 import RoomList from '../components/RoomList';
 import ReviewList from '../components/ReviewList';
 import '../css/Accommodation.css';
-import BookingPanel from '../components/BookingPanel';
+import BookingPanel, { type BookingData } from '../components/BookingPanel';
 import useIsMobile from '../hooks/useIsMobile';
 import FloatingReserveBubble from '../components/FloatingReserveBubble';
 import KakaoMap from '../components/KakaoMap';
 import AccommodationInfo from '../components/AccommodationInfo';
+import { createBooking } from '../../booking/api';
+import type { CreateBookingRequest } from '../../booking/types';
 
 /*
     Carousel : 숙소 대표 이미지
@@ -113,6 +115,37 @@ function AccommodationDetail() {
         setSelectedRoom(room);
         navigate(`/room/${room.roomId}`)
     }
+
+    // 예약하기 버튼 클릭 핸들러
+    const handleReserve = async (bookingData: BookingData) => {
+        try {
+            // Date를 "YYYY-MM-DD" 문자열로 변환
+            const formatDate = (date: Date | null) => {
+                if (!date) return '';
+                return date.toISOString().split('T')[0];
+            };
+
+            // 예약 생성 요청 데이터 구성
+            const request: CreateBookingRequest = {
+                roomId: bookingData.roomId,
+                checkIn: formatDate(bookingData.checkIn),
+                checkOut: formatDate(bookingData.checkOut),
+                amount: bookingData.totalPrice,
+                adults: bookingData.adults,
+                children: bookingData.children,
+                infants: bookingData.infants,
+            };
+
+            // 예약 생성 API 호출
+            const booking = await createBooking(request);
+
+            // 예약 성공 시 결제 페이지로 이동 (예약 정보 전달)
+            navigate('/checkout', { state: { booking } });
+        } catch (err) {
+            console.error('예약 생성 실패:', err);
+            alert('예약 생성에 실패했습니다. 다시 시도해주세요.');
+        }
+    };
 
     // 데이터 로딩 직후 기본값으로 선택되는 객실의 블락 날짜를 표시해준다
     useEffect(() => {
@@ -271,7 +304,7 @@ function AccommodationDetail() {
                             <BookingPanel
                                 name={data.name}
                                 rooms={data.rooms || []}
-                                onReserve={() => alert("예약 완료!")}
+                                onReserve={handleReserve}
                                 onClickGuests={() => alert("인원 선택창 열림")}
                                 showRoomSelect={true}
                                 disabledDates={blockedDates} // 선택된 객실 기준 블락 날짜 전달
@@ -304,9 +337,9 @@ function AccommodationDetail() {
                     <BookingPanel
                         name={data.name}
                         rooms={data.rooms}
-                        onReserve={() => {
+                        onReserve={(bookingData) => {
                             setOpenReserve(false);
-                            alert("예약 완료!");
+                            handleReserve(bookingData);
                         }}
                         onClickGuests={() => alert("인원 선택창 열림")}
                         showRoomSelect={true} // 모바일에도 객실 선택 표시

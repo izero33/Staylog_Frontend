@@ -50,6 +50,25 @@ function BoardDetail() {
         fetchBoard();
     },[boardId, boardType]);
 
+    // 게시글 수정 버튼
+    const handleUpdate = async () => {
+
+        const confirmUpdate = window.confirm("게시글을 수정하시겠습니까?");
+
+        if (!confirmUpdate) return; // 취소 누르면 함수 종료
+
+        try {
+
+            navigate(`/form/${boardType}/${boardId}`); // 수정폼으로
+
+        } catch (err) {
+
+            console.error("게시글 수정 실패:", err);
+            alert("게시글 수정 중 오류가 발생했습니다.");
+        }
+    };
+
+
     // 게시글 삭제 버튼
     const handleDelete = async () => {
 
@@ -66,9 +85,6 @@ function BoardDetail() {
             alert("게시글 삭제 중 오류가 발생했습니다.");
         }
     };
-
-
-
     
     
     // 좋아요 상태값 관리     
@@ -187,9 +203,6 @@ function BoardDetail() {
 
         </>
         )}
-        
-
-
 
     </div>
     
@@ -206,33 +219,42 @@ function BoardDetail() {
         </button>
     </div>
 
-    {/* 게시글 삭제 */}
-    { Number(userId) === dto?.userId && (
-
-    <div className="d-flex justify-content-end">
-        <button
-            className="btn btn-outline-danger"
-            onClick={handleDelete}>
-            삭제
-        </button>
-    </div>
-
-    )}
-
 
     <div className="border-top my-4 border-dark"></div>
 
+    
     
 
     {/* 게시판목록으로 돌아가기 */}
     <div className="d-flex justify-content-end mb-5">
         
-        
+    
+    {/* 게시글 수정 */}
+    { Number(userId) === dto?.userId && (
+    
+    <div className="d-flex justify-content-end gap-2">
+        <button
+            className="btn btn-outline-primary"
+            onClick={handleUpdate}>
+            수정
+        </button>
+    
+        <button
+            className="btn btn-outline-primary"
+            onClick={handleDelete}>
+            삭제
+        </button>
+
         <button
             className="btn btn-outline-secondary"
             onClick={() => navigate(`/${boardType}`)}>
             목록
         </button>
+    </div>
+    
+    )}    
+        
+        
         
 
         

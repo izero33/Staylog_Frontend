@@ -3,7 +3,6 @@ import { Container } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../../global/api';
 import axios from 'axios';
-import '../css/AdminAccommodationDetail.css';
 import type { CommonCodeNameList } from '../types/CommonCodeNameList';
 import type { AdminAccommodation } from '../types/AdminAccommodationTypes';
 import AddressSearch from '../../../global/components/AddressSearch';

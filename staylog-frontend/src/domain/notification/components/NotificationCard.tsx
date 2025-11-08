@@ -81,13 +81,13 @@ function onNavigate() {
 
   return (
     <>
-      <Card onClick={onNavigate} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseReave} style={{ width: '90%', borderRadius: '10px 45px 10px 10px', backgroundColor: '#ebebebe8' }} className="mx-auto position-relative border-0 shadow-sm cursor-pointer mb-4">
+      <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseReave} style={{ width: '90%', borderRadius: '10px 45px 10px 10px', backgroundColor: '#ebebebe8' }} className="mx-auto position-relative border-0 shadow-sm cursor-pointer mb-4">
         {isRead &&
           <span className="position-absolute" style={{ top: '2px', right: '2px', width: '10px', height: '10px', backgroundColor: '#ee6f6fff', borderRadius: '50%', opacity: (!mouseOver && isRead == 'N') ? 1 : 0, transition: 'opacity 0.2s ease-in-out', pointerEvents: 'none' }} />
         }
         <CloseButton className="notification-close-btn" onClick={() => handleDelete(notiId)} aria-label="알림 닫기" style={{ position: 'absolute', top: '1px', right: '1px', fontSize: '0.6rem', opacity: mouseOver ? 1 : 0, pointerEvents: mouseOver ? 'auto' : 'none' }} />
 
-        <Card.Body  onClick={() => {handleReadOne(notiId)}} className="d-flex align-items-center p-3">
+        <Card.Body  onClick={() => {handleReadOne(notiId), onNavigate()}} className="d-flex align-items-center p-3">
           <Image src={details.imageUrl} style={{ width: '85px', height: '85px', objectFit: 'cover', }} className="rounded-3" />
           <div className="flex-grow-1">
             <Card.Text as="small" className="text-muted mb-1 d-block ms-3 fs-8">{details.date}</Card.Text>

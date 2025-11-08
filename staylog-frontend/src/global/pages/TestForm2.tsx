@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import ImageUploader, * as ImageUploaderTypes from '../components/ImageUploader'; // ImageUploader 경로에 맞게 수정
+import ImageUploader, * as ImageUploaderTypes from '../components/ImageManager'; // ImageUploader 경로에 맞게 수정
 import api from '../api'; // API 클라이언트 경로에 맞게 수정
 
 const TestForm2: React.FC = () => {

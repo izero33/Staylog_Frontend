@@ -6,25 +6,22 @@ import api from "../../../global/api";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import type { BoardDto } from "../types/boardtypes";
 import Comments from "../components/comment/Comments";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../global/store/types";
 
 
 
-function BoardDetail() {
+function BoardDetail2() {
     
     // 게시글 카테고리, 게시글 번호
     const { boardType, boardId } = useParams<{ boardType: string; boardId: string }>();
 
     // USER 상태값 관리
-    // const userId = useGetUserIdFromToken();
-    const userId = useSelector((state: RootState) => state.userInfo?.userId)
+    const userId = useGetUserIdFromToken();
 
     // DTO 상태값 관리
     const [dto, setDto] = useState<BoardDto | null>(null);
 
 
-    // 페이지네이션
+
 
     const navigate = useNavigate();
 
@@ -38,6 +35,8 @@ function BoardDetail() {
                     boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
                 const res = await api.get(`/v1/boards/${boardId}`, {params: userId ? {userId : Number(userId)} : {} });
                 console.log("📦 불러온 게시글 상세:", res);
+                console.log("userId:", userId);
+                console.log("요청 URL", `/v1/boards/${boardId}`, {params: userId ? {userId : Number(userId)} : {} });
                 
                 setDto(res);
 
@@ -50,25 +49,6 @@ function BoardDetail() {
         fetchBoard();
     },[boardId, boardType]);
 
-    // 게시글 수정 버튼
-    const handleUpdate = async () => {
-
-        const confirmUpdate = window.confirm("게시글을 수정하시겠습니까?");
-
-        if (!confirmUpdate) return; // 취소 누르면 함수 종료
-
-        try {
-
-            navigate(`/form/${boardType}/${boardId}`); // 수정폼으로
-
-        } catch (err) {
-
-            console.error("게시글 수정 실패:", err);
-            alert("게시글 수정 중 오류가 발생했습니다.");
-        }
-    };
-
-
     // 게시글 삭제 버튼
     const handleDelete = async () => {
 
@@ -78,13 +58,16 @@ function BoardDetail() {
         try {
             await api.delete(`/v1/boards/${boardId}`);
             alert("게시글이 성공적으로 삭제되었습니다.");
-            navigate(`/${boardType}`); // 삭제 후 목록으로
+            navigate("/review"); // 삭제 후 목록으로
         } catch (err) {
             
             console.error("게시글 삭제 실패:", err);
             alert("게시글 삭제 중 오류가 발생했습니다.");
         }
     };
+
+
+
     
     
     // 좋아요 상태값 관리     
@@ -135,11 +118,11 @@ function BoardDetail() {
 
         // ✅ 프론트 상태 업데이트만 내부에서 처리
         if (!liked) {
-            setLikes((prev) => prev + 1);
-            setLiked(true);
+        setLikes((prev) => prev + 1);
+        setLiked(true);
         } else {
-            setLikes((prev) => (prev > 0 ? prev - 1 : 0));
-            setLiked(false);
+        setLikes((prev) => (prev > 0 ? prev - 1 : 0));
+        setLiked(false);
         }
 
     } catch (err) {
@@ -173,7 +156,6 @@ function BoardDetail() {
 
         {/* 별점 - 리뷰에서만 보기 */}
         {boardType === "review" && (
-        <>
         <div className="d-flex justify-content-center align-items-center mt-5 mb-5">
             
             {[1, 2, 3, 4, 5].map((star) => (
@@ -186,28 +168,27 @@ function BoardDetail() {
             </span>
             ))}
         </div>
-
-        {/* 숙소 링크 */}
-        <div className="d-flex justify-content-center mb-5">
-            <button
-                className="btn btn-outline-secondary"
-                onClick={() => {
-                    if (dto?.accommodationId) {
-                        navigate(`/accommodations/${dto.accommodationId}`);
-                    }
-                }}
-            >
-                숙소 보러가기
-            </button>
-        </div>
-
-        </>
         )}
+        
+
+
 
     </div>
     
 
-    
+    {/* 숙소 링크 */}
+    <div className="d-flex justify-content-center mb-5">
+        <button
+            className="btn btn-secondary"
+            onClick={() => {
+                if (dto?.accommodationId) {
+                    navigate(`/accommodations/${dto.accommodationId}`);
+                }
+            }}
+        >
+            숙소 보러가기
+        </button>
+    </div>
 
     {/* 좋아요 */}
     <div className="d-flex justify-content-center mb-3">
@@ -219,53 +200,41 @@ function BoardDetail() {
         </button>
     </div>
 
+    {/* 게시글 삭제 */}
+    {userId === dto?.userId && (
+
+    <div className="d-flex justify-content-end">
+        <button
+            className="btn btn-outline-danger"
+            onClick={handleDelete}>
+            삭제
+        </button>
+    </div>
+
+    )}
+
 
     <div className="border-top my-4 border-dark"></div>
 
-    
     
 
     {/* 게시판목록으로 돌아가기 */}
     <div className="d-flex justify-content-end mb-5">
         
-    
-    {/* 게시글 수정 */}
-    { Number(userId) === dto?.userId && (
-    
-    <div className="d-flex justify-content-end gap-2">
-        <button
-            className="btn btn-outline-primary"
-            onClick={handleUpdate}>
-            수정
-        </button>
-    
-        <button
-            className="btn btn-outline-primary"
-            onClick={handleDelete}>
-            삭제
-        </button>
-
+        
         <button
             className="btn btn-outline-secondary"
-            onClick={() => navigate(`/${boardType}`)}>
+            onClick={() => navigate(-1)}>
             목록
         </button>
-    </div>
-    
-    )}    
-        
-        
         
 
         
     </div>
-
-    {/* 댓글 */}
     <div style={{ padding: "1rem" }}>
         <Comments boardId={Number(boardId)} userId={userId} />
     </div>
-
     </>
 }
 
-export default BoardDetail;
+export default BoardDetail2;

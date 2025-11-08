@@ -12,7 +12,7 @@ import type { AdminRoom } from '../types/AdminRoomTypes';
     Accordion : 클릭 시 펼쳐지는 기능
 */
 
-function AdminAccommodationDetail() {
+function AdminRoomDetail() {
     // 예비용 이미지
     const img1 = "https://picsum.photos/1400/500";
     const img2 = "https://picsum.photos/1400/500?grayscale";
@@ -103,11 +103,6 @@ function AdminAccommodationDetail() {
         }
     };
 
-    //숙소 상세 페이지 이동 핸들러
-    const handleGoToAccommDetail = (accommodationId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}`);
-    };
-
     // 객실 목록 페이지 이동 핸들러
     const handleGoToList = () => {
         if (location.state?.from) {
@@ -133,14 +128,19 @@ function AdminAccommodationDetail() {
     // 전체 화면 너비 사용 : Container fluid
     return <>
         <Container fluid className="p-0">
-            <h3 className="justify-content-between d-flex">
+            <h3 className="justify-content-start d-flex align-items-end">
+                {data.name}
+                <span className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '0.8rem' }}>
+                    {data.deletedYn === 'N' ? '활성화' : '비활성화'}
+                </span>
+            </h3>
+            <div className="text-muted mt-3">
+                <span className='me-2'>등록일 : {formatKST(data.createdAt)}</span>
+                <span>수정일 : {formatKST(data.updatedAt)}</span>
+            </div>
+
+            <div className="justify-content-between d-flex mt-5">
                 <div>
-                    {data.name}
-                    <span className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '0.8rem' }}>
-                        {data.deletedYn === 'N' ? '활성화' : '비활성화'}
-                    </span>
-                </div>
-                <div className="">
                     <button
                         className="btn btn-sm btn-outline-secondary me-1"
                         title="객실 목록으로 돌아가기"
@@ -148,46 +148,33 @@ function AdminAccommodationDetail() {
                     >
                         <i className="bi bi-arrow-left"></i> 뒤로가기
                     </button>
-
                 </div>
-            </h3>
-            <div className="text-muted ">
-                <span className='me-2'>등록일 : {formatKST(data.createdAt)}</span>
-                <span>수정일 : {formatKST(data.updatedAt)}</span>
-            </div>
-
-            <div className="justify-content-end d-flex mt-5 gap-1">
-                <button title="수정하기" className="btn btn-sm btn-primary" onClick={() => handleGoToUpdate(data.roomId!)}>수정하기</button>
-                {data.deletedYn === 'N' ? (
-                    <button title="비활성화하기" className="btn btn-sm btn-danger text-white" onClick={() => updateRoomStatus(data.roomId!, 'Y')}>비활성화하기</button>
-                ) : (
-                    <button title="활성화하기" className="btn btn-sm btn-success" onClick={() => updateRoomStatus(data.roomId!, 'N')}>활성화하기</button>
-                )}
-                <button
-                    className="btn btn-sm btn-outline-primary"
-                    title="숙소 상세 보기"
-                    onClick={() => handleGoToAccommDetail(data.accommodationId!)} // 이동 함수 연결
-                >
-                    숙소 상세 <i className="bi bi-arrow-left"></i>
-                </button>
+                <div className="d-flex gap-1">
+                    <button title="수정하기" className="btn btn-sm btn-primary" onClick={() => handleGoToUpdate(data.roomId!)}>수정하기</button>
+                    {data.deletedYn === 'N' ? (
+                        <button title="비활성화하기" className="btn btn-sm btn-danger text-white" onClick={() => updateRoomStatus(data.roomId!, 'Y')}>비활성화하기</button>
+                    ) : (
+                        <button title="활성화하기" className="btn btn-sm btn-success" onClick={() => updateRoomStatus(data.roomId!, 'N')}>활성화하기</button>
+                    )}
+                </div>
             </div>
 
             <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed' }}>
                 <colgroup>
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '85%' }} />
+                    <col style={{ width: '25%' }} />
+                    <col style={{ width: '75%' }} />
                 </colgroup>
                 <tbody>
                     <tr>
-                        <th className="bg-light text-center">유형</th>
+                        <th className="bg-light text-center align-middle" style={{ width: '30%' }}>유형</th>
                         <td>{data.typeName}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light text-center">가격</th>
+                        <th className="bg-light text-center align-middle">가격</th>
                         <td>{data.price}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light text-center" style={{ width: '30%' }}>최대 인원</th>
+                        <th className="bg-light text-center align-middle">최대 인원</th>
                         <td>
                             <table className="table table-sm mb-0" style={{ width: '30%' }}>
                                 <tbody>
@@ -214,7 +201,7 @@ function AdminAccommodationDetail() {
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light text-center">침대</th>
+                        <th className="bg-light text-center align-middle">침대</th>
                         <td>
                             <table className="table table-sm mb-0" style={{ width: '30%' }}>
                                 <tbody>
@@ -248,23 +235,23 @@ function AdminAccommodationDetail() {
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light text-center">면적</th>
+                        <th className="bg-light text-center align-middle">면적</th>
                         <td>{data.area} m²</td>
                     </tr>
                     {data.checkIn && (
                         <tr>
-                            <th className="bg-light">체크인</th>
+                            <th className="bg-light text-center align-middle">체크인</th>
                             <td>{data.checkIn}</td>
                         </tr>
                     )}
                     {data.checkOut && (
                         <tr>
-                            <th className="bg-light">체크아웃</th>
+                            <th className="bg-light text-center align-middle">체크아웃</th>
                             <td>{data.checkOut}</td>
                         </tr>
                     )}
                     <tr>
-                        <th className="bg-light text-center">이미지</th>
+                        <th className="bg-light text-center align-middle">이미지</th>
                         <td>
                             <div className="accommodationImages images-slider">
                                 <Carousel>
@@ -280,7 +267,7 @@ function AdminAccommodationDetail() {
                         </td>
                     </tr>
                     <tr>
-                        <th className="bg-light text-center">설명</th>
+                        <th className="bg-light text-center align-middle">설명</th>
                         <td dangerouslySetInnerHTML={{ __html: data.description }} />
                     </tr>
                 </tbody>
@@ -289,4 +276,4 @@ function AdminAccommodationDetail() {
     </>
 }
 
-export default AdminAccommodationDetail;
+export default AdminRoomDetail;

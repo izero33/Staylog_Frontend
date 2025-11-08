@@ -35,7 +35,7 @@ type ReservationDetail = {
   totalGuestCount: number | null;
 
   /** ✅ 결제 금액(서버가 amount 또는 price를 줄 수 있어 둘 다 고려) */
-  amount: number | null;
+  finalAmount: number | null;
   price: number | null;
 
   paymentMethod: string | null;
@@ -89,7 +89,7 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
           totalGuestCount: root.totalGuestCount ?? null,
 
           // ✅ 금액 (amount 우선, 없으면 price)
-          amount: root.amount ?? null,
+          finalAmount: root.finalAmount ?? null,
           price: root.price ?? null,
 
           paymentMethod: root.paymentMethod ?? null,
@@ -131,7 +131,7 @@ export default function AdminReservationDetailModal({ open, bookingId, onClose }
   //  표시용 유틸: 결제 금액 우선순위 (amount > price)
   const displayAmount = (d?: ReservationDetail | null) => {
     if (!d) return "—";
-    const val = d.amount ?? d.price;
+    const val = d.finalAmount ?? d.price;
     return val != null ? `${val.toLocaleString()}원` : "—";
   };
 

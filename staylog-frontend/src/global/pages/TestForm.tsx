@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import ImageUploader, * as ImageUploaderTypes from '../components/ImageUploader';
+import ImageUploader, * as ImageUploaderTypes from '../components/ImageManager';
 import api from '../api';
 
 const TestForm: React.FC = () => {

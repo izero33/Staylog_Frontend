@@ -130,14 +130,30 @@ function AdminAccommodationDetail() {
     // 전체 화면 너비 사용 : Container fluid
     return <>
         <Container fluid className="p-0">
-            <h3 className="justify-content-between d-flex">
+            <h3 className="justify-content-between d-flex align-items-end">
                 <div>
                     {data.name}
                     <span className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '0.8rem' }}>
                         {data.deletedYn === 'N' ? '활성화' : '비활성화'}
                     </span>
                 </div>
-                <div className="">
+                {data.avgRating ? (
+                    <div style={{fontSize : '1rem'}}>
+                        <i title='평균별점' className="bi bi-star-fill text-warning me-1"></i> {data.avgRating}&nbsp;
+                        (<i title='리뷰' className="bi bi-person"></i> {data.reviewCount}개)
+                    </div>
+                ) : (
+                    <span style={{fontSize : '1rem'}}>등록된 리뷰가 없습니다.</span>
+                )}
+            </h3>
+
+            <div className="text-muted mt-3">
+                <span className='me-2'>등록일 : {formatKST(data.createdAt)}</span>
+                <span>수정일 : {formatKST(data.updatedAt)}</span>
+            </div>
+
+            <div className="justify-content-between d-flex mt-5">
+                <div>
                     <button
                         className="btn btn-sm btn-outline-secondary me-1"
                         title="숙소 목록으로 돌아가기"
@@ -145,35 +161,29 @@ function AdminAccommodationDetail() {
                     >
                         <i className="bi bi-arrow-left"></i> 뒤로가기
                     </button>
-
                 </div>
-            </h3>
 
-            <div className="text-muted ">
-                <span className='me-2'>등록일 : {formatKST(data.createdAt)}</span>
-                <span>수정일 : {formatKST(data.updatedAt)}</span>
-            </div>
-            
-            <div className="justify-content-end d-flex mt-5 gap-1">
-                <button title="수정하기" className="btn btn-sm btn-primary" onClick={() => handleGoToUpdate(data.accommodationId!)}>수정하기</button>
-                {data.deletedYn === 'N' ? (
-                    <button title="비활성화하기" className="btn btn-sm btn-danger text-white" onClick={() => updateAccommodationStatus(data.accommodationId!, 'Y')}>비활성화하기</button>
-                ) : (
-                    <button title="활성화하기" className="btn btn-sm btn-success" onClick={() => updateAccommodationStatus(data.accommodationId!, 'N')}>활성화하기</button>
-                )}
-                <button
-                    className="btn btn-sm btn-outline-primary"
-                    title="객실 목록 보기"
-                    onClick={() => handleGoToRooms(data.accommodationId!)} // 이동 함수 연결
-                >
-                    객실 목록 <i className="bi bi-list"></i>
-                </button>
+                <div className="d-flex gap-1">
+                    <button title="수정하기" className="btn btn-sm btn-primary" onClick={() => handleGoToUpdate(data.accommodationId!)}>수정하기</button>
+                    {data.deletedYn === 'N' ? (
+                        <button title="비활성화하기" className="btn btn-sm btn-danger text-white" onClick={() => updateAccommodationStatus(data.accommodationId!, 'Y')}>비활성화하기</button>
+                    ) : (
+                        <button title="활성화하기" className="btn btn-sm btn-success" onClick={() => updateAccommodationStatus(data.accommodationId!, 'N')}>활성화하기</button>
+                    )}
+                    <button
+                        className="btn btn-sm btn-outline-primary"
+                        title="객실 목록 보기"
+                        onClick={() => handleGoToRooms(data.accommodationId!)} // 이동 함수 연결
+                    >
+                        객실 목록 <i className="bi bi-list"></i>
+                    </button>
+                </div>
             </div>
 
             <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed' }}>
                 <colgroup>
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '85%' }} />
+                    <col style={{ width: '25%' }} />
+                    <col style={{ width: '75%' }} />
                 </colgroup>
                 <tbody>
                     <tr>

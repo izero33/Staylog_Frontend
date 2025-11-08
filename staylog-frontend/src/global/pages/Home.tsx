@@ -39,10 +39,11 @@ function Home() {
       <button onClick={()=>navigate("/admin")}>관리자 페이지</button>
       <button onClick={()=>navigate("/test-form")}>이미지 업로드 폼으로 이동</button>
       <button onClick={()=>navigate("/test-load")}>이미지 로드 페이지로 이동</button>
-      <button onClick={()=>navigate("/bord")}>에디터</button>
+      <button onClick={()=>navigate("/testEditor")}>Quill 테스트</button>
       <button onClick={() => navigate("/comments/1")}>
         댓글 페이지로 이동
       </button>
+      <button onClick={(()=>navigate("/home"))}>Home</button>
     </>
   );
 }

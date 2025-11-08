@@ -225,7 +225,7 @@ function AdminAccommodationListPage() {
                             }}
                         >
                             <option value=''>전체</option>
-                            <option value="N">공개</option>
+                            <option value="N">활성</option>
                             <option value="Y">숨김</option>
                         </select>
                     </div>
@@ -266,12 +266,26 @@ function AdminAccommodationListPage() {
 
             {/* 페이지 정보 */}
             {page && (
-                <div className="text-end text-muted mt-3">
-                    전체 {page.totalCount}건 ({page.pageNum}/{page.totalPage} 페이지)
+                <div className="text-end text-muted mt-3 d-flex justify-content-end align-items-center gap-1">
+                    전체 {page.totalCount}건 (
+                    <input
+                        type="number"
+                        className="form-control-sm form-control border-1 border-light text-center d-inline-block"
+                        value={page.totalPage === 0 ? 0 : page.pageNum}
+                        style={{ width: '55px' }}
+                        onChange={(e) => {
+                            const newPageNum = Number(e.target.value);
+                            if (newPageNum >= 0 && newPageNum <= page.totalPage) {
+                                setSearchParams(prev => ({
+                                    ...prev,
+                                    pageNum: newPageNum
+                                }));
+                            }
+                        }} /><span className="mx-1">/{page.totalPage} 페이지</span>)
                 </div>
             )}
 
-            <table className="table table-striped text-center mt-5 custom-table">
+            <table className="table table-striped text-center mt-3 custom-table">
                 <thead className="table-light">
                     <tr>
                         <th style={{ width: '8%' }}>번호</th>

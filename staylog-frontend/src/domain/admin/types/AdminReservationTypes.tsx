@@ -18,6 +18,7 @@ export type AdminReservation = {
   checkOut: string | null;
   createdAt: string | null;
   amount?: number | null;
+  finalAmount?: number | null;
   status: string;
   statusName?: string;   // 서버에서 내려주는 한글명
   statusColor?: string;  // COMMON_CODE.ATTR1

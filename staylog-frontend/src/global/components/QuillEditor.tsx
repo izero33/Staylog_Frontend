@@ -7,7 +7,7 @@
 import { useMemo, useRef } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { uploadSingleImageForEditor } from '../api/imageApi';
+import { uploadSingleImage } from '../api/imageApi';
 
 /**
  * QuillEditor 컴포넌트가 부모로부터 받을 Props의 타입을 정의합니다.
@@ -16,9 +16,11 @@ interface QuillEditorProps {
   value: string; // 에디터의 현재 내용을 담는 HTML 문자열
   onChange: (content: string) => void; // 에디터 내용이 변경될 때마다 부모의 상태를 업데이트하는 콜백 함수
   style?: React.CSSProperties; // 부모 컴포넌트에서 커스텀 스타일을 적용할 수 있도록 합니다.
+  targetType: string; // 이미지 업로드를 위한 대상 타입 (e.g., "BOARD", "ACCOMMODATION")
+  targetId: number | null; // 이미지 업로드를 위한 대상 ID
 }
 
-export default function QuillEditor({ value, onChange, style }: QuillEditorProps) {
+export default function QuillEditor({ value, onChange, style, targetType, targetId }: QuillEditorProps) {
   // Quill 에디터 인스턴스에 직접 접근하기 위해 useRef를 사용합니다.
   const quillRef = useRef<ReactQuill | null>(null);
 
@@ -27,6 +29,12 @@ export default function QuillEditor({ value, onChange, style }: QuillEditorProps
    * 툴바의 이미지 버튼을 클릭했을 때 실행될 커스텀 핸들러입니다.
    */
   const imageHandler = () => {
+    // targetId가 없으면 이미지 업로드를 막습니다.
+    if (targetId === null) {
+      alert("ID가 지정되지 않아 이미지를 업로드할 수 없습니다. 정상 경로로 접근해 작성 해주세요.");
+      return;
+    }
+
     // 1. 숨겨진 input[type="file"] 엘리먼트를 동적으로 생성합니다.
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
@@ -40,8 +48,9 @@ export default function QuillEditor({ value, onChange, style }: QuillEditorProps
 
       try {
         // 3. '즉시 업로드' API를 호출하여 서버에 이미지를 업로드하고 이미지 URL을 받습니다.
-        // 이 때 targetType은 'TEMP'로 고정하여 임시 파일임을 명시합니다.
-        const imageUrl = await uploadSingleImageForEditor(file);
+        // 에디터 본문 이미지는 targetType에 "_CONTENT" 접미사를 붙여 별도로 관리합니다.
+        const contentTargetType = `${targetType}_CONTENT`;
+        const imageUrl = await uploadSingleImage(file, contentTargetType, targetId);
 
         // 4. 현재 에디터의 커서 위치에 반환된 이미지 URL을 사용하여 <img> 태그를 삽입합니다.
         const editor = quillRef.current?.getEditor(); // ref를 통해 에디터 인스턴스를 가져옵니다.
@@ -78,7 +87,7 @@ export default function QuillEditor({ value, onChange, style }: QuillEditorProps
         image: imageHandler, // 'image' 버튼 클릭 시 우리가 만든 imageHandler 함수가 실행됩니다.
       },
     },
-  }), []);
+  }), [targetId, targetType]); // targetId와 targetType이 변경될 때 modules도 재생성되도록 의존성
 
   /**
    * 에디터에서 허용할 포맷(태그 및 속성)의 목록입니다.

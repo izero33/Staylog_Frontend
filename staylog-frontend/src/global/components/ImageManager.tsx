@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Flipper, Flipped } from 'react-flip-toolkit';
 import '../css/ImageUploaderCustom.css';
-import { fetchImagesByTarget, updateImageBatch } from '../api/imageApi';
+import { fetchImagesByTarget, updateImageBatch, uploadMultipleImages } from '../api/imageApi';
 import type { ImageData, ImageUpdateItemDto, ImageUpdateRequest } from '../types/image';
 
 // 1. 상태 인터페이스 확장
@@ -10,11 +10,13 @@ export interface DroppedFile {
   file: File | null; // 새로 추가한 파일만 File 객체를 가짐
   preview: string; // 이미지 미리보기 URL
   imageId: number | null; // 서버에 저장된 기존 이미지의 ID
+  originalName: string; // 원본 파일명
 }
 
 export interface ImageManagerProps {
   targetType: string;
   targetId: number | null; // ID가 없을 수도 있으므로 null 허용
+  isEditMode?: boolean; // 수정 모드 여부를 받는 prop 추가 (기본값 false)
   uploadTrigger?: number;
   onUploadComplete?: () => void;
   onUploadError?: (error: string) => void;
@@ -23,6 +25,7 @@ export interface ImageManagerProps {
 const ImageManager: React.FC<ImageManagerProps> = ({
   targetType,
   targetId,
+  isEditMode = false, // 기본값을 false (등록 모드)로 설정
   uploadTrigger,
   onUploadComplete,
   onUploadError,
@@ -35,7 +38,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({
 
   // 3. 기존 이미지 로딩 로직
   useEffect(() => {
-    if (targetId) {
+    if (isEditMode && targetId) {
       const loadInitialImages = async () => {
         setIsLoading(true);
         try {
@@ -45,6 +48,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({
             file: null,
             preview: img.imageUrl,
             imageId: img.imageId,
+            originalName: img.originalName,
           }));
           setItems(initialItems);
         } catch (err: any) {
@@ -54,8 +58,11 @@ const ImageManager: React.FC<ImageManagerProps> = ({
         }
       };
       loadInitialImages();
+    } else {
+      // 등록 모드이거나 targetId가 없으면 items를 빈 배열로 초기화합니다.
+      setItems([]);
     }
-  }, [targetType, targetId]);
+  }, [targetType, targetId, isEditMode]);
 
   const handleFileSelection = (files: FileList | null) => {
     if (!files) return;
@@ -67,6 +74,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({
         file,
         preview: URL.createObjectURL(file),
         imageId: null,
+        originalName: file.name,
       }));
 
     setItems(prev => [...prev, ...newFiles]);
@@ -113,24 +121,31 @@ const ImageManager: React.FC<ImageManagerProps> = ({
 
     setIsLoading(true);
     setError(null);
+  
+  try {
+    const newFiles: File[] = items
+      .map(item => item.file)
+      .filter((file): file is File => file !== null);
 
-    try {
+    if (isEditMode) {
+      // 수정 모드: updateImageBatch 호출
       const imageOrders: ImageUpdateItemDto[] = items.map((item, index) => ({
         imageId: item.imageId,
         displayOrder: index + 1,
       }));
-
-      const newFiles: File[] = items
-        .map(item => item.file)
-        .filter((file): file is File => file !== null);
 
       const request: ImageUpdateRequest = {
         targetType,
         targetId,
         imageOrders,
       };
-
       await updateImageBatch(request, newFiles);
+    } else {
+      // 등록 모드: uploadMultipleImages 호출
+      if (newFiles.length > 0) {
+        await uploadMultipleImages(newFiles, targetType, targetId);
+      }
+    }
       
       onUploadComplete?.();
       // 선택적으로 저장 후 목록을 다시 불러올 수 있습니다.
@@ -142,7 +157,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [items, targetType, targetId, onUploadComplete, onUploadError]);
+  }, [items, targetType, targetId, isEditMode, onUploadComplete, onUploadError]);
 
   useEffect(() => {
     if (uploadTrigger !== undefined && uploadTrigger > 0) {
@@ -218,7 +233,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({
                         </button>
                       </div>
                       <img src={item.preview} alt={item.file?.name || `image-${item.imageId}`} className="img-thumbnail me-3" style={{ width: '100px', height: 'auto' }} />
-                      <span className="text-truncate" style={{ maxWidth: '300px' }}>{item.file?.name || `기존 이미지 (${item.imageId})`}</span>
+                      <span className="text-truncate" style={{ maxWidth: '300px' }}>{item.originalName}</span>
                     </div>
                     <button
                       type="button"

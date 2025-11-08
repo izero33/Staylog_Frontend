@@ -37,6 +37,8 @@ import AdminCouponPage from "../../domain/admin/pages/AdminCouponPage";
 import AdminRoomUpdate from "../../domain/admin/pages/AdminRoomUpdate";
 import TestEditorPage from "../pages/TestEditorPage";
 import Home2 from "../pages/Home2";
+import AdminAccommodationRegisterPage from "../../domain/admin/pages/AdminAccommodationRegisterPage";
+import AdminRoomRegisterPage from "../../domain/admin/pages/AdminRoomRegisterPage";
 
 
 
@@ -72,9 +74,11 @@ const adminRoute: RouteObject = {
       { index: true, element: <AdminUserPage /> },  // /admin 기본 페이지
       { path: "user", element: <AdminUserPage /> },  // /admin/user
       { path: "accommodations", element: <AdminAccommodationPage /> },  // /admin/accommodations
+      { path: "accommodations/new", element: <AdminAccommodationRegisterPage /> }, // /admin/accommodations/new
       { path: "accommodations/:accommodationId", element: <AdminAccommodationDetail /> },  // /admin/accommodations/:accommodationId
       { path: "accommodations/:accommodationId/update", element: <AdminAccommodationUpdate /> },  // /admin/accommodations/:accommodationId/update
       { path: "accommodations/:accommodationId/rooms", element: <AdminRoomPage /> },  // /admin/accommodations/:accommodationId/rooms
+      { path: "accommodations/:accommodationId/rooms/new", element: <AdminRoomRegisterPage /> },  // /admin/accommodations/:accommodationId/rooms/new
       { path: "accommodations/:accommodationId/rooms/:roomId", element: <AdminRoomDetail /> },  // /admin/accommodations/:accommodationId/rooms/:roomId
       { path: "accommodations/:accommodationId/rooms/:roomId/update", element: <AdminRoomUpdate /> },  // /admin/accommodations/:accommodationId/rooms/:roomId/update
       { path: "reservations", element: <AdminReservationPage /> },  // /admin/reservations

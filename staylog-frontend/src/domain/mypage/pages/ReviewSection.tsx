@@ -7,11 +7,13 @@ import { formatKST } from "../../../global/utils/date";
 import type { Reviews } from "../types/mypageTypes";
 import useCommonCodeSelector from "../../common/hooks/useCommonCodeSelector";
 import type { CommonCodeDto } from "../../common/types";
+import { useNavigate } from "react-router-dom";
 
 
 
 function ReviewSection() {
     const userId = useGetUserIdFromToken();
+    const navigate = useNavigate();
     
     // DB 공통 코드 1. Redux의 공통 코드 스토어에서 특정 그룹 불러오기
     const reservationStatusList = useCommonCodeSelector("reservationStatus"); 
@@ -103,7 +105,15 @@ function ReviewSection() {
                             <td>{review.accommodationName}</td>
                             <td>{review.checkIn ? (formatKST ? formatKST(review.checkIn).split(" ")[0] : review.checkIn.substring(0, 10)) : 'N/A'}</td>
                             <td>{review.checkOut ? (formatKST ? formatKST(review.checkOut).split(" ")[0] : review.checkOut.substring(0, 10)) : 'N/A'}</td>
-                            <td><Button variant="outline-secondary" size="sm">작성하기</Button></td>
+                            <td>
+                                <Button 
+                                    variant="outline-primary" 
+                                    size="sm"
+                                    onClick={() => navigate('/form/review', { state: { booking: review } })}
+                                >
+                                    작성하기
+                                </Button>
+                            </td>
                         </tr>
                     ))
                 ) : (
@@ -135,7 +145,16 @@ function ReviewSection() {
                         <tr key={review.reviewId}>
                             <td>{review.bookingNum}</td>
                             <td>{review.accommodationName}</td>
-                            <td style={{ textAlign: 'left' }}>{review.title}</td>
+                            <td style={{ textAlign: 'left' }}>
+                                <Button
+                                    variant="link"
+                                    className="p-0"
+                                    onClick={() => navigate(`/review/${review.reviewId}`)}
+                                >
+                                    {review.title}
+                                </Button>
+                                
+                            </td>
                             <td>{review.rating}</td>
                             <td>{review.createdAt ? (formatKST ? formatKST(review.createdAt).split(" ")[0] : review.createdAt.substring(0, 10)) : 'N/A'}</td>
                         </tr>

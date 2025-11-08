@@ -31,26 +31,20 @@ export type ReservationModalProps = {
 export type ReservationDetail = {
    bookingId: number;
    bookingNum: string | null; // 회원에게 보여지는 예약번호
-   
    userName: string | null;
    guestName: string | null;
    phone: string | null;
-
    accommodationName: string | null;
    roomName: string | null;
-
    createdAt: string; // 예약일
    checkIn: string; // 체크인
    checkOut: string; // 체크아웃
-
    status: string; // RES_PENDING | RES_CONFIRMED | RES_CANCELED | RES_COMPLETED
-
    /** 투숙 인원 */
    adults: number | null;
    children: number | null;
    infants: number | null;
    totalGuestCount: number | null;
-
    /** 결제 금액 및 결제 방식 */
    amount: number | null;
    paymentMethod: string | null;
@@ -58,7 +52,6 @@ export type ReservationDetail = {
    statusLogs?: Array<{ at: string; from?: string | null; to: string; by?: string | null }>;
    paymentLogs?: Array<{ at: string; action: string; amount?: number | null; note?: string | null }>;
 };
-
 
 
 // 백엔드 ReviewInfoResponse DTO 와 필드명을 일치시킴.

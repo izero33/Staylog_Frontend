@@ -137,9 +137,9 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
    return (
       <Offcanvas show={isOpen} onHide={onClose} placement="end" scroll={true} style={{ "--bs-offcanvas-width": "450px" } as React.CSSProperties} id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
-         <Offcanvas.Header closeButton>
-            <Offcanvas.Title id="offcanvasWithBothOptionsLabel">{loginId}</Offcanvas.Title>
-            <Button onClick={() => handleReadAll(userId)}>모든 알림 읽기 처리</Button>
+         <Offcanvas.Header className='ms-4' closeButton>
+            <Offcanvas.Title className="fs-4 fw-medium text-dark" id="offcanvasWithBothOptionsLabel">{loginId}</Offcanvas.Title>
+            <Button size="sm" variant="secondary" className='ms-4' onClick={() => handleReadAll(userId)}>전체 확인</Button>
          </Offcanvas.Header>
 
          <Offcanvas.Body>
@@ -161,7 +161,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
                notiList.length > 0
                   ? (
                      notiList.map((noti) => (
-                        <NotificationCard key={noti.notiId} {...noti} handleDelete={() => handleDelete(noti.notiId)} handleReadOne={() => { handleReadOne(noti.notiId) }} />
+                        <NotificationCard key={noti.notiId} {...noti} handleDelete={() => handleDelete(noti.notiId)} handleReadOne={() => { handleReadOne(noti.notiId) }} onClose={onClose}/>
                      ))
                   )
                   : ("")

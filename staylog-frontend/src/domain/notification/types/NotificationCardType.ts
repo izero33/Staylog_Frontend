@@ -60,5 +60,6 @@ interface responseDetailsType {
 export interface NotificationCardProps extends responseNotificationsType {
   handleDelete: (notiId: number) => void
   handleReadOne: (notiId: number) => void
+  onClose: () => void
 }
 

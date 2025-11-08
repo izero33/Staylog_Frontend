@@ -3,6 +3,10 @@ import '../../../global/css/BootstrapCustomCss.css';
 import { useState } from "react";
 import type { NotificationCardProps } from '../types/NotificationCardType';
 import dayjs from "dayjs";
+import type { ModalMode } from "../../../global/types";
+import { useModal } from "../../../global/hooks/useModal";
+import Modal from "../../../global/components/Modal";
+import { useNavigate } from "react-router-dom";
 
 
 /**
@@ -16,7 +20,9 @@ import dayjs from "dayjs";
  * @param timeAgo 알림 생성일로부터 얼마나 지났는지
  * @param isRead 알림 읽음 여부
  */
-function NotificationCard({ notiId, targetId, details, isRead, createdAt, handleDelete, handleReadOne }: NotificationCardProps) {
+function NotificationCard({ notiId, targetId, details, isRead, createdAt, handleDelete, handleReadOne, onClose }: NotificationCardProps) {
+
+  const navigate = useNavigate();
 
   // 알림 카드에 마우스가 올라갔는지 여부 (delete 버튼을 활성화시킬 용도)
   const [mouseOver, setMouseOver] = useState(false);
@@ -32,16 +38,54 @@ function NotificationCard({ notiId, targetId, details, isRead, createdAt, handle
     setMouseOver(false)
   }
 
+  // 모달 커스텀훅 사용
+      const {isModalOpen, modalMode, openModal, closeModal} = useModal<ModalMode>('none')
+
+function onNavigate() {
+    switch (details.typeName) {
+      case "Coupon": // 쿠폰 발급 알림
+        openModal('coupon')
+        break;
+
+      case "Reservation":
+        // TODO: 예약 확정 알림 클릭 시 로직
+        break;
+        
+      case "Refund":
+        // TODO: 예약 취소 알림 클릭 시 로직
+        break;
+        
+      case "Review": // 리뷰글 작성 알림
+        navigate(`/review/${targetId}`)
+        onClose()
+        break;
+        
+      case "Comment":
+        // TODO: 댓글 작성 알림 클릭 시 로직
+        break;
+        
+      case "Signup": // 회원가입 알림
+        navigate(`/mypage/member`)
+        onClose()
+        break;
+
+      default:
+        // 예외 케이스 처리 (정의되지 않은 type)
+        console.warn(`Unhandled notification type: ${details.typeName}`);
+        break;
+    }
+  }
+
 
 
 
   return (
     <>
-      <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseReave} style={{ width: '90%', borderRadius: '10px 45px 10px 10px', backgroundColor: '#ebebebe8' }} className="mx-auto position-relative border-0 shadow-sm cursor-pointer mb-4">
+      <Card onClick={onNavigate} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseReave} style={{ width: '90%', borderRadius: '10px 45px 10px 10px', backgroundColor: '#ebebebe8' }} className="mx-auto position-relative border-0 shadow-sm cursor-pointer mb-4">
         {isRead &&
           <span className="position-absolute" style={{ top: '2px', right: '2px', width: '10px', height: '10px', backgroundColor: '#ee6f6fff', borderRadius: '50%', opacity: (!mouseOver && isRead == 'N') ? 1 : 0, transition: 'opacity 0.2s ease-in-out', pointerEvents: 'none' }} />
         }
-        <CloseButton onClick={() => handleDelete(notiId)} aria-label="알림 닫기" style={{ position: 'absolute', top: '2px', right: '2px', fontSize: '0.5rem', opacity: mouseOver ? 1 : 0, pointerEvents: mouseOver ? 'auto' : 'none' }} />
+        <CloseButton className="notification-close-btn" onClick={() => handleDelete(notiId)} aria-label="알림 닫기" style={{ position: 'absolute', top: '1px', right: '1px', fontSize: '0.6rem', opacity: mouseOver ? 1 : 0, pointerEvents: mouseOver ? 'auto' : 'none' }} />
 
         <Card.Body  onClick={() => {handleReadOne(notiId)}} className="d-flex align-items-center p-3">
           <Image src={details.imageUrl} style={{ width: '85px', height: '85px', objectFit: 'cover', }} className="rounded-3" />
@@ -61,6 +105,13 @@ function NotificationCard({ notiId, targetId, details, isRead, createdAt, handle
           </div>
         </Card.Body>
       </Card>
+
+        {isModalOpen && <Modal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            mode={modalMode} />
+        }
+
     </>
   );
 }

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Badge, Card, Col, Row } from 'react-bootstrap';
 import { format } from 'date-fns';
 import type { couponType } from '../types/couponTypes';

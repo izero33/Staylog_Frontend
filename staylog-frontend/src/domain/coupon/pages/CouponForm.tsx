@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Tabs, Tab, Alert, Badge } from 'react-bootstrap';
 import useGetUserIdFromToken from '../../auth/hooks/useGetUserIdFromToken';
 import api from '../../../global/api';
-import UnavailableCouponCard from '../components/UnavailableCouponCard';
+import UnavailableCouponCard from '../../coupon/components/UnavailableCouponCard';
 import type { couponType } from '../types/couponTypes';
-import AvailableCouponCard from '../components/AvailableCouponCard';
+import AvailableCouponCard from '../../coupon/components/AvailableCouponCard';
 // 💡 공통 타입 import
 
 interface CouponFormProps {

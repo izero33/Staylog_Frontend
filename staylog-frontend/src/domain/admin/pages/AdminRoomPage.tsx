@@ -255,7 +255,7 @@ function AdminRoomPage() {
 
             {/* 페이지 정보 */}
             {page && (
-                <div className="text-end text-muted mt-3 d-flex justify-content-end align-items-center gap-1">
+                <small className="text-end text-muted mt-4 d-flex justify-content-end align-items-center gap-1">
                     전체 {page.totalCount}건 (
                     <input
                         type="number"
@@ -271,10 +271,10 @@ function AdminRoomPage() {
                                 }));
                             }
                         }} /><span className="mx-1">/{page.totalPage} 페이지</span>)
-                </div>
+                </small>
             )}
 
-            <table className="table table-striped text-center mt-3 custom-table">
+            <table className="table table-striped text-center mt-1 custom-table">
                 <thead className="table-light">
                     <tr>
                         <th style={{ width: '8%' }}>번호</th>

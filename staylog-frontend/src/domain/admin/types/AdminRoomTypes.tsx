@@ -1,4 +1,4 @@
-import { extend } from "dayjs";
+
 import type { PageRequest, PageResponse } from "../../../global/types/Paginationtypes";
 
 export interface AdminRoom {

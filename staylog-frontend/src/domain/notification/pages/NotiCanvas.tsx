@@ -29,13 +29,14 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
    // 알림 카드 리스트
    const notiList = useSelector((state: RootState) => state.notiList);
+   const getNotiData = useSelector((state: RootState) => state.getNotiData)
 
    const userId: number | undefined = useGetUserIdFromToken();
    const loginId = useGetLoginIdFromToken();
 
-   const [getData, setGetData] = useState<boolean>(false)
+   // const [getData, setGetData] = useState<boolean>(false)
 
-   
+
    // 로딩 / 에러 메시지 상태 관리 
    const [loading, setLoading] = useState(true);
    const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -48,26 +49,29 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
       // 이미 값을 가져왔다면 리소스 아끼기
       // if(notiList.length != 0) {
-      if(getData) { // 이미 데이터를 가져왔다면
+      if (getNotiData) { // 이미 데이터를 가져왔다면
          console.log("이미 값이 있으므로 재요청하지 않고 return");
          console.log(notiList);
          setLoading(false)
          return
       }
-      
+
       (async () => {
          if (!userId) {
             return
          }
+
          try {
             const response: responseNotificationsType[] = await api.get(`/v1/notification/${userId}`)
+            if(response != null) { // 알림 목록이 있을때만
+               // 알림 리스트 저장 액션
+               dispatch({
+                  type: "SET_NOTIFICATION_LIST",
+                  payload: response
+               })
+            }
 
-            // 알림 리스트 저장 액션
-            dispatch({
-               type: "SET_NOTIFICATION_LIST",
-               payload: response
-            })
-            setGetData(true) // 데이터 유무 상태값 변경
+            // setGetData(true) // 데이터 조회 유무 상태값 변경
 
          } catch (err) {
             console.log(err);
@@ -101,6 +105,23 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
          }
       } else {
          return
+      }
+   }
+
+
+   async function handelDeleteAll() {
+      if (confirm("모든 알림을 삭제하시겠습니까?")) {
+         console.log("유저 PK는 ", userId);
+         
+         try {
+            await api.delete(`/v1/notification/${userId}/delete-all`)
+            dispatch({
+               type: "DELETE_NOTIFICATION_ALL"
+            })
+         } catch(err) {
+            console.log(err);
+            
+         }
       }
    }
 
@@ -144,6 +165,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
          <Offcanvas.Header className='ms-4' closeButton>
             <Offcanvas.Title className="fs-4 fw-medium text-dark" id="offcanvasWithBothOptionsLabel">{loginId}</Offcanvas.Title>
             <Button size="sm" variant="secondary" className='ms-4' onClick={() => handleReadAll(userId)}>전체 확인</Button>
+            <Button size="sm" variant="danger" className='ms-4' onClick={handelDeleteAll}>전체 삭제</Button>
          </Offcanvas.Header>
 
          <Offcanvas.Body>
@@ -160,12 +182,13 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
                   {errorMsg}
                </div>
             )}
-            
+
             {
                notiList.length > 0
                   ? (
                      notiList.map((noti) => (
-                        <NotificationCard key={noti.notiId} {...noti} handleDelete={() => handleDelete(noti.notiId)} handleReadOne={() => { handleReadOne(noti.notiId) }} onClose={onClose}/>
+                     // notiList.slice(0, 5).map((noti) => (
+                        <NotificationCard key={noti.notiId} {...noti} handleDelete={() => handleDelete(noti.notiId)} handleReadOne={() => { handleReadOne(noti.notiId) }} onClose={onClose} />
                      ))
                   )
                   : ("")

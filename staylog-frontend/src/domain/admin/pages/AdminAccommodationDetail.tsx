@@ -1,11 +1,13 @@
 
-import { Container, Carousel, Image } from 'react-bootstrap';
+import { Container, Carousel } from 'react-bootstrap';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
 import type { AdminAccommodation } from '../types/AdminAccommodationTypes';
 import { formatKST } from '../../../global/utils/date';
+import AccommodationInfo from '../../accommodation/components/AccommodationInfo';
+import KakaoMap from '../../accommodation/components/KakaoMap';
 
 /*
     Carousel : 숙소 대표 이미지
@@ -179,7 +181,7 @@ function AdminAccommodationDetail() {
                     </button>
                 </div>
             </div>
-            
+
             <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
                 <tbody>
                     {/* 세로 헤더 (왼쪽이 헤더) */}
@@ -196,47 +198,108 @@ function AdminAccommodationDetail() {
                         <td>{data.address}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light text-center">체크인</th>
-                        <td>{data.checkInTime}</td>
-                    </tr>
-                    <tr>
-                        <th className="bg-light text-center">체크아웃</th>
-                        <td>{data.checkOutTime}</td>
-                    </tr>
-
-                    {/* 구분선 */}
-                    <tr>
-                        <td colSpan={2}></td>
-                    </tr>
-
-                    {/* 가로 헤더 (위쪽이 헤더) */}
-                    <tr>
-                        <th colSpan={2} className="bg-light text-center">이미지</th>
-                    </tr>
-                    <tr>
-                        <td colSpan={2}>
-                            <div className="accommodationImages images-slider">
-                                <Carousel>
-                                    <Carousel.Item>
-                                        {/* 이미지 비율에 맞게 나오게 함*/}
-                                        <Image src={img1} alt="숙소 이미지 1" className="d-block w-100" style={{objectFit: "contain" }} />
-                                    </Carousel.Item>
-                                    <Carousel.Item>
-                                        <Image src={img2} alt="숙소 이미지 2" className="d-block w-100" style={{objectFit: "contain" }} />
-                                    </Carousel.Item>
-                                </Carousel>
-                            </div>
+                        <th className="bg-light text-center">체크인 / 체크아웃</th>
+                        <td>
+                            {data.checkInTime} ~ {data.checkOutTime}
                         </td>
-                    </tr>
-
-                    <tr>
-                        <th colSpan={2} className="bg-light text-center">설명</th>
-                    </tr>
-                    <tr>
-                        <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.description }} />
                     </tr>
                 </tbody>
             </table>
+
+            <p className='fs-3 text-center my-4 border-top py-3 border-bottom bg-light'>숙소 페이지 미리 보기</p>
+
+            <Container className="p-0 accommodationAll">
+                {/* 숙소 상세 내용, 객실 목록, 리뷰 목록, 위치 지도, 안내사항, 예약폼 영역 */}
+                <Container className="mb-5 mt-0" style={{ backgroundColor: '#f8f9fa' }}>
+                    <div className="py-4">
+                        <div className="left">
+                            {/* 헤더 영역 */}
+                            <div
+                                className="mb-4 p-4 bg-white rounded"
+                                id='header'
+                                style={{
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                    border: '1px solid #e0e0e0'
+                                }}
+                            >
+                                {/* 숙소 대표 이미지 영역 */}
+                                <div className="accommodationImages images-slider mb-3">
+                                    <Carousel className="w-100 h-100">
+                                        <Carousel.Item>
+                                            <img src={img1} alt="숙소 이미지 1" className="carousel-img" />
+                                        </Carousel.Item>
+                                        <Carousel.Item>
+                                            <img src={img2} alt="숙소 이미지 2" className="carousel-img" />
+                                        </Carousel.Item>
+                                    </Carousel>
+                                </div>
+                                <h3 className="mb-1">{data.name}</h3>
+                                <small className="text-muted">{data.regionName}</small>
+                            </div>
+
+                            {/* 숙소 상세 소개 */}
+                            <div
+                                className="accommodationDetail mb-4 p-4 bg-white rounded"
+                                id="summary"
+                                style={{
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                    border: '1px solid #e0e0e0'
+                                }}
+                            >
+                                <h5 className="mb-3 pb-2" style={{ borderBottom: '2px solid #dee2e6' }}>
+                                    숙소 소개
+                                </h5>
+                                <p
+                                    style={{ fontSize: "0.85rem", lineHeight: "1.6", color: "#495057" }}
+                                    dangerouslySetInnerHTML={{ __html: data.description }}
+                                />
+                            </div>
+
+                            {/* 숙소 위치 */}
+                            <div
+                                className="mb-4 p-4 bg-white rounded"
+                                id="locationMap"
+                                style={{
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                    border: '1px solid #e0e0e0'
+                                }}
+                            >
+                                <h5 className="mb-3 pb-2" style={{ borderBottom: '2px solid #dee2e6' }}>
+                                    위치
+                                </h5>
+                                <p className="mb-3" style={{ fontSize: "0.9rem", color: "#495057" }}>
+                                    {data.address}
+                                </p>
+                                <div
+                                    className="mapApi rounded overflow-hidden"
+                                    style={{
+                                        height: "25rem",
+                                        border: '1px solid #dee2e6'
+                                    }}
+                                >
+                                    <KakaoMap
+                                        latitude={Number(data.latitude)}
+                                        longitude={Number(data.longitude)}
+                                        height="25rem"
+                                        level={3}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* 안내 사항 */}
+                            <div
+                                className="p-4 bg-white rounded"
+                                style={{
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                    border: '1px solid #e0e0e0'
+                                }}
+                            >
+                                <AccommodationInfo />
+                            </div>
+                        </div>
+                    </div>
+                </Container>
+            </Container>
         </Container>
     </>
 }

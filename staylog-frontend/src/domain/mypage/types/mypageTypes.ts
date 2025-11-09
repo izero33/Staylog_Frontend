@@ -34,7 +34,9 @@ export type ReservationDetail = {
    userName: string | null;
    guestName: string | null;
    phone: string | null;
+   accommodationId: number | null;
    accommodationName: string | null;
+   roomId: number | null;
    roomName: string | null;
    createdAt: string; // 예약일
    checkIn: string; // 체크인
@@ -46,6 +48,7 @@ export type ReservationDetail = {
    infants: number | null;
    totalGuestCount: number | null;
    /** 결제 금액 및 결제 방식 */
+   payId: number | null;
    amount: number | null;
    paymentMethod: string | null;
    paidAt: string | null;

@@ -16,7 +16,7 @@ function MypageSideBar() {
    ];
 
    const handleClick = (key: string) => {
-      navigate(`/mypage/${key}`); // URL 화
+      navigate(`/mypage/${key}`);
    };
 
    return (

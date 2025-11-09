@@ -1,6 +1,6 @@
 
 import { Button, Offcanvas } from 'react-bootstrap';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import NotificationCard from "../components/NotificationCard";
 import type { responseNotificationsType } from '../types/NotificationCardType';
 import useGetLoginIdFromToken from '../../auth/hooks/useGetLoginIdFromToken';
@@ -22,7 +22,8 @@ export interface NotiCanvasProps {
  */
 function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
-
+   // 한 번에 로드할 알림 개수
+   const NOTI_LOAD_COUNT = 15;
 
    const dispatch = useDispatch();
 
@@ -36,16 +37,50 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
    // const [getData, setGetData] = useState<boolean>(false)
 
-
    // 로딩 / 에러 메시지 상태 관리 
    const [loading, setLoading] = useState(true);
    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
 
+   // 화면에 보여줄 알림 개수 상태값
+   const [visibleCount, setVisibleCount] = useState(NOTI_LOAD_COUNT);
+
+   // 스크롤 이벤트를 감지할 DOM 요소(Offcanvas.Body)
+   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+
+   // 다음 목록을 로드하는 함수
+   const loadMore = () => {
+      // 이미 모든 알림을 화면에 보여주고 있다면 함수 종료
+      if (visibleCount >= notiList.length) {
+         return;
+      }
+      // 다음 15개를 더 보여주기 위해 count 증가
+      setVisibleCount(prevCount => prevCount + NOTI_LOAD_COUNT);
+   };
+
+   // 스크롤 이벤트가 발생할 때마다 핸들러 실행
+   const handleScroll = () => {
+      const container = scrollContainerRef.current;
+      if (container) {
+         // scrollTop: 스크롤바의 현재 수직 위치
+         // clientHeight: 요소의 내부 높이 (눈에 보이는 영역)
+         // scrollHeight: 스크롤 가능한 전체 높이
+
+         // 스크롤이 맨 아래에 도달했는지 확인 (5px의 여유를 둠)
+         if (container.scrollTop + container.clientHeight >= container.scrollHeight - 5) {
+            loadMore(); // 아래에 닿으면 다음 목록 로드
+         }
+      }
+   };
+
 
    // 알림 리스트 요청
    useEffect(() => {
       setLoading(true)
+
+      // 캔버스가 열릴 때마다 보여줄 개수를 초기화
+      setVisibleCount(NOTI_LOAD_COUNT);
 
       // 이미 값을 가져왔다면 리소스 아끼기
       // if(notiList.length != 0) {
@@ -58,12 +93,13 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
 
       (async () => {
          if (!userId) {
+            setLoading(false);
             return
          }
 
          try {
             const response: responseNotificationsType[] = await api.get(`/v1/notification/${userId}`)
-            if(response != null) { // 알림 목록이 있을때만
+            if (response != null) { // 알림 목록이 있을때만
                // 알림 리스트 저장 액션
                dispatch({
                   type: "SET_NOTIFICATION_LIST",
@@ -80,7 +116,7 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
             setLoading(false)
          }
       })()
-   }, [userId])
+   }, [userId, isOpen, getNotiData, dispatch])
 
 
    // 알림 삭제
@@ -108,19 +144,23 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
       }
    }
 
-
+   // 전체 알림 삭제
    async function handelDeleteAll() {
+      if(notiList.length <= 0) {
+         alert('삭제할 알림이 없습니다.')
+         return
+      }
       if (confirm("모든 알림을 삭제하시겠습니까?")) {
          console.log("유저 PK는 ", userId);
-         
+
          try {
             await api.delete(`/v1/notification/${userId}/delete-all`)
             dispatch({
                type: "DELETE_NOTIFICATION_ALL"
             })
-         } catch(err) {
+         } catch (err) {
             console.log(err);
-            
+
          }
       }
    }
@@ -168,7 +208,8 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
             <Button size="sm" variant="danger" className='ms-4' onClick={handelDeleteAll}>전체 삭제</Button>
          </Offcanvas.Header>
 
-         <Offcanvas.Body>
+         {/* Offcanvas.Body에 ref와 onScroll 이벤트 연결 */}
+         <Offcanvas.Body ref={scrollContainerRef} onScroll={handleScroll}>
 
             {/* 로딩 / 에러 상태 */}
             {loading && (
@@ -184,14 +225,17 @@ function NotiCanvas({ isOpen, onClose }: NotiCanvasProps) {
             )}
 
             {
-               notiList.length > 0
+               !loading && notiList.length > 0
                   ? (
-                     notiList.map((noti) => (
-                     // notiList.slice(0, 5).map((noti) => (
+                     notiList.slice(0, visibleCount).map((noti) => ( // 정해진 개수 출력
+                        // notiList.map((noti) => ( // 전체 출력
                         <NotificationCard key={noti.notiId} {...noti} handleDelete={() => handleDelete(noti.notiId)} handleReadOne={() => { handleReadOne(noti.notiId) }} onClose={onClose} />
                      ))
                   )
-                  : ("")
+                  // 알림이 없다면 출력
+                  : !loading && !errorMsg && (
+                     <div className="text-center text-muted mt-3">알림이 없습니다.</div>
+                  )
             }
          </Offcanvas.Body>
       </Offcanvas>

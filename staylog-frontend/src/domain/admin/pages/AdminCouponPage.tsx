@@ -238,7 +238,7 @@ function AdminCouponPage() {
                                        <InputGroup>
                                           <Form.Control
                                              type="number"
-                                             placeholder="10"
+                                             placeholder="예: 10"
                                              min="1"
                                              max="100"
                                              required

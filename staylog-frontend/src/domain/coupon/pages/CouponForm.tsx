@@ -3,8 +3,8 @@ import { Tabs, Tab, Alert, Badge } from 'react-bootstrap';
 import useGetUserIdFromToken from '../../auth/hooks/useGetUserIdFromToken';
 import api from '../../../global/api';
 import UnavailableCouponCard from '../../coupon/components/UnavailableCouponCard';
-import type { couponType } from '../types/couponTypes';
 import AvailableCouponCard from '../../coupon/components/AvailableCouponCard';
+import type { couponType } from '../types/couponTypes';
 // 💡 공통 타입 import
 
 interface CouponFormProps {

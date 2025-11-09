@@ -1,5 +1,5 @@
 
-import { Container, Carousel, Image } from 'react-bootstrap';
+import { Container, Card } from 'react-bootstrap';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
@@ -161,7 +161,6 @@ function AdminRoomDetail() {
 
             <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
                 <tbody>
-                    {/* 세로 헤더 (왼쪽이 헤더) */}
                     <tr>
                         <th className="bg-light text-center align-middle" style={{ width: '25%' }}>유형</th>
                         <td>{data.typeName}</td>
@@ -235,53 +234,68 @@ function AdminRoomDetail() {
                         <th className="bg-light text-center align-middle">면적</th>
                         <td>{data.area} m²</td>
                     </tr>
-                    {data.checkIn && (
-                        <tr>
-                            <th className="bg-light text-center align-middle">체크인</th>
-                            <td>{data.checkIn}</td>
-                        </tr>
-                    )}
-                    {data.checkOut && (
-                        <tr>
-                            <th className="bg-light text-center align-middle">체크아웃</th>
-                            <td>{data.checkOut}</td>
-                        </tr>
-                    )}
-
-                    {/* 구분선 */}
-                    <tr>
-                        <td colSpan={2}></td>
-                    </tr>
-
-                    {/* 가로 헤더 (위쪽이 헤더) */}
-                    <tr>
-                        <th colSpan={2} className="bg-light text-center align-middle">이미지</th>
-                    </tr>
-                    <tr>
-                        <td colSpan={2}>
-                            <div className="accommodationImages images-slider">
-                                <Carousel>
-                                    <Carousel.Item>
-                                        {/* 이미지 비율에 맞게 나오게 함*/}
-                                        <Image src={img1} alt="객실 이미지 1" className="d-block w-100" style={{ objectFit: "contain" }} />
-                                    </Carousel.Item>
-                                    <Carousel.Item>
-                                        <Image src={img2} alt="객실 이미지 2" className="d-block w-100" style={{ objectFit: "contain" }} />
-                                    </Carousel.Item>
-                                </Carousel>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th colSpan={2} className="bg-light text-center align-middle">설명</th>
-                    </tr>
-                    <tr>
-                        <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.description }} />
-                    </tr>
                 </tbody>
             </table>
-        </Container >
+
+            {/* 객실 페이지 미리 보기 */}
+            <p className='fs-5 text-center my-4 border-top py-3 border bg-light rounded'>객실 페이지 미리 보기</p>
+
+            <Container className="my-4 accommodationAll pb-3">
+                <div className="border p-4 rounded">
+                    <Card className="mb-4">
+                        <div className="hero-wrap">
+                            <img
+                                src="https://picsum.photos/1200/500"
+                                alt="숙소 이미지"
+                                className="hero-img"
+                            />
+                        </div>
+                    </Card>
+                    <h4 className="mb-3">{data.name}</h4>
+                    <p className="mb-4" dangerouslySetInnerHTML={{ __html: data.description }} />
+
+                    <section className="md-4">
+                        <div className="room-rule-box">
+                            <h5>객실 규정</h5>
+                            <ul className="room-rules">
+                                <li>체크인 {data.checkInTime} / 체크아웃 {data.checkOutTime}</li>
+                                <li>기준 {data.maxAdult} 명 (최대 {data.maxAdult! + data.maxChildren! + data.maxInfant!} 명)</li>
+                            </ul>
+                        </div>
+
+                        <div className="room-price">
+                            ₩{data.price}
+                        </div>
+
+                        <section className="mt-4">
+                            <h3 className="h5 mb-3">편의시설</h3>
+                            <div className="d-flex flex-wrap gap-4 fs-6">
+                                <div className="d-flex align-items-center gap-1">
+                                    <i className="bi bi-wifi fs-4"></i>
+                                    <span>와이파이</span>
+                                </div>
+                                <div className="d-flex align-items-center gap-1">
+                                    <i className="bi bi-cup-hot fs-4"></i>
+                                    <span>커피머신</span>
+                                </div>
+                                <div className="d-flex align-items-center gap-1">
+                                    <i className="bi bi-webcam fs-4"></i>
+                                    <span>CCTV</span>
+                                </div>
+                                <div className="d-flex align-items-center gap-1">
+                                    <i className="bi bi-p-square fs-4"></i>
+                                    <span>주차가능</span>
+                                </div>
+                                <div className="d-flex align-items-center gap-1">
+                                    <i className="bi bi-water fs-4"></i>
+                                    <span>수영장</span>
+                                </div>
+                            </div>
+                        </section>
+                    </section>
+                </div>
+            </Container>
+        </Container>
     </>
 }
 

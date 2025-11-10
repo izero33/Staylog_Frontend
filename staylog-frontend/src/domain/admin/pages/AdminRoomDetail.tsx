@@ -201,7 +201,7 @@ function AdminRoomDetail() {
                         </tr>
                         <tr>
                             <th className="bg-light text-center align-middle">가격</th>
-                            <td>{data.price}</td>
+                            <td>{data.price!.toLocaleString()} 원</td>
                         </tr>
                         <tr>
                             <th className="bg-light text-center align-middle">최대 인원</th>
@@ -291,7 +291,7 @@ function AdminRoomDetail() {
                 <div className="card mb-3">
                     <div className="card-body">
                         <h6 className="card-subtitle mb-2 text-muted">가격</h6>
-                        <p className="card-text">{data.price!.toLocaleString()}원</p>
+                        <p className="card-text">{data.price!.toLocaleString()} 원</p>
                     </div>
                 </div>
 

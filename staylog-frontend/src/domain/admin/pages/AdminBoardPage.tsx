@@ -123,7 +123,6 @@ function AdminBoardPage() {
             state: {
                 searchParams,   // 현재 검색 조건
                 inputKeyword,   // 현재 검색어
-                from: location.pathname  // 이전 페이지 경로
             }
         });
     };
@@ -281,10 +280,12 @@ function AdminBoardPage() {
                                 value={inputKeyword}
                                 onChange={(e) => {
                                     setInputKeyword(e.target.value);
-                                    {searchParams.boardType === 'BOARD_JOURNAL' && setSearchParams(prev => ({
-                                        ...prev,
-                                        searchType: 'userNickName'
-                                    })) }
+                                    {
+                                        searchParams.boardType === 'BOARD_JOURNAL' && setSearchParams(prev => ({
+                                            ...prev,
+                                            searchType: 'userNickName'
+                                        }))
+                                    }
                                 }}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
@@ -331,76 +332,156 @@ function AdminBoardPage() {
                 </small>
             )}
 
-            {/* 게시글 테이블 */}
-            <table className="table table-striped text-center mt-1 custom-table">
-                <thead className="table-light">
-                    <tr>
-                        <th style={{ width: '8%' }}>번호</th>
-                        {searchParams.boardType === 'BOARD_REVIEW' ? <th>숙소명</th> : <th>지역</th>}
-                        <th>제목</th>
-                        <th style={{ width: '12%' }}>작성자</th>
-                        <th>반응지표</th>
-                        <th style={{ width: '15%' }}>등록일</th>
-                        <th style={{ width: '10%' }}>상태</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {boards.length === 0 ? (
+            {/* ---------- 데스크톱(≥lg): 테이블 ---------- */}
+            <div className="table-responsive mt-1 d-none d-lg-block">
+                <table className="table table-striped text-center mt-1 custom-table">
+                    <thead className="table-light">
                         <tr>
-                            <td colSpan={7} className="text-center py-5">
-                                <div className="text-muted">
-                                    <i className="bi bi-inbox fs-1 d-block mb-3"></i>
-                                    <p className="mb-0">등록된 게시글이 없습니다.</p>
-                                </div>
-                            </td>
+                            <th style={{ width: '8%' }}>번호</th>
+                            {searchParams.boardType === 'BOARD_REVIEW' ? <th>숙소명</th> : <th>지역</th>}
+                            <th>제목</th>
+                            <th style={{ width: '12%' }}>작성자</th>
+                            <th>반응지표</th>
+                            <th style={{ width: '15%' }}>등록일</th>
+                            <th style={{ width: '10%' }}>상태</th>
                         </tr>
-                    ) : (
-                        boards.map((item, index) => (
-                            <tr key={item.boardId}>
-                                <td>{page ? (page.pageNum - 1) * page.pageSize + index + 1 : index + 1}</td>
-                                {searchParams.boardType === 'BOARD_REVIEW' ? <td>{item.accommodationName || '-'}</td> : <td>{item.regionName || '-'}</td>}
-                                <td>
-                                    <button
-                                        type="button"
-                                        className="btn btn-link p-0 text-decoration-none"
-                                        onClick={() => handleToDetailPage(item.boardId)}
-                                    >
-                                        {item.title}
-                                    </button>
-                                </td>
-                                <td>{item.userNickName}</td>
-                                <td>
-                                    {searchParams.boardType === 'BOARD_REVIEW' && (
-                                        <span className="badge bg-warning text-dark me-1">
-                                            <i className="bi bi-star"></i> {item.rating}
-                                        </span>
-                                    )}
-                                    <span className="badge bg-danger me-1">
-                                        <i className="bi bi-heart"></i> {item.likesCount}
-                                    </span>
-                                    <span className="badge bg-secondary">
-                                        <i className="bi bi-eye"></i> {item.viewsCount}
-                                    </span>
-                                </td>
-                                <td>{formatKST(item.createdAt)}</td>
-                                <td>
-                                    <select
-                                        className="form-select form-select-sm"
-                                        value={item.deleted}
-                                        onChange={(e) => handleStatusChange(item.boardId, e)}
-                                    >
-                                        <option value="N">공개</option>
-                                        <option value="Y">숨김</option>
-                                    </select>
-                                    <span className={`badge bg-${item.deleted === 'N' ? 'success' : 'danger'}`}>
-                                        {item.deleted === 'N' ? '공개' : '숨김'}
-                                    </span>
+                    </thead>
+                    <tbody>
+                        {boards.length === 0 ? (
+                            <tr>
+                                <td colSpan={7} className="text-center py-5">
+                                    <div className="text-muted">
+                                        <i className="bi bi-inbox fs-1 d-block mb-3"></i>
+                                        <p className="mb-0">등록된 게시글이 없습니다.</p>
+                                    </div>
                                 </td>
                             </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+                        ) : (
+                            boards.map((item, index) => (
+                                <tr key={item.boardId}>
+                                    <td>{page ? (page.pageNum - 1) * page.pageSize + index + 1 : index + 1}</td>
+                                    {searchParams.boardType === 'BOARD_REVIEW' ? <td>{item.accommodationName || '-'}</td> : <td>{item.regionName || '-'}</td>}
+                                    <td>
+                                        <button
+                                            type="button"
+                                            className="btn btn-link p-0 text-decoration-none"
+                                            onClick={() => handleToDetailPage(item.boardId)}
+                                        >
+                                            {item.title}
+                                        </button>
+                                    </td>
+                                    <td>{item.userNickName}</td>
+                                    <td>
+                                        {searchParams.boardType === 'BOARD_REVIEW' && (
+                                            <span className="badge bg-warning text-dark me-1">
+                                                <i className="bi bi-star"></i> {item.rating}
+                                            </span>
+                                        )}
+                                        <span className="badge bg-danger me-1">
+                                            <i className="bi bi-heart"></i> {item.likesCount}
+                                        </span>
+                                        <span className="badge bg-secondary">
+                                            <i className="bi bi-eye"></i> {item.viewsCount}
+                                        </span>
+                                    </td>
+                                    <td>{formatKST(item.createdAt)}</td>
+                                    <td>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={item.deleted}
+                                            onChange={(e) => handleStatusChange(item.boardId, e)}
+                                        >
+                                            <option value="N">공개</option>
+                                            <option value="Y">숨김</option>
+                                        </select>
+                                        <span className={`badge bg-${item.deleted === 'N' ? 'success' : 'danger'}`}>
+                                            {item.deleted === 'N' ? '공개' : '숨김'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+
+            {/* ---------- 모바일(<lg): 카드 ---------- */}
+            <div className="d-lg-none d-grid gap-3 mt-3">
+                {boards.length === 0 ? (
+                    <div className="card shadow-sm">
+                        <div className="card-body text-center text-muted py-5">
+                            <i className="bi bi-inbox fs-1 d-block mb-3"></i>
+                            등록된 게시글이 없습니다.
+                        </div>
+                    </div>
+                ) : (
+                    boards.map((item, index) => (
+                        <div key={item.boardId} className="card shadow-sm">
+                            <div className="card-body">
+                                {/* 상단: 제목/작성자/상태 */}
+                                <div className="d-flex justify-content-between align-items-start gap-2">
+                                    <div className="flex-grow-1">
+                                        <button
+                                            type="button"
+                                            className="btn btn-link p-0 text-decoration-none fw-semibold text-start"
+                                            onClick={() => handleToDetailPage(item.boardId)}
+                                        >
+                                            {item.title}
+                                        </button>
+                                        <div className="text-muted small">
+                                            {item.accommodationName || "-"} · {item.userNickName}
+                                        </div>
+                                    </div>
+                                    <div className="text-nowrap">
+                                        <span
+                                            className={`badge ${item.deleted === "N" ? "bg-success" : "bg-danger"
+                                                }`}
+                                        >
+                                            {item.deleted === "N" ? "공개" : "숨김"}
+                                        </span>
+                                    </div>
+                                </div>
+
+
+                                {/* 중간: 반응지표 */}
+                                <div className="mt-2 small gap-1 d-flex align-items-center">
+                                    {searchParams.boardType === "BOARD_REVIEW" && (
+                                        <span className="badge bg-warning text-dark">
+                                            <i title="별점" className="bi bi-star"></i> {item.rating}
+                                        </span>
+                                    )}
+                                    <span className="badge bg-danger">
+                                        <i title="좋아요수" className="bi bi-heart"></i> {item.likesCount}
+                                    </span>
+                                    <span className="badge bg-secondary">
+                                        <i title="조회수" className="bi bi-eye"></i> {item.viewsCount}
+                                    </span>
+                                </div>
+
+                                {/* 하단: 날짜 + 상태 선택 */}
+                                <div className="d-flex justify-content-between align-items-center mt-3">
+                                    <div className="text-muted small">
+                                        번호 <span className="ms-1">{page ? (page.pageNum - 1) * page.pageSize + index + 1 : index + 1}</span>
+                                        <br />
+                                        등록일 <span className="ms-1">{formatKST(item.createdAt)}</span>
+                                    </div>
+                                    <div className="d-flex align-items-center gap-2">
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={item.deleted}
+                                            onChange={(e) => handleStatusChange(item.boardId, e)}
+                                        >
+                                            <option value="N">공개</option>
+                                            <option value="Y">숨김</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
 
             {/* 페이지네이션 */}
             {page && <Pagination page={page} onPageChange={handlePageChange} />}

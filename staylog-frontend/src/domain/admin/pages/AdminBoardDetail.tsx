@@ -106,7 +106,7 @@ function AdminBoardDetail() {
     const handleGoToList = () => {
         if (location.state?.from) {
             // 저장된 검색 상태와 함께 목록으로 돌아가기
-            navigate(location.state.from, {
+            navigate('/admin/boards', {
                 state: {
                     searchParams: location.state.searchParams,
                     inputKeyword: location.state.inputKeyword

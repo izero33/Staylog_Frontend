@@ -110,8 +110,8 @@ function AdminAccommodationDetail() {
                 }
             });
         } else {
-            // state가 없으면 그냥 뒤로가기
-            navigate(-1);
+            // 기본적으로 목록으로 돌아가기
+            navigate('/admin/accommodations');
         }
     };
 

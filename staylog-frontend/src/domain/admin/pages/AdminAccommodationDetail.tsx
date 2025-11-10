@@ -8,6 +8,7 @@ import type { AdminAccommodation } from '../types/AdminAccommodationTypes';
 import { formatKST } from '../../../global/utils/date';
 import KakaoMap from '../../accommodation/components/KakaoMap';
 import '../css/AdminDescriptionImg.css'
+import ImageCarousel from '../../../global/components/ImageCarousel';
 /*
     Carousel : 숙소 대표 이미지
     Accordion : 클릭 시 펼쳐지는 기능
@@ -95,14 +96,14 @@ function AdminAccommodationDetail() {
 
     //객실 목록 페이지 이동 핸들러
     const handleGoToRooms = (accommodationId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}/rooms`, { state: { accommodationName: data.name } });
+        navigate(`/admin/accommodations/${accommodationId}/rooms`);
     };
 
     // 숙소 목록 페이지 이동 핸들러
     const handleGoToList = () => {
         if (location.state?.from) {
             // 저장된 검색 상태와 함께 목록으로 돌아가기
-            navigate(location.state.from, {
+            navigate(`/admin/accommodations`, {
                 state: {
                     searchParams: location.state.searchParams,
                     inputKeyword: location.state.inputKeyword
@@ -157,7 +158,7 @@ function AdminAccommodationDetail() {
                 <div>
                     <button
                         className="btn btn-sm btn-outline-secondary me-1"
-                        title="목록으로 돌아가기"
+                        title="숙소목록으로 돌아가기"
                         onClick={handleGoToList} // 이동 함수 연결
                     >
                         <i className="bi bi-arrow-left"></i> 뒤로가기
@@ -211,14 +212,13 @@ function AdminAccommodationDetail() {
                 <div className="border p-4 rounded">
                     {/* 숙소 대표 이미지 영역 */}
                     <div className="images-slider mb-3">
-                        <Carousel className="w-100 h-100">
-                            <Carousel.Item>
-                                <img src={img1} alt="숙소 이미지 1" className="carousel-img" />
-                            </Carousel.Item>
-                            <Carousel.Item>
-                                <img src={img2} alt="숙소 이미지 2" className="carousel-img" />
-                            </Carousel.Item>
-                        </Carousel>
+                        <ImageCarousel
+                            targetType='ACCOMMODATION'
+                            targetId={accommodationId}
+                            aspectRatio='21:9'
+                            rounded={true}
+                            arrowsOnHover={true}
+                        />
                     </div>
 
                     {/* 숙소 기본 정보 */}
@@ -232,7 +232,7 @@ function AdminAccommodationDetail() {
                         </h5>
                         <p
                             className="description-content"
-                            style={{ fontSize: "0.85rem", lineHeight: "1.6", color: "#495057"}}
+                            style={{ fontSize: "0.85rem", lineHeight: "1.6", color: "#495057" }}
                             dangerouslySetInnerHTML={{ __html: data.description }}
                         />
                     </div>

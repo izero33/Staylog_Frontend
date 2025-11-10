@@ -1,5 +1,5 @@
 
-import { Container, Card } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
@@ -7,6 +7,7 @@ import axios from 'axios';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminRoom } from '../types/AdminRoomTypes';
 import '../css/AdminDescriptionImg.css';
+import ImageCarousel from '../../../global/components/ImageCarousel';
 
 /*
     Carousel : 객실 대표 이미지
@@ -108,7 +109,7 @@ function AdminRoomDetail() {
     const handleGoToList = () => {
         if (location.state?.from) {
             // 저장된 검색 상태와 함께 목록으로 돌아가기
-            navigate(location.state.from, {
+            navigate(`/admin/accommodations/${accommodationId}/rooms`, {
                 state: {
                     searchParams: location.state.searchParams,
                     inputKeyword: location.state.inputKeyword
@@ -243,20 +244,18 @@ function AdminRoomDetail() {
 
             <Container className="my-4 accommodationAll pb-3">
                 <div className="border p-4 rounded">
-                    <Card className="mb-4">
-                        <div className="hero-wrap">
-                            <img
-                                src="https://picsum.photos/1200/500"
-                                alt="숙소 이미지"
-                                className="hero-img"
-                            />
-                        </div>
-                    </Card>
-                    <h4>{data.name}</h4>
+                    <ImageCarousel
+                        targetType='ROOM'
+                        targetId={roomId}
+                        aspectRatio='16:9'
+                        rounded={true}
+                        indicatorType='numbers-only'
+                        arrowsOnHover={true}
+                    />
+
+                    <h4 className="fw-bold">{data.name}</h4>
 
                     <section className="md-4">
-                        <div className="room-description my-4 description-content" dangerouslySetInnerHTML={{ __html: data.description }} />
-
                         <div className="room-rule-box">
                             <h5>객실 규정</h5>
                             <ul className="room-rules">
@@ -294,6 +293,9 @@ function AdminRoomDetail() {
                                 </div>
                             </div>
                         </section>
+                        <hr />
+                        <div className="room-description my-4 description-content" dangerouslySetInnerHTML={{ __html: data.description }} />
+                        <hr />
                     </section>
                 </div>
             </Container>

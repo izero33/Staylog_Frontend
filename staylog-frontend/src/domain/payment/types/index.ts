@@ -37,6 +37,7 @@ export interface ConfirmPaymentRequest {
 export interface PaymentResultResponse {
   paymentId: number;
   paymentKey: string;
+  bookingId : number;
   orderId: string;
   amount: number;
   method: string;
@@ -45,50 +46,4 @@ export interface PaymentResultResponse {
   requestedAt: string;
   approvedAt: string;
   failureReason?: string;      // 실패 사유 (실패 시)
-}
-
-/**
- * 결제 상태 코드
- *
- * ⚠️ 주의: 이 enum은 참고용입니다.
- * 실제 런타임에서는 백엔드 CommonCodes에서 제공되는 값을 사용해야 합니다.
- *
- * 사용 방법:
- * ```typescript
- * import useCommonCodeSelector from '../../common/hooks/useCommonCodeSelector';
- *
- * const paymentStatusCodes = useCommonCodeSelector('paymentStatus');
- * const isPaid = paymentStatusCodes.some(code => code.codeId === 'PAY_PAID');
- * ```
- */
-export enum PaymentStatus {
-  READY = 'PAY_READY',         // 결제 준비
-  PAID = 'PAY_PAID',           // 결제 완료
-  FAILED = 'PAY_FAILED',       // 결제 실패
-  REFUND = 'PAY_REFUND',       // 환불 완료
-}
-
-/**
- * 결제 수단
- *
- * ⚠️ 주의: 이 enum은 참고용입니다.
- * 실제 런타임에서는 백엔드 CommonCodes에서 제공되는 값을 사용해야 합니다.
- *
- * 사용 방법:
- * ```typescript
- * import useCommonCodeSelector from '../../common/hooks/useCommonCodeSelector';
- *
- * const paymentMethodCodes = useCommonCodeSelector('paymentMethods');
- * const methodName = paymentMethodCodes.find(code => code.codeId === 'PAY_CARD')?.codeName;
- * ```
- */
-export enum PaymentMethod {
-  CARD = 'PAY_CARD',                     // 신용/체크카드
-  VIRTUAL_ACCOUNT = 'PAY_VIRTUAL_ACCOUNT', // 가상계좌
-  BANK_TRANSFER = 'PAY_BANK_TRANSFER',    // 계좌이체
-  KAKAOPAY = 'PAY_KAKAOPAY',              // 카카오페이
-  NAVERPAY = 'PAY_NAVERPAY',              // 네이버페이
-  TOSS = 'PAY_TOSS',                      // 토스
-  MOBILE = 'PAY_MOBILE',                  // 휴대폰결제
-  EASY = 'PAY_EASY',                      // 간편결제
 }

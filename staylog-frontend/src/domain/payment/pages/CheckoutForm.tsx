@@ -61,6 +61,14 @@ function CheckoutForm() {
    const [paymentMethod, setPaymentMethod] = useState<string>('PAY_CARD'); // 결제 수단
    const [isProcessing, setIsProcessing] = useState(false); // 결제 처리 중
 
+   // 약관 동의 state
+   const [agreements, setAgreements] = useState({
+      all: false,
+      terms: false,      // 필수: 이용규칙 및 취소/환불 규정
+      privacy: false,    // 필수: 개인정보 수집 및 이용
+      marketing: false   // 선택: 마케팅 정보 수신
+   });
+
    // 🆕 URL 파라미터로 전달된 결제 실패 정보 확인
    useEffect(() => {
       const searchParams = new URLSearchParams(window.location.search);
@@ -80,6 +88,30 @@ function CheckoutForm() {
       setCouponInfo(coupon); // 쿠폰 정보 state 설정
       closeModal();          // 로직 처리 후 모달 닫기
    }
+
+   // 약관 동의 핸들러
+   const handleAgreementChange = (type: 'all' | 'terms' | 'privacy' | 'marketing') => {
+      if (type === 'all') {
+         const newValue = !agreements.all;
+         setAgreements({
+            all: newValue,
+            terms: newValue,
+            privacy: newValue,
+            marketing: newValue
+         });
+      } else {
+         const newAgreements = {
+            ...agreements,
+            [type]: !agreements[type]
+         };
+         // 개별 체크 시 전체 동의 자동 업데이트
+         newAgreements.all = newAgreements.terms && newAgreements.privacy && newAgreements.marketing;
+         setAgreements(newAgreements);
+      }
+   };
+
+   // 필수 약관 모두 동의했는지 확인
+   const isRequiredAgreementsChecked = agreements.terms && agreements.privacy;
 
    useEffect(() => {
       // couponInfo가 들어오는지 확인
@@ -102,6 +134,12 @@ function CheckoutForm() {
    // 결제 처리 핸들러
    const handlePayment = async () => {
       if (!booking) return;
+
+      // 필수 약관 동의 확인
+      if (!isRequiredAgreementsChecked) {
+         alert('필수 약관에 모두 동의해주세요.');
+         return;
+      }
 
       setIsProcessing(true);
       try {
@@ -172,7 +210,7 @@ function CheckoutForm() {
          await toss.requestPayment(tossPaymentMethod, paymentOptions);
 
          console.log('[Toss SDK] requestPayment 완료 (successUrl로 리다이렉트됨)');
-
+         
       } catch (error: any) {
          console.error('[결제 실패]', error);
          console.error('[에러 상세]', {
@@ -200,89 +238,109 @@ function CheckoutForm() {
                <Card className="mb-4">
                   <Card.Header as="h5">예약자 정보</Card.Header>
                   <Card.Body>
-                     <Form>
-                        <Form.Group as={Row} className="mb-3" controlId="formBookerName">
-                           <Form.Label column sm={3}>
-                              예약자명
-                           </Form.Label>
-                           <Col sm={9}>
-                              <Form.Control type="text" value={booking.guestName || nickname} readOnly />
-                           </Col>
-                        </Form.Group>
+                     <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={3}>
+                           예약자명
+                        </Form.Label>
+                        <Col sm={9}>
+                           <Form.Control type="text" value={booking.guestName || nickname} readOnly />
+                        </Col>
+                     </Form.Group>
 
-                        <Form.Group as={Row} className="mb-3" controlId="formBookerPhone">
-                           <Form.Label column sm={3}>
-                              휴대폰 번호
-                           </Form.Label>
-                           <Col sm={9}>
-                              <Form.Control type="tel" placeholder="'-' 없이 입력" />
-                           </Col>
-                        </Form.Group>
+                     <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={3}>
+                           성인:
+                        </Form.Label>
+                        <Col sm={9}>
+                           <Form.Control type="text" value={`${booking.adults}명`} readOnly />
+                        </Col>
+                     </Form.Group>
 
-                        <Form.Group as={Row} className="mb-3" controlId="formBookerEmail">
-                           <Form.Label column sm={3}>
-                              이메일
-                           </Form.Label>
-                           <Col sm={9}>
-                              <Form.Control type="email" placeholder="example@google.com" />
-                           </Col>
-                        </Form.Group>
-                     </Form>
+                     <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={3}>
+                           어린이:
+                        </Form.Label>
+                        <Col sm={9}>
+                           <Form.Control type="text" value={`${booking.children}명`} readOnly />
+                        </Col>
+                     </Form.Group>
+
+                     <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={3}>
+                           영유아:
+                        </Form.Label>
+                        <Col sm={9}>
+                           <Form.Control type="text" value={`${booking.infants}명`} readOnly />
+                        </Col>
+                     </Form.Group>
+
+                     <Form.Group as={Row} className="mb-0">
+                        <Form.Label column sm={3}>
+                           총인원:
+                        </Form.Label>
+                        <Col sm={9}>
+                           <Form.Control type="text" value={`${booking.totalGuestCount}명`} readOnly />
+                        </Col>
+                     </Form.Group>
                   </Card.Body>
                </Card>
 
                {/* ----- 결제 수단 ----- */}
                <Card className="mb-4">
-                  <Card.Header as="h5">결제 수단</Card.Header>
+                  <Card.Header as="h5">결제 수단 선택</Card.Header>
                   <Card.Body>
-                     <Form>
-                        <div className="d-flex gap-3 flex-wrap">
-                           {paymentMethodCodes.length > 0 ? (
-                              // CommonCodes에서 로드된 결제 수단 표시 (주요 수단만 필터링)
-                              paymentMethodCodes
-                                 .filter(code => ['PAY_CARD', 'PAY_BANK_TRANSFER', 'PAY_VIRTUAL_ACCOUNT', 'PAY_KAKAOPAY', 'PAY_NAVERPAY', 'PAY_TOSS'].includes(code.codeId))
-                                 .map(code => (
-                                    <Form.Check
-                                       key={code.codeId}
-                                       type="radio"
-                                       id={`payment-${code.codeId.toLowerCase()}`}
-                                       name="paymentMethod"
-                                       label={code.codeName}
-                                       checked={paymentMethod === code.codeId}
-                                       onChange={() => setPaymentMethod(code.codeId)}
-                                    />
-                                 ))
-                           ) : (
-                              // Fallback: CommonCodes 로딩 전 기본 옵션
-                              <>
-                                 <Form.Check
-                                    type="radio"
-                                    id="payment-card"
-                                    name="paymentMethod"
-                                    label="신용/체크카드"
-                                    checked={paymentMethod === 'PAY_CARD'}
-                                    onChange={() => setPaymentMethod('PAY_CARD')}
-                                 />
-                                 <Form.Check
-                                    type="radio"
-                                    id="payment-transfer"
-                                    name="paymentMethod"
-                                    label="계좌이체"
-                                    checked={paymentMethod === 'PAY_BANK_TRANSFER'}
-                                    onChange={() => setPaymentMethod('PAY_BANK_TRANSFER')}
-                                 />
-                                 <Form.Check
-                                    type="radio"
-                                    id="payment-virtual"
-                                    name="paymentMethod"
-                                    label="가상계좌"
-                                    checked={paymentMethod === 'PAY_VIRTUAL_ACCOUNT'}
-                                    onChange={() => setPaymentMethod('PAY_VIRTUAL_ACCOUNT')}
-                                 />
-                              </>
-                           )}
-                        </div>
-                     </Form>
+                     {/* 결제 수단 버튼 (세로 나열) */}
+                     <div className="d-grid gap-3">
+                        {/* 카드 결제 */}
+                        <Button
+                           variant={paymentMethod === 'PAY_CARD' ? 'primary' : 'outline-secondary'}
+                           size="lg"
+                           className="text-start py-3"
+                           onClick={() => setPaymentMethod('PAY_CARD')}
+                        >
+                           카드 결제
+                        </Button>
+
+                        {/* 가상계좌 */}
+                        <Button
+                           variant={paymentMethod === 'PAY_VIRTUAL_ACCOUNT' ? 'primary' : 'outline-secondary'}
+                           size="lg"
+                           className="text-start py-3"
+                           onClick={() => setPaymentMethod('PAY_VIRTUAL_ACCOUNT')}
+                        >
+                           가상계좌
+                        </Button>
+
+                        {/* 계좌이체 */}
+                        <Button
+                           variant={paymentMethod === 'PAY_BANK_TRANSFER' ? 'primary' : 'outline-secondary'}
+                           size="lg"
+                           className="text-start py-3"
+                           onClick={() => setPaymentMethod('PAY_BANK_TRANSFER')}
+                        >
+                           계좌이체
+                        </Button>
+
+                        {/* 간편결제 */}
+                        <Button
+                           variant={paymentMethod === 'PAY_EASY' ? 'primary' : 'outline-secondary'}
+                           size="lg"
+                           className="text-start py-3"
+                           onClick={() => setPaymentMethod('PAY_EASY')}
+                        >
+                           간편결제
+                        </Button>
+
+                        {/* 휴대폰결제 */}
+                        <Button
+                           variant={paymentMethod === 'PAY_MOBILE' ? 'primary' : 'outline-secondary'}
+                           size="lg"
+                           className="text-start py-3"
+                           onClick={() => setPaymentMethod('PAY_MOBILE')}
+                        >
+                           휴대폰결제
+                        </Button>
+                     </div>
                   </Card.Body>
                </Card>
 
@@ -295,6 +353,8 @@ function CheckoutForm() {
                         id="terms-all"
                         label="전체 동의"
                         className="fw-bold mb-2"
+                        checked={agreements.all}
+                        onChange={() => handleAgreementChange('all')}
                      />
                      <hr />
                      <Form.Check
@@ -302,17 +362,23 @@ function CheckoutForm() {
                         id="terms-1"
                         label="숙소 이용규칙 및 취소/환불 규정 동의 (필수)"
                         className="mb-2"
+                        checked={agreements.terms}
+                        onChange={() => handleAgreementChange('terms')}
                      />
                      <Form.Check
                         type="checkbox"
                         id="terms-2"
                         label="개인정보 수집 및 이용 동의 (필수)"
                         className="mb-2"
+                        checked={agreements.privacy}
+                        onChange={() => handleAgreementChange('privacy')}
                      />
                      <Form.Check
                         type="checkbox"
                         id="terms-3"
                         label="마케팅 정보 수신 동의 (선택)"
+                        checked={agreements.marketing}
+                        onChange={() => handleAgreementChange('marketing')}
                      />
                   </Card.Body>
                </Card>
@@ -383,10 +449,15 @@ function CheckoutForm() {
                            size="lg"
                            className="w-100"
                            onClick={handlePayment}
-                           disabled={isProcessing}
+                           disabled={isProcessing || !isRequiredAgreementsChecked}
                         >
                            {isProcessing ? '처리 중...' : `${finalAmount.toLocaleString()}원 결제하기`}
                         </Button>
+                        {!isRequiredAgreementsChecked && (
+                           <small className="text-muted d-block mt-2 text-center">
+                              필수 약관에 동의해주세요
+                           </small>
+                        )}
                      </ListGroup.Item>
                   </ListGroup>
                </Card>

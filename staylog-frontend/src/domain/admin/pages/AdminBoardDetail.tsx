@@ -7,8 +7,7 @@ import axios from 'axios';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminBoard } from '../types/AdminBoardTypes';
 import AdminReservationDetailModal from '../components/AdminReservationDetailModal';
-import '../css/AdminDetailPageTable.css';
-import { tr } from 'date-fns/locale';
+import '../css/AdminDescriptionImg.css';
 
 /*
     Carousel : 게시글 대표 이미지
@@ -228,7 +227,7 @@ function AdminBoardDetail() {
                         <th colSpan={2} className="bg-light text-center">내용</th>
                     </tr>
                     <tr>
-                        <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.content }} />
+                        <td colSpan={2} className='description-content' dangerouslySetInnerHTML={{ __html: data.content }} />
                     </tr>
                 </tbody>
             </table>

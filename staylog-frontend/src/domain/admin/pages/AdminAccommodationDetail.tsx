@@ -6,9 +6,8 @@ import api from '../../../global/api';
 import axios from 'axios';
 import type { AdminAccommodation } from '../types/AdminAccommodationTypes';
 import { formatKST } from '../../../global/utils/date';
-import AccommodationInfo from '../../accommodation/components/AccommodationInfo';
 import KakaoMap from '../../accommodation/components/KakaoMap';
-
+import '../css/AdminDescriptionImg.css'
 /*
     Carousel : 숙소 대표 이미지
     Accordion : 클릭 시 펼쳐지는 기능
@@ -232,7 +231,8 @@ function AdminAccommodationDetail() {
                             숙소 소개
                         </h5>
                         <p
-                            style={{ fontSize: "0.85rem", lineHeight: "1.6", color: "#495057" }}
+                            className="description-content"
+                            style={{ fontSize: "0.85rem", lineHeight: "1.6", color: "#495057"}}
                             dangerouslySetInnerHTML={{ __html: data.description }}
                         />
                     </div>

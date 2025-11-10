@@ -6,6 +6,7 @@ import api from '../../../global/api';
 import axios from 'axios';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminRoom } from '../types/AdminRoomTypes';
+import '../css/AdminDescriptionImg.css';
 
 /*
     Carousel : 객실 대표 이미지
@@ -251,10 +252,10 @@ function AdminRoomDetail() {
                             />
                         </div>
                     </Card>
-                    <h4 className="fw-bold">{data.name}</h4>
+                    <h4>{data.name}</h4>
 
                     <section className="md-4">
-                        <div className="room-description my-4" dangerouslySetInnerHTML={{ __html: data.description }} />
+                        <div className="room-description my-4 description-content" dangerouslySetInnerHTML={{ __html: data.description }} />
 
                         <div className="room-rule-box">
                             <h5>객실 규정</h5>

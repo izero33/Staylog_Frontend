@@ -18,7 +18,7 @@ export interface ImageManagerProps {
   targetId: number | null; // ID가 없을 수도 있으므로 null 허용
   isEditMode?: boolean; // 수정 모드 여부를 받는 prop 추가 (기본값 false)
   uploadTrigger?: number;
-  onUploadComplete?: () => void;
+  onUploadComplete?: (uploadedImages: ImageData[]) => void; // 인자 타입 수정
   onUploadError?: (error: string) => void;
 }
 
@@ -58,10 +58,9 @@ const ImageManager: React.FC<ImageManagerProps> = ({
         }
       };
       loadInitialImages();
-    } else {
-      // 등록 모드이거나 targetId가 없으면 items를 빈 배열로 초기화합니다.
-      setItems([]);
-    }
+    } 
+    // 등록 모드일 때는 아무것도 하지 않아, 사용자가 선택한 파일이 유지되도록 합니다.
+    // 컴포넌트가 처음 마운트될 때 items는 useState([])에 의해 이미 빈 배열로 초기화됩니다.
   }, [targetType, targetId, isEditMode]);
 
   const handleFileSelection = (files: FileList | null) => {
@@ -127,29 +126,32 @@ const ImageManager: React.FC<ImageManagerProps> = ({
       .map(item => item.file)
       .filter((file): file is File => file !== null);
 
+    let uploadedImages: ImageData[] = [];
+
     if (isEditMode) {
-      // 수정 모드: updateImageBatch 호출
+      // 수정 모드
       const imageOrders: ImageUpdateItemDto[] = items.map((item, index) => ({
         imageId: item.imageId,
         displayOrder: index + 1,
       }));
-
-      const request: ImageUpdateRequest = {
-        targetType,
-        targetId,
-        imageOrders,
-      };
+      const request: ImageUpdateRequest = { targetType, targetId, imageOrders };
+      
       await updateImageBatch(request, newFiles);
+      
+      // 수정 후 최신 이미지 목록을 다시 불러옴
+      const response = await fetchImagesByTarget(targetType, targetId);
+      uploadedImages = response.images;
+
     } else {
-      // 등록 모드: uploadMultipleImages 호출
+      // 등록 모드
       if (newFiles.length > 0) {
-        await uploadMultipleImages(newFiles, targetType, targetId);
+        const response = await uploadMultipleImages(newFiles, targetType, targetId);
+        uploadedImages = response.images;
       }
     }
       
-      onUploadComplete?.();
-      // 선택적으로 저장 후 목록을 다시 불러올 수 있습니다.
-      // loadInitialImages(); 
+    onUploadComplete?.(uploadedImages); // 캡처한 결과를 전달
+
     } catch (err: any) {
       const errorMessage = err.message || '이미지 저장에 실패했습니다.';
       setError(errorMessage);

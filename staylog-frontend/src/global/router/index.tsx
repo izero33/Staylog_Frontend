@@ -40,6 +40,7 @@ import Home2 from "../pages/Home2";
 import AccommodationReviewList from "../../domain/accommodation/pages/AccommodationReviewList";
 import AdminAccommodationRegisterPage from "../../domain/admin/pages/AdminAccommodationRegisterPage";
 import AdminRoomRegisterPage from "../../domain/admin/pages/AdminRoomRegisterPage";
+import CarouselTestPage from "../pages/CarouselTestPage";
 
 
 
@@ -65,7 +66,8 @@ const routes: RouteObject[] = [
   { path: "/payment/complete", element: <PaymentCompletePage/>}, // 결제 완료 페이지
   { path: "/comments/:boardId", element: <CommentsPage /> },
   { path: "/testEditor", element: <TestEditorPage /> },
-  { path: "/home", element: <Home2 />}
+  { path: "/home", element: <Home2 />},
+  { path: "/testCarousel", element: <CarouselTestPage />},
 ];
 
 // Admin 중첩 라우트 객체를 별도로 정의

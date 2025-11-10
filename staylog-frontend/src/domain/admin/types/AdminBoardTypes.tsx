@@ -14,7 +14,7 @@ export interface AdminBoard {
    title: string;             // 제목
    content: string;           // 내용
    rating?: number;    // 평점
-   likes?: number;            // 좋아요 수
+   likesCount?: number;            // 좋아요 수
    viewsCount?: number;       // 조회수
    createdAt: string;        // 작성일
    updatedAt?: string;
@@ -30,7 +30,7 @@ export interface AdminBoardSearchParams extends PageRequest{
     deleted?: 'Y' | 'N' | null;
     
     // 정렬조건
-    sortBy?: 'createdAt' | 'viewsCount' | 'rating' | 'likes';
+    sortBy?: 'createdAt' | 'viewsCount' | 'rating' | 'likesCount';
     sortOrder?: 'ASC' | 'DESC'; 
 }
 
@@ -47,7 +47,7 @@ export interface AdminBoardList {
    accommodationName?: string;// 숙소 이름
    title: string;             // 제목
    rating?: number;    // 평점
-   likes?: number;            // 좋아요 수
+   likesCount?: number;            // 좋아요 수
    viewsCount?: number;       // 조회수
    createdAt: string;        // 작성일
    deleted: 'Y' | 'N';

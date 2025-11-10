@@ -16,36 +16,36 @@ interface AddressSearchProps {
 }
 
 const AddressSearch: React.FC<AddressSearchProps> = ({ show, onClose, onAddressSelect }) => {
-    
+
     // 주소-좌표 변환 함수
     const getCoordinates = (roadAddress: string) => {
         if (!window.kakao || !window.kakao.maps.services.Geocoder) {
             console.error("Kakao 지도 API의 Geocoder 객체가 로드되지 않았습니다.");
             // API 로드 실패 시에도 결과는 전달하고 모달을 닫음
-            onAddressSelect(roadAddress, { lat: null, lng: null }); 
-            onClose(); 
+            onAddressSelect(roadAddress, { lat: null, lng: null });
+            onClose();
             return;
         }
 
-        const geocoder = new window.kakao.maps.services.Geocoder();
+            const geocoder = new window.kakao.maps.services.Geocoder();
 
-        geocoder.addressSearch(roadAddress, (result: any[], status: any) => {
-            if (status === window.kakao.maps.services.Status.OK) {
-                const firstResult = result[0];
-                const newCoords: Coordinates = {
+            geocoder.addressSearch(roadAddress, (result: any[], status: any) => {
+                if (status === window.kakao.maps.services.Status.OK) {
+                    const firstResult = result[0];
+                    const newCoords: Coordinates = {
                     lat: parseFloat(firstResult.y), // 위도
                     lng: parseFloat(firstResult.x), // 경도
-                };
+                    };
 
                 // 부모 컴포넌트로 최종 주소와 좌표를 전달
-                onAddressSelect(roadAddress, newCoords);
+                    onAddressSelect(roadAddress, newCoords);
                 onClose(); // 모달 닫기
-            } else {
+                } else {
                 // 좌표 변환 실패 시 null 값을 전달
-                onAddressSelect(roadAddress, { lat: null, lng: null });
+                    onAddressSelect(roadAddress, { lat: null, lng: null });
                 onClose(); // 모달 닫기
-            }
-        });
+                }
+            });
     };
 
     // 다음 우편번호 검색 완료 시 처리 함수
@@ -60,13 +60,13 @@ const AddressSearch: React.FC<AddressSearchProps> = ({ show, onClose, onAddressS
             <Modal.Header closeButton>
                 <Modal.Title>주소 검색</Modal.Title>
             </Modal.Header>
-            
-            {/* 💡 스타일 개선: Modal.Body에 상대 위치 및 높이 지정 */}
+
+            {/* Modal.Body에 상대 위치 및 높이 지정 */}
             <Modal.Body style={{ position: 'relative', padding: 0, height: '500px' }}>
                 <DaumPostcode
                     // 팝업이 Modal.Body 영역을 꽉 채우도록 설정
                     style={{ position: 'absolute', width: '100%', height: '100%' }}
-                    autoClose={false} 
+                    autoClose={false}
                     onComplete={onCompletePost}
                 />
             </Modal.Body>

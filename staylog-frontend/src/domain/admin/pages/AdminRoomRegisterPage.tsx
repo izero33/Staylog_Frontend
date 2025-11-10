@@ -339,28 +339,6 @@ const AdminRoomRegisterPage: React.FC = () => {
               </td>
             </tr>
             <tr>
-              <th className="bg-light text-center align-middle">체크인/체크아웃 시간</th>
-              <td>
-                <div className="d-flex align-items-center">
-                  <input
-                    type="time"
-                    name="checkIn"
-                    className="form-control form-control-sm me-2"
-                    value={formData.checkIn}
-                    onChange={handleChange}
-                  />
-                  <span>~</span>
-                  <input
-                    type="time"
-                    name="checkOut"
-                    className="form-control form-control-sm ms-2"
-                    value={formData.checkOut}
-                    onChange={handleChange}
-                  />
-                </div>
-              </td>
-            </tr>
-            <tr>
               <th className="bg-light text-center align-middle">상세 설명</th>
               <td>
                 {formData.roomId ? (

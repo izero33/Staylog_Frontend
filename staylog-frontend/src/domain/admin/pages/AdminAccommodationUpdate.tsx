@@ -85,7 +85,7 @@ const AdminAccommodationUpdate: React.FC = () => {
             console.error('숙소 정보 수정 실패:', err);
             alert('숙소 정보 수정에 실패했습니다.');
             setIsSubmitting(false);
-        } 
+        }
     }, [data, description, accommodationId]);
 
     // ImageManager 업로드 완료 콜백
@@ -123,7 +123,12 @@ const AdminAccommodationUpdate: React.FC = () => {
 
     return (
         <Container fluid className="p-4">
-            <h3 className="mb-4">{data.name} 수정</h3>
+            <h3 className="mb-4">
+                {data.name} 수정폼
+                <span className={`ms-2 badge ${data.deletedYn === 'N' ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '0.8rem' }}>
+                    {data.deletedYn === 'N' ? '활성화' : '비활성화'}
+                </span>
+            </h3>
             <form onSubmit={handleSubmit}>
                 <table className="table table-bordered">
                     <tbody>

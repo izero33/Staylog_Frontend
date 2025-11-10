@@ -16,12 +16,11 @@ function index() {
    // 토큰에서 userId 가져오기
    const userId = useGetUserIdFromToken();
    //Redux 에서 로그인 한 상태 확인 (닉네임 가져오기)   
-   const nickname = useSelector((state: RootState) => state.userInfo?.nickname);
-    // Redux에도 로그인 정보가 있을 수 있지만, JWT 기반으로 갱신 보완
+   //const nickname = useSelector((state: RootState) => state.userInfo?.nickname);
+   // Redux에도 로그인 정보가 있을 수 있지만, JWT 기반으로 갱신 보완
    const reduxNickname = useSelector((state: RootState) => state.userInfo?.nickname);   
    // 회원정보 상태값
    const [member, setMember] = useState<MemberInfo | null>(null);
-   const [activeMenu, setActiveMenu] = useState("member");
 
 
    // 회원정보 조회 (닉네임이 바뀔 때마다 재조회)
@@ -60,12 +59,13 @@ function index() {
                
                {/* 왼쪽 사이드 메뉴 */}
                <Col xs={12} md={3} lg={2} className="p-0 bg-white border-end">
-                  <MypageSideBar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
+                  {/* <MypageSideBar activeMenu={activeMenu} setActiveMenu={setActiveMenu} /> */}
+                  <MypageSideBar/>
                </Col>
 
                {/* 오른쪽 콘텐츠 */}
-                  <Col xs={12} md={9} lg={10} className="d-flex flex-column justify-content-center align-items-center text-center">
-                     {/* 회원정보/예약/리뷰/문의 섹션 - 여기서 하위 라우트가 자동 렌더링됨 */}
+                  {/* 회원정보/예약/리뷰/문의 섹션 - 여기서 하위 라우트가 자동 렌더링됨 */}
+                  <Col xs={12} md={9} lg={10} className="d-flex flex-column justify-content-center align-items-center text-center px-0 px-md-3"> {/* px-0 px-md-3으로 변경 */}
                      <Outlet />  
                   </Col>
             </Row>

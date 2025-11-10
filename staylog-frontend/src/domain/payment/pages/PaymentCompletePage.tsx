@@ -11,7 +11,9 @@ import useCommonCodeSelector from '../../common/hooks/useCommonCodeSelector';
 function PaymentCompletePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [paymentResult, setPaymentResult] = useState<PaymentResultResponse | null>(null);
+  /* 결제가 잘 됐는지 결제 정보를 저장하는 상태 */
+  const [paymentResult, setPaymentResult] = useState<PaymentResultResponse | null>(null); 
+  /* 결제 완료시 선택한 옵션 보여주는 상세 정보*/
   const [booking, setBooking] = useState<BookingDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,24 +57,23 @@ function PaymentCompletePage() {
 
       try {
         // 결제 승인 API 호출
+        // ✅ bookingId는 백엔드가 orderId로 Payment를 찾아서 자동으로 처리
         const result = await confirmPayment({
           paymentKey,
           orderId,
           amount: Number(amount),
         });
-
+        console.log('[결제 승인 성공]', result);
         setPaymentResult(result);
 
-        // 예약 정보 조회 (orderId에서 bookingId 추출 필요)
-        // orderId 형식이 "ORDER_{timestamp}_{uuid}" 라고 가정
-        // 백엔드에서 bookingNum으로 예약을 조회할 수 있도록 해야 함
-        // 임시로 bookingId는 result에서 가져올 수 있다고 가정
-        // 실제로는 confirmPayment 응답에 bookingId가 포함되어야 함
+        // 예약 정보 조회
+        // confirmPayment 응답에 포함된 bookingId를 사용하여 예약 정보 조회
+        if (!result.bookingId) {
+          throw new Error('결제 응답에 예약 정보가 없습니다.');
+        }
 
-        // 예약 정보를 가져오기 위해 임시로 사용
-        // TODO: 백엔드 API에서 orderId로 예약 조회 엔드포인트 추가 필요
-        // const bookingData = await getBookingByOrderId(orderId);
-        // setBooking(bookingData);
+        const bookingData = await getBooking(result.bookingId);
+        setBooking(bookingData);
 
       } catch (err: any) {
         console.error('결제 승인 실패:', err);
@@ -198,24 +199,6 @@ function PaymentCompletePage() {
                 </Col>
               </Row>
 
-              <Row className="mb-3">
-                <Col>
-                  <div className="mb-2">
-                    <strong>추가 침대:</strong> 0 / 유아침대: 0
-                  </div>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col>
-                  <div>
-                    <strong>고객 요청사항:</strong>
-                    <div className="border rounded p-2 mt-2 bg-light">
-                      null
-                    </div>
-                  </div>
-                </Col>
-              </Row>
             </Card.Body>
           </Card>
 

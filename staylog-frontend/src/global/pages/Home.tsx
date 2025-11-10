@@ -44,6 +44,7 @@ function Home() {
         댓글 페이지로 이동
       </button>
       <button onClick={(()=>navigate("/home"))}>Home</button>
+      <button onClick={(()=>navigate("/testCarousel"))}>캐러셀 테스트</button>
     </>
   );
 }

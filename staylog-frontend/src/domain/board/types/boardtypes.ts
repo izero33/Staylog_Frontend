@@ -23,7 +23,7 @@ export type BoardDto = {
    viewsCount?: number;       // 조회수
    createdAt?: string;        // 작성일
 
-   thumbnailUrl?: string;     // 썸네일 이미지
+   imageData?: string;     // 썸네일 이미지
 
 }
 

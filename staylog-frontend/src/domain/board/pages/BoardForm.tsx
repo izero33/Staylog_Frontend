@@ -18,6 +18,7 @@ import type { RootState } from "../../../global/store/types";
 import RegionModal from "../components/RegionModal";
 import { Col, Row } from "react-bootstrap";
 import ImageManager from "../../../global/components/ImageManager";
+import { fetchDraftIdForTable } from "../../../global/api/commonApi";
 
 
 
@@ -34,7 +35,7 @@ function BoardForm() {
 
     // USER 상태값 관리
     const userId = useSelector((state: RootState) => state.userInfo?.userId)
-       
+    
     // ImageManager 관련 상태
     const [resetTrigger, setResetTrigger] = useState(0);
     const [imageUploadTrigger, setImageUploadTrigger] = useState(0);
@@ -87,6 +88,24 @@ function BoardForm() {
       if (userId == null) return;
       setDto(prev => ({ ...prev, userId }));
     }, [userId]);
+
+    // 새 글 작성 시: 임시 boardId(draftId) 미리 확보
+    useEffect(() => {
+      const fetchDraftId = async () => {
+        if (isEdit) return; // 수정 모드에서는 실행 안 함
+
+        try {
+          const draftId = await fetchDraftIdForTable(apiBoardType); // 예: "board" 테이블용 임시 ID
+          console.log("🆕 임시 boardId 생성됨:", draftId);
+          setDto((prev) => ({ ...prev, boardId: draftId }));
+        } catch (err) {
+          console.error("임시 boardId 생성 실패:", err);
+        }
+      };
+
+      fetchDraftId();
+    }, [isEdit]);
+
 
     // 수정 모드 => 기존 데이터 로드
     useEffect(() => {
@@ -319,7 +338,7 @@ function BoardForm() {
                 
                 
                 <ImageManager
-                    key={`image-manager-${resetTrigger}`}
+                    key={`image-manager-${dto.boardId}`}
                     targetType={apiBoardType}
                     targetId={boardId ? Number(boardId) : 0}
                     isEditMode={true} // 수정 모드 활성화

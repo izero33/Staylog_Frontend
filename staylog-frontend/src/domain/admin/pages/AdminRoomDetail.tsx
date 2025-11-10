@@ -334,9 +334,8 @@ function AdminRoomDetail() {
                     <ImageCarousel
                         targetType='ROOM'
                         targetId={roomId}
-                        aspectRatio='16:9'
+                        aspectRatio='21:9'
                         rounded={true}
-                        indicatorType='numbers-only'
                         arrowsOnHover={true}
                     />
 

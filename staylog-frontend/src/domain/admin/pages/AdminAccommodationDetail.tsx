@@ -1,11 +1,13 @@
 
-import { Container, Carousel, Image } from 'react-bootstrap';
+import { Container, Carousel } from 'react-bootstrap';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
 import axios from 'axios';
 import type { AdminAccommodation } from '../types/AdminAccommodationTypes';
 import { formatKST } from '../../../global/utils/date';
+import AccommodationInfo from '../../accommodation/components/AccommodationInfo';
+import KakaoMap from '../../accommodation/components/KakaoMap';
 
 /*
     Carousel : 숙소 대표 이미지
@@ -94,7 +96,7 @@ function AdminAccommodationDetail() {
 
     //객실 목록 페이지 이동 핸들러
     const handleGoToRooms = (accommodationId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}/rooms`);
+        navigate(`/admin/accommodations/${accommodationId}/rooms`, { state: { accommodationName: data.name } });
     };
 
     // 숙소 목록 페이지 이동 핸들러
@@ -179,10 +181,9 @@ function AdminAccommodationDetail() {
                     </button>
                 </div>
             </div>
-            
+
             <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
                 <tbody>
-                    {/* 세로 헤더 (왼쪽이 헤더) */}
                     <tr>
                         <th className="bg-light text-center" style={{ width: '25%' }}>유형</th>
                         <td>{data.typeName}</td>
@@ -196,47 +197,71 @@ function AdminAccommodationDetail() {
                         <td>{data.address}</td>
                     </tr>
                     <tr>
-                        <th className="bg-light text-center">체크인</th>
-                        <td>{data.checkInTime}</td>
-                    </tr>
-                    <tr>
-                        <th className="bg-light text-center">체크아웃</th>
-                        <td>{data.checkOutTime}</td>
-                    </tr>
-
-                    {/* 구분선 */}
-                    <tr>
-                        <td colSpan={2}></td>
-                    </tr>
-
-                    {/* 가로 헤더 (위쪽이 헤더) */}
-                    <tr>
-                        <th colSpan={2} className="bg-light text-center">이미지</th>
-                    </tr>
-                    <tr>
-                        <td colSpan={2}>
-                            <div className="accommodationImages images-slider">
-                                <Carousel>
-                                    <Carousel.Item>
-                                        {/* 이미지 비율에 맞게 나오게 함*/}
-                                        <Image src={img1} alt="숙소 이미지 1" className="d-block w-100" style={{objectFit: "contain" }} />
-                                    </Carousel.Item>
-                                    <Carousel.Item>
-                                        <Image src={img2} alt="숙소 이미지 2" className="d-block w-100" style={{objectFit: "contain" }} />
-                                    </Carousel.Item>
-                                </Carousel>
-                            </div>
+                        <th className="bg-light text-center">체크인 / 체크아웃</th>
+                        <td>
+                            {data.checkInTime} ~ {data.checkOutTime}
                         </td>
-                    </tr>
-
-                    <tr>
-                        <th colSpan={2} className="bg-light text-center">설명</th>
-                    </tr>
-                    <tr>
-                        <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.description }} />
                     </tr>
                 </tbody>
             </table>
+
+
+            <p className='fs-5 text-center my-4 border-top py-3 border bg-light rounded'>숙소 페이지 미리 보기</p>
+
+            <Container className="p-0">
+                <div className="border p-4 rounded">
+                    {/* 숙소 대표 이미지 영역 */}
+                    <div className="images-slider mb-3">
+                        <Carousel className="w-100 h-100">
+                            <Carousel.Item>
+                                <img src={img1} alt="숙소 이미지 1" className="carousel-img" />
+                            </Carousel.Item>
+                            <Carousel.Item>
+                                <img src={img2} alt="숙소 이미지 2" className="carousel-img" />
+                            </Carousel.Item>
+                        </Carousel>
+                    </div>
+
+                    {/* 숙소 기본 정보 */}
+                    <h3 className="mb-1">{data.name}</h3>
+                    <small className="text-muted">{data.regionName}</small>
+
+                    {/* 숙소 상세 소개 */}
+                    <div className="my-4">
+                        <h5 className="mb-3 pb-2" style={{ borderBottom: '2px solid #dee2e6' }}>
+                            숙소 소개
+                        </h5>
+                        <p
+                            style={{ fontSize: "0.85rem", lineHeight: "1.6", color: "#495057" }}
+                            dangerouslySetInnerHTML={{ __html: data.description }}
+                        />
+                    </div>
+
+                    {/* 숙소 위치 */}
+                    <div className="my-4">
+                        <h5 className="mb-3 pb-2" style={{ borderBottom: '2px solid #dee2e6' }}>
+                            위치
+                        </h5>
+                        <p className="mb-3" style={{ fontSize: "0.9rem", color: "#495057" }}>
+                            {data.address}
+                        </p>
+                        <div
+                            className="rounded overflow-hidden"
+                            style={{
+                                height: "25rem",
+                                border: '1px solid #dee2e6'
+                            }}
+                        >
+                            <KakaoMap
+                                latitude={Number(data.latitude)}
+                                longitude={Number(data.longitude)}
+                                height="25rem"
+                                level={3}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </Container>
         </Container>
     </>
 }

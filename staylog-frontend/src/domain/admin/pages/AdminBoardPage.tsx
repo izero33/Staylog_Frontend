@@ -195,7 +195,7 @@ function AdminBoardPage() {
                             className="form-select form-select-sm border-light w-auto"
                             name="orderBy"
                             onChange={(e) => {
-                                const [sortBy, sortOrder] = e.target.value.split('_') as ['createdAt' | 'viewsCount' | 'rating' | 'likes', 'ASC' | 'DESC'];
+                                const [sortBy, sortOrder] = e.target.value.split('_') as ['createdAt' | 'viewsCount' | 'rating' | 'likesCount', 'ASC' | 'DESC'];
                                 setSearchParams(prev => ({
                                     ...prev,
                                     sortBy,
@@ -214,8 +214,8 @@ function AdminBoardPage() {
                             )}
                             <option value="viewsCount_DESC">조회수 높은순</option>
                             <option value="viewsCount_ASC">조회수 낮은순</option>
-                            <option value="likes_DESC">좋아요 많은순</option>
-                            <option value="likes_ASC">좋아요 적은순</option>
+                            <option value="likesCount_DESC">좋아요 많은순</option>
+                            <option value="likesCount_ASC">좋아요 적은순</option>
                         </select>
                     </div>
 
@@ -271,7 +271,7 @@ function AdminBoardPage() {
 
             {/* 페이지 정보 */}
             {page && (
-                <div className="text-end text-muted mt-3 d-flex justify-content-end align-items-center gap-1">
+                <small className="text-end text-muted mt-4 d-flex justify-content-end align-items-center gap-1">
                     전체 {page.totalCount}건 (
                     <input
                         type="number"
@@ -287,11 +287,11 @@ function AdminBoardPage() {
                                 }));
                             }
                         }} /><span className="mx-1">/{page.totalPage} 페이지</span>)
-                </div>
+                </small>
             )}
 
             {/* 게시글 테이블 */}
-            <table className="table table-striped text-center mt-3 custom-table">
+            <table className="table table-striped text-center mt-1 custom-table">
                 <thead className="table-light">
                     <tr>
                         <th style={{ width: '8%' }}>번호</th>
@@ -335,7 +335,7 @@ function AdminBoardPage() {
                                         </span>
                                     )}
                                     <span className="badge bg-danger me-1">
-                                        <i className="bi bi-heart"></i> {item.likes}
+                                        <i className="bi bi-heart"></i> {item.likesCount}
                                     </span>
                                     <span className="badge bg-secondary">
                                         <i className="bi bi-eye"></i> {item.viewsCount}

@@ -12,6 +12,7 @@ import '../css/room.css';
 import AccommodationInfo from "../components/AccommodationInfo";
 import { getImageUrl } from "../../../global/hooks/getImageUrl";
 
+import { formatDateToYYYYMMDD } from "../../../global/utils/date";
 
 function RoomDetail() {
 
@@ -48,10 +49,12 @@ function RoomDetail() {
     const to = new Date();
     to.setMonth(today.getMonth() + 2);
 
-    const fromStr = today.toISOString().split("T")[0];
-    const toStr = to.toISOString().split("T")[0];
-
-    api.get<string[]>(`/v1/${roomId}/blocked`, { params: { from: fromStr, to: toStr } })
+    api.get<string[]>(`/v1/${roomId}/blocked`, {
+      params: {
+        from: formatDateToYYYYMMDD(today),
+        to: formatDateToYYYYMMDD(to)
+      }
+    })
       .then(res => setBlockedDates(res))
       .catch(err => {
         console.error(err);

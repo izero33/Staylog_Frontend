@@ -219,16 +219,6 @@ const AdminRoomUpdate: React.FC = () => {
                                 <span>m²</span>
                             </td>
                         </tr>
-                        <tr>
-                            <th className="bg-light text-center">체크인/체크아웃 시간</th>
-                            <td>
-                                <div className="d-flex align-items-center">
-                                    <input type="time" name="checkIn" className="form-control form-control-sm me-2" value={data.checkIn} onChange={(e) => setData({ ...data, checkIn: e.target.value })} />
-                                    <span>~</span>
-                                    <input type="time" name="checkOut" className="form-control form-control-sm ms-2" value={data.checkOut} onChange={(e) => setData({ ...data, checkOut: e.target.value })} />
-                                </div>
-                            </td>
-                        </tr>
                         {/* 상세 설명 (QuillEditor) */}
                         <tr>
                             <th className="bg-light text-center align-middle">상세 설명</th>

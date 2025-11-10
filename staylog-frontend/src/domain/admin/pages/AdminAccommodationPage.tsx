@@ -120,8 +120,8 @@ function AdminAccommodationListPage() {
     };
 
     //객실 목록 페이지 이동 핸들러
-    const handleGoToRooms = (accommodationId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}/rooms`);
+    const handleGoToRooms = (accommodationId: number, accommodationName: string) => {
+        navigate(`/admin/accommodations/${accommodationId}/rooms`,  { state: { accommodationName } });
     };
 
     //숙소 등록 페이지 이동 핸들러
@@ -266,7 +266,7 @@ function AdminAccommodationListPage() {
 
             {/* 페이지 정보 */}
             {page && (
-                <div className="text-end text-muted mt-3 d-flex justify-content-end align-items-center gap-1">
+                <small className="text-end text-muted mt-4 d-flex justify-content-end align-items-center gap-1">
                     전체 {page.totalCount}건 (
                     <input
                         type="number"
@@ -282,10 +282,10 @@ function AdminAccommodationListPage() {
                                 }));
                             }
                         }} /><span className="mx-1">/{page.totalPage} 페이지</span>)
-                </div>
+                </small>
             )}
 
-            <table className="table table-striped text-center mt-3 custom-table">
+            <table className="table table-striped text-center mt-1 custom-table">
                 <thead className="table-light">
                     <tr>
                         <th style={{ width: '8%' }}>번호</th>
@@ -340,7 +340,7 @@ function AdminAccommodationListPage() {
                                     <button
                                         className="btn btn-sm btn-outline-primary me-1"
                                         title="객실 목록 보기"
-                                        onClick={() => handleGoToRooms(item.accommodationId!)} // 이동 함수 연결
+                                        onClick={() => handleGoToRooms(item.accommodationId!, item.name!)} // 이동 함수 연결
                                     >
                                         <i className="bi bi-list"></i>
                                     </button>

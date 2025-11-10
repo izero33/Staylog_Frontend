@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { getReservationList } from "../api/mypageApi";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
-import { Button, Card, Col, Pagination, Row, Table, Badge } from "react-bootstrap";
+import { Button, Card, Pagination, Table, Badge } from "react-bootstrap";
 import { formatKST } from "../../../global/utils/date";
 import MypageReservationDetailModal from "../components/MypageReservationDetailModal";
 
@@ -47,7 +47,7 @@ function ReservationSection() {
 
     // 상태 필터 버튼
     const renderFilterButtons = () => (
-        <div className="d-flex justify-content-center gap-2 mb-4">
+        <div className="d-flex flex-wrap justify-content-center gap-2 mb-4"> {/* flex-wrap 추가 */}
             <Button variant={status === "upcoming" ? "dark" : "outline-secondary"} onClick={() => setStatus("upcoming")}>
                 다가올 예약
             </Button>
@@ -63,10 +63,10 @@ function ReservationSection() {
     // 상태 표시 뱃지
     const getStatusBadge = (status: string) => {
         switch (status) {
-            case 'RES_CONFIRMED': return <Badge bg="success">확정</Badge>;
-            case 'RES_CANCELED':
-            case 'RES_REFUNDED': return <Badge bg="danger">취소</Badge>;
-            default: return <Badge bg="secondary">대기</Badge>;
+            case 'RES_CONFIRMED': return <Badge bg="success" className="fs-6 fw-normal">확정</Badge>;
+            case 'RES_CANCELED': return <Badge bg="danger" className="fs-6 fw-normal">취소</Badge>;
+            case 'RES_REFUNDED': return <Badge bg="danger" className="fs-6 fw-normal">환불</Badge>;
+            default: return <Badge bg="secondary" className="fs-6 fw-normal">대기</Badge>;
         }
     };
 
@@ -75,7 +75,7 @@ function ReservationSection() {
         <div className="d-none d-lg-block">
             <Table bordered hover responsive className="align-middle text-center">
                 <thead className="table-light">
-                    <tr>
+                    <tr className="text-nowrap">
                         <th>예약 번호</th>
                         <th>투숙자명</th>
                         <th>숙소명 / 객실명</th>
@@ -83,27 +83,29 @@ function ReservationSection() {
                         <th>체크아웃</th>
                         <th>총 투숙인원</th>
                         <th>상태</th>
+                        <th>예약 상세 보기</th>
                     </tr>
                 </thead>
                 <tbody>
                     {currentItems.length > 0 ? (
                         currentItems.map((r) => (
                             <tr key={r.bookingId}>
-                                <td>
-                                    <Button variant="link" className="p-0 text-decoration-none" onClick={() => openDetail(r.bookingId)}>
-                                        {r.bookingNum || r.bookingId}
-                                    </Button>
-                                </td>
-                                <td>{r.guestName}</td>
+                                <td className="text-nowrap">{r.bookingNum || r.bookingId}</td>
+                                <td className="text-nowrap">{r.guestName}</td>
                                 <td>{r.accommodationName} / {r.roomName}</td>
-                                <td>{r.checkIn ? formatKST(r.checkIn).split("T")[0] : "—"}</td>
-                                <td>{r.checkOut ? formatKST(r.checkOut).split("T")[0] : "—"}</td>
+                                <td className="text-nowrap">{r.checkIn ? formatKST(r.checkIn).split("T")[0] : "—"}</td>
+                                <td className="text-nowrap">{r.checkOut ? formatKST(r.checkOut).split("T")[0] : "—"}</td>
                                 <td>{r.totalGuestCount}</td>
                                 <td>{getStatusBadge(r.status)}</td>
+                                <td>
+                                    <Button variant="outline-primary" size="sm" onClick={() => openDetail(r.bookingId)}>
+                                        예약 보기
+                                    </Button>
+                                </td>
                             </tr>
                         ))
                     ) : (
-                        <tr><td colSpan={7} className="text-muted py-4">예약 내역이 없습니다.</td></tr>
+                        <tr><td colSpan={8} className="text-muted py-4">예약 내역이 없습니다.</td></tr>
                     )}
                 </tbody>
             </Table>
@@ -126,8 +128,10 @@ function ReservationSection() {
                             <Card.Text><strong>투숙자명:</strong> {r.guestName}</Card.Text>
                             <Card.Text><strong>총 투숙인원:</strong> {r.totalGuestCount}</Card.Text>
                             <div className="d-flex justify-content-between text-sm">
-                                <span><strong>체크인</strong> {r.checkIn ? formatKST(r.checkIn).split("T")[0] : "—"}</span>
-                                <span><strong>체크아웃</strong> {r.checkOut ? formatKST(r.checkOut).split("T")[0] : "—"}</span>
+                                <span className="text-nowrap"><strong>체크인</strong> {r.checkIn ? formatKST(r.checkIn).split("T")[0] : "—"}</span>
+                            </div>
+                            <div className="d-flex justify-content-between text-sm">    
+                                <span className="text-nowrap"><strong>체크아웃</strong> {r.checkOut ? formatKST(r.checkOut).split("T")[0] : "—"}</span>
                             </div>
                             <Button variant="outline-dark" size="sm" className="w-100 mt-3" onClick={() => openDetail(r.bookingId)}>
                                 상세 보기

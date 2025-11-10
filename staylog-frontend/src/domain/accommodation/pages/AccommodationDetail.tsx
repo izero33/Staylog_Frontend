@@ -14,6 +14,7 @@ import KakaoMap from '../components/KakaoMap';
 import AccommodationInfo from '../components/AccommodationInfo';
 import { createBooking } from '../../booking/api';
 import type { CreateBookingRequest } from '../../booking/types';
+import { formatDateToYYYYMMDD } from '../../../global/utils/date';
 
 /*
     Carousel : 숙소 대표 이미지
@@ -119,17 +120,11 @@ function AccommodationDetail() {
     // 예약하기 버튼 클릭 핸들러
     const handleReserve = async (bookingData: BookingData) => {
         try {
-            // Date를 "YYYY-MM-DD" 문자열로 변환
-            const formatDate = (date: Date | null) => {
-                if (!date) return '';
-                return date.toISOString().split('T')[0];
-            };
-
             // 예약 생성 요청 데이터 구성
             const request: CreateBookingRequest = {
                 roomId: bookingData.roomId,
-                checkIn: formatDate(bookingData.checkIn),
-                checkOut: formatDate(bookingData.checkOut),
+                checkIn: formatDateToYYYYMMDD(bookingData.checkIn),
+                checkOut: formatDateToYYYYMMDD(bookingData.checkOut),
                 amount: bookingData.totalPrice,
                 adults: bookingData.adults,
                 children: bookingData.children,
@@ -157,12 +152,14 @@ function AccommodationDetail() {
     useEffect(() => {
         if (!bookingSelectedRoom) return;
 
+        const today = new Date();
+        const sixMonthsLater = new Date();
+        sixMonthsLater.setMonth(today.getMonth() + 6);
+
         api.get<string[]>(`/v1/${bookingSelectedRoom.roomId}/blocked`, {
             params: {
-                from: new Date().toISOString().split("T")[0],
-                to: new Date(new Date().setMonth(new Date().getMonth() + 6))
-                    .toISOString()
-                    .split("T")[0],
+                from: formatDateToYYYYMMDD(today),
+                to: formatDateToYYYYMMDD(sixMonthsLater),
             },
         })
             .then(res => setBlockedDates(res))

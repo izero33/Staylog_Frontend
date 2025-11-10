@@ -1,5 +1,5 @@
 import LoginForm from "../../domain/auth/pages/LoginForm";
-import CouponForm from "../../domain/mypage/pages/CouponForm";
+import CouponForm from "../../domain/coupon/pages/CouponForm";
 import type { ModalProps } from "../types/ModalMode";
 
 

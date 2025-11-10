@@ -197,7 +197,7 @@ function AdminBoardDetail() {
                                     )}
                                     <tr>
                                         <th>좋아요수</th>
-                                        <td>{data.likes}</td>
+                                        <td>{data.likesCount}</td>
                                     </tr>
                                     <tr>
                                         <th>조회수</th>

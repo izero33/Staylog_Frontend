@@ -1,4 +1,4 @@
-import { extend } from "dayjs";
+
 import type { PageRequest, PageResponse } from "../../../global/types/Paginationtypes";
 
 export interface AdminRoom {
@@ -12,8 +12,8 @@ export interface AdminRoom {
     maxAdult?: number;
     maxChildren?: number;
     maxInfant?: number;
-    checkIn?: string;
-    checkOut?: string;
+    checkInTime?: string;
+    checkOutTime?: string;
     area?: number;
     deletedYn: 'Y' | 'N';
     singleBed?: number;

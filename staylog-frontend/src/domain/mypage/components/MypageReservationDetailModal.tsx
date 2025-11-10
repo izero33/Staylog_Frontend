@@ -1,12 +1,15 @@
 // src/domain/mypage/components/MypageReservationDetailModal.tsx
-    import { useEffect, useState } from "react";
-    import { getReservationDetail } from "../api/mypageApi"; // api.ts 함수 사용
-    import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken"; // userId hook
-    import { formatKST } from "../../../global/utils/date";
-    import type { ReservationDetail, ReservationModalProps } from "../types/mypageTypes";
+import { useEffect, useState } from "react";
+import { getReservationDetail } from "../api/mypageApi"; // api.ts 함수 사용
+import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken"; // userId hook
+import { formatKST } from "../../../global/utils/date";
+import type { ReservationDetail, ReservationModalProps } from "../types/mypageTypes";
+import { useNavigate } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 
 function MypageReservationDetailModal({ open, bookingId, onClose }: ReservationModalProps) {
+    const navigate = useNavigate();
     const userId = useGetUserIdFromToken(); // userId 가져오기
     const [detail, setDetail] = useState<ReservationDetail | null>(null);
     const [loading, setLoading] = useState(false);
@@ -99,7 +102,27 @@ function MypageReservationDetailModal({ open, bookingId, onClose }: ReservationM
                                 <dd className="text-start col-sm-8">{detail.guestName ?? "—"}</dd>
 
                                 <dt className="text-start col-sm-4 text-muted">숙소 / 객실</dt>
-                                <dd className="text-start col-sm-8">{(detail.accommodationName ?? "—") + " / " + (detail.roomName ?? "—")}</dd>
+                                <dd className="text-start col-sm-8">
+                                    <span>{detail.accommodationName ?? "—"}</span>
+                                    <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        className="ms-2"
+                                        onClick={() => navigate(`/accommodations/${detail.accommodationId}`)}
+                                    >
+                                        숙소 상세보기    
+                                    </Button>
+                                    <span className="mx-1">/</span>
+                                    <span>{detail.roomName ?? "-"}</span>
+                                    <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        className="ms-2"
+                                        onClick={() => navigate(`/room/${detail.roomId}`)}
+                                    >
+                                        객실 상세보기
+                                    </Button>
+                                </dd>
                             </dl>
                         </section>
 

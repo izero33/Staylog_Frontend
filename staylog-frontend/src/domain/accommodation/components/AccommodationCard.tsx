@@ -16,7 +16,7 @@ function AccommodationCard({ accommodation }: AccommodationCardProps) {
   };
 
   const handleCardClick = () => {
-    navigate(`/accommodation/${accommodation.accommodationId}`);
+    navigate(`/accommodations/${accommodation.accommodationId}`);
   };
 
   return (
@@ -88,10 +88,6 @@ function AccommodationCard({ accommodation }: AccommodationCardProps) {
               ₩{accommodation.basePrice.toLocaleString()}
             </span>
             <span className="text-muted small"> / 박</span>
-          </div>
-          <div className="text-muted small">
-            <i className="bi bi-star-fill text-warning me-1"></i>
-            예약 {accommodation.reservationCount}건
           </div>
         </div>
       </div>

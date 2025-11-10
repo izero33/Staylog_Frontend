@@ -8,7 +8,8 @@ const initState: RootState = {
    logoutTimer: null,
    commonCodes: null,
    notiList: [],
-   notiUnreadCount: 0
+   notiUnreadCount: 0,
+   getNotiData: false
 };
 
 
@@ -52,6 +53,7 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
          return {
             ...state,
             notiList: action.payload,
+            getNotiData: true // 조회 유무를 true로 변경하여 리소스 절약
          };
 
       // 새 알림 1개를 목록에 추가
@@ -121,6 +123,13 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
             notiList: state.notiList.filter(noti => noti.notiId !== notiIdToDelete),
          };
       }
+
+      case 'DELETE_NOTIFICATION_ALL' :
+         return {
+            ...state,
+            notiList: initState.notiList,
+            notiUnreadCount: 0
+         };
 
       
       default:

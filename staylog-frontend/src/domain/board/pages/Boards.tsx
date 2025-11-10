@@ -18,6 +18,10 @@ import useGetUserRoleFromToken from "../../auth/hooks/useGetUserRoleFromToken";
 import JournalCard from "../components/JournalCard";
 // import { getImageUrl } from "../../../global/hooks/getImageUrl"; // 목록 페이지에서는 불필요
 
+interface ImageDataa {
+  imageUrl: string
+}
+
 function Boards() {
   // 게시판 카테고리
   const { boardType } = useParams<{ boardType: string }>();
@@ -73,18 +77,18 @@ function Boards() {
         ? []
         : selectedRegions;
 
-      const res = await api.get(`/v1/boards`, {
-        params: {
+      const res = await api.post(`/v1/boardsList`, {
+        
           boardType: apiBoardType,
           pageNum,
           pageSize: pageInfo.pageSize,
           regionCodes: validRegions,
           sort: sortOption || pageInfo.sort,
-        },
-      });
+          
+        });
 
-      const list = res.boardList || res?.data?.data?.boardList || [];
-      const page = res.pageResponse || res?.data?.data?.pageResponse || {};
+      const list = res.boardList || res?.boardList || [];
+      const page = res.pageResponse || res?.pageResponse || {};
 
       setBoards(list);
       setPageInfo((prev) => ({
@@ -130,7 +134,7 @@ function Boards() {
       {/* 상단 제목 */}
       <div className="mt-4 text-center">
         <h2 className="fw-bold p-4">
-          {boardType === "journal" ? "저널 게시판" : "리뷰 게시판"}
+          {boardType === "journal" ? "JOURNAL" : "REVIEW"}
         </h2>
       </div>
 
@@ -278,7 +282,7 @@ function Boards() {
               <PaginationBar pageState={pageInfo} onMove={fetchBoards} />
             </div>
           </Col>
-        </Row>
+        </Row> 
       </Container>
     </>
   );

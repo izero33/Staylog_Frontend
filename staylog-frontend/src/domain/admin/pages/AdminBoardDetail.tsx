@@ -8,6 +8,7 @@ import { formatKST } from '../../../global/utils/date';
 import type { AdminBoard } from '../types/AdminBoardTypes';
 import AdminReservationDetailModal from '../components/AdminReservationDetailModal';
 import '../css/AdminDetailPageTable.css';
+import { tr } from 'date-fns/locale';
 
 /*
     Carousel : 게시글 대표 이미지
@@ -164,14 +165,19 @@ function AdminBoardDetail() {
                         <th className="bg-light text-center" style={{ width: '25%' }}>작성자</th>
                         <td>{data.userNickName}</td>
                     </tr>
+
                     <tr>
                         <th className="bg-light text-center">지역</th>
                         <td>{data.regionName}</td>
                     </tr>
+                    {/* 숙소명 (리뷰 전용) */}
+                    {data.rating !== 0 && data.rating !== null && (
                     <tr>
                         <th className="bg-light text-center">숙소명</th>
                         <td>{data.accommodationName}</td>
                     </tr>
+                    )}
+
                     {data.bookingId !== 0 && (<tr>
                         <th className="bg-light text-center">예약번호</th>
                         <td>
@@ -187,7 +193,7 @@ function AdminBoardDetail() {
                     <tr>
                         <th className="bg-light text-center">반응지표</th>
                         <td>
-                            <table className="table table-sm mb-0" style={{ width: '20%' }}>
+                            <table className="table table-sm mb-0" style={{ width: '33%' }}>
                                 <tbody>
                                     {data.rating !== 0 && data.rating !== null && (
                                         <tr>

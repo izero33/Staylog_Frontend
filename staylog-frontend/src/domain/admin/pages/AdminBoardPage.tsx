@@ -12,6 +12,7 @@ import type {
 import '../css/AdminTable.css';
 import type { PageResponse } from "../../../global/types/Paginationtypes";
 import Pagination from "../../../global/components/Pagination";
+import type { CommonCodeNameList } from "../types/CommonCodeNameList";
 
 // 상태 업데이트 API 호출 함수
 const updateBoardStatus = async (boardId: number, status: 'Y' | 'N') => {
@@ -43,6 +44,10 @@ function AdminBoardPage() {
         }
     );
 
+    //공통 코드 상태 정의
+    const [regionCodeList, setRegionCodeList] = useState<CommonCodeNameList[]>([]);
+
+
     // 게시글 목록 조회
     useEffect(() => {
         api.get<AdminBoardListResponse>("/v1/admin/boards", { params: searchParams })
@@ -51,6 +56,11 @@ function AdminBoardPage() {
                 setPage(res.page);
             })
             .catch(err => console.log("게시글 목록 로드 실패", err));
+
+        // 공통 코드: 지역 코드 목록 로드
+        api.get<CommonCodeNameList[]>("/v1/commonCode", { params: { codeId: 'REGION_TYPE' } })
+            .then(res => setRegionCodeList(res))
+            .catch(err => console.log("지역 코드 로드 실패", err));
     }, [searchParams]);
 
     // 상태 변경 핸들러
@@ -191,6 +201,27 @@ function AdminBoardPage() {
                             <option value="Y">숨김</option>
                         </select>
 
+                        {/* 지역 코드 필터 (저널 게시판 전용) */}
+                        {searchParams.boardType === 'BOARD_JOURNAL' && (
+                            <select
+                                name="regionCode"
+                                className="form-select form-select-sm border-light w-auto"
+                                value={searchParams.regionCode || ''}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    const filterValue = (value === 'REGION_TYPE' || value === '') ? undefined : value;
+                                    setSearchParams(prev => ({
+                                        ...prev,
+                                        regionCode: filterValue
+                                    }));
+                                }}
+                            >
+                                {regionCodeList.map(item => (
+                                    <option key={item.codeId} value={item.codeId}>{item.codeName}</option>
+                                ))}
+                            </select>
+                        )}
+
                         <select
                             className="form-select form-select-sm border-light w-auto"
                             name="orderBy"
@@ -221,30 +252,40 @@ function AdminBoardPage() {
 
                     {/* 검색 기준 및 입력 그룹 */}
                     <div className="ms-md-auto d-flex gap-2 mt-2 mt-md-0 align-items-center">
-                        <select
-                            name="searchType"
-                            className="form-select form-select-sm border-light w-auto"
-                            value={searchParams.searchType || ''}
-                            onChange={(e) => {
-                                const value = e.target.value as 'accommodationName' | 'userNickName' | undefined;
-                                setSearchParams(prev => ({
-                                    ...prev,
-                                    searchType: value || undefined
-                                }));
-                            }}
-                        >
-                            <option value=''>검색 기준</option>
-                            <option value="accommodationName">숙소명</option>
-                            <option value="userNickName">작성자</option>
-                        </select>
+                        {/* 검색어 기준 필터 (리뷰 게시판 전용 - 숙소명, 작성자) */}
+                        {searchParams.boardType === 'BOARD_REVIEW' && (
+                            <select
+                                name="searchType"
+                                className="form-select form-select-sm border-light w-auto"
+                                value={searchParams.searchType || ''}
+                                onChange={(e) => {
+                                    const value = e.target.value as 'accommodationName' | 'userNickName' | undefined;
+                                    setSearchParams(prev => ({
+                                        ...prev,
+                                        searchType: value || undefined
+                                    }));
+                                }}
+                            >
+                                <option value=''>검색 기준</option>
+                                <option value="accommodationName">숙소명</option>
+                                <option value="userNickName">작성자</option>
+                            </select>
+                        )}
+
 
                         <div className="input-group input-group-sm">
                             <input
                                 type="text"
-                                placeholder="검색어 입력"
+                                placeholder={searchParams.boardType === 'BOARD_REVIEW' ? "검색어 입력" : "작성자명 입력"}
                                 className="form-control-sm border-1"
                                 value={inputKeyword}
-                                onChange={(e) => setInputKeyword(e.target.value)}
+                                onChange={(e) => {
+                                    setInputKeyword(e.target.value);
+                                    {searchParams.boardType === 'BOARD_JOURNAL' && setSearchParams(prev => ({
+                                        ...prev,
+                                        searchType: 'userNickName'
+                                    })) }
+                                }}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleSearch();
@@ -295,7 +336,7 @@ function AdminBoardPage() {
                 <thead className="table-light">
                     <tr>
                         <th style={{ width: '8%' }}>번호</th>
-                        <th>숙소명</th>
+                        {searchParams.boardType === 'BOARD_REVIEW' ? <th>숙소명</th> : <th>지역</th>}
                         <th>제목</th>
                         <th style={{ width: '12%' }}>작성자</th>
                         <th>반응지표</th>
@@ -317,7 +358,7 @@ function AdminBoardPage() {
                         boards.map((item, index) => (
                             <tr key={item.boardId}>
                                 <td>{page ? (page.pageNum - 1) * page.pageSize + index + 1 : index + 1}</td>
-                                <td>{item.accommodationName || '-'}</td>
+                                {searchParams.boardType === 'BOARD_REVIEW' ? <td>{item.accommodationName || '-'}</td> : <td>{item.regionName || '-'}</td>}
                                 <td>
                                     <button
                                         type="button"

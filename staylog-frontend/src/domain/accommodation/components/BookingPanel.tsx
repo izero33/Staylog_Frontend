@@ -3,6 +3,7 @@ import { Button, Card, Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
 import type { AccommodationRoomListType } from "../types/AccommodationType";
+import { getImageUrl } from "../../../global/hooks/getImageUrl";
 
 // 예약 정보 타입
 export interface BookingData {
@@ -22,7 +23,7 @@ type Props = {
   onClickGuests?: () => void;
   // 객실 정보
   name: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   rooms?: AccommodationRoomListType[];
   onReserve?: (bookingData: BookingData) => void; // 예약 정보 전달
   // 예약 불가일
@@ -67,6 +68,8 @@ function BookingPanel({
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
 
+  const [maxEndDate, setMaxEndDate] = useState<Date | null>(null);
+
   // 선택된 객실 (첫 번째 객실을 기본으로 표시)
   const [selectedRoom, setSelectedRoom] = useState<AccommodationRoomListType | null>(
     rooms.length > 0 ? rooms[0] : null
@@ -90,11 +93,13 @@ function BookingPanel({
     onSelectRoom?.(room!);
   };
 
+  const roomImageUrl = getImageUrl("ROOM", selectedRoom?.roomId??0);
+
   // 숙박일 계산
   const nights = checkIn && checkOut
     ? Math.round(
-        ((new Date(checkOut).setHours(0, 0, 0, 0) - new Date(checkIn).setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
-      )
+      ((new Date(checkOut).setHours(0, 0, 0, 0) - new Date(checkIn).setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
+    )
     : 0;
 
   // 총 인원 계산
@@ -104,11 +109,79 @@ function BookingPanel({
   // 총액 : 1박 기준 객실 가격 * 숙박일수
   const totalPrice = roomPrice > 0 ? Math.round(roomPrice * nights) : 0;
 
-  // 예약 불가일 -> Date 배열
-  const excludeDates = (disabledDates ?? []).map(d => {
-    const date = new Date(d + "T00:00:00");
-    return date;
-  });
+  /*블락 징검다리 제한 */
+
+  // --- 유틸 추가 ---
+  const toLocalDate = (s: string) => { //변환 함수 "2025-11-12" → new Date(2025,10,12,00:00)
+    const [y, m, d] = s.split("-").map(Number);
+    return new Date(y, m - 1, d); // 로컬 00:00
+  };
+  const ymd = (d: Date) =>
+    `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`;
+  const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+
+  // ---- 예약 불가일 준비 ----
+  // 문자열 세트(빠른 포함 체크) + 로컬 Date 정렬본(다음 블락 찾기용)
+  const blockedSet = new Set((disabledDates ?? []));
+  const blockedDatesLocal = (disabledDates ?? []).map(toLocalDate).sort((a, b) => +a - +b);
+  const excludeDates = blockedDatesLocal; // 비활성화할 날짜 
+
+  // 체크인 이후 "다음 블락 시작일" 찾기
+  const nextBlockedAfter = (d: Date | null) => {
+    if (!d) return null;
+    for (const b of blockedDatesLocal) if (+b > +d) return b; //체크인 날짜(d)보다 더 늦은(b) 블락일 중 가장 먼저 나오는 날짜를 리턴해라
+    return null;
+  };
+
+  // 날짜 클릭 가능 여부 제어 (징검다리)
+  const filterDate = (date: Date) => {
+    const k = ymd(date);
+    const isBlocked = blockedSet.has(k);
+
+    // 체크인 전(혹은 범위 다시 선택 중) → 블락일만 막고 나머지는 허용
+    if (checkIn === null || (checkIn && checkOut)) return !isBlocked;
+
+    // 체크아웃 선택 단계
+    if (isBlocked) return false;                // 블락일은 불가
+    if (+date <= +checkIn) return false;        // 체크인은 포함 X, 그 다음날부터
+    if (maxEndDate && +date > +maxEndDate) return false; // 다음 블락 전날까지만 //maxEndDate :체크인한 날 다음에 오는 블락일 바로 전날
+    return true;
+  };
+
+  // 블락 데이터가 바뀌면(다른 방 선택 등) 제한 재계산/초기화
+  useEffect(() => {
+    if (checkIn) {
+      const nb = nextBlockedAfter(checkIn); //체크인 다음 가장빠른 블락일 찾기
+      setMaxEndDate(nb ? addDays(nb, -1) : null); //체크아웃 가능한 최대 날짜 = 블락일 전날
+      // 이미 고른 체크아웃이 범위를 넘으면 잘라줌
+      if (checkOut && nb && +checkOut > +addDays(nb, -1)) {
+        setRange([checkIn, addDays(nb, -1)]);
+      }
+    } else {
+      setMaxEndDate(null);
+    }
+  }, [disabledDates]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpenCalendar(false);
+        setOpenGuest(false);
+
+        //  선택 초기화
+        setRange([null, null]);
+        setMaxEndDate(null);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+
+  /*블락 징검다리 제한 */
+
+
+
   // 화면 넓이에 따라 1/2개월 자동 전환
   useEffect(() => {
     const recalc = () => {
@@ -181,19 +254,35 @@ function BookingPanel({
                 className="border rounded bg-white shadow mt-1 p-2 d-inline-block"
                 style={{ zIndex: 2000, width: "max-content", maxWidth: "90vw" }}>
                 <DatePicker
-          
                   inline
                   locale={ko}
                   selectsRange
                   startDate={checkIn}
                   endDate={checkOut}
                   onChange={(v) => {
-                    setRange(v as [Date | null, Date | null]);
+                    const [start, end] = v as [Date | null, Date | null];
+
+                    // 체크인만 고른 순간: 다음 차단일 - 1일을 maxEndDate로
+                    if (start && !end) {
+                      const nb = nextBlockedAfter(start);
+                      setMaxEndDate(nb ? addDays(nb, -1) : null);
+                      setRange([start, null]);
+                      return;
+                    }
+
+                    // 체크인 + 체크아웃 선택 시: maxEndDate를 넘기면 잘라냄
+                    if (start && end && maxEndDate && end > maxEndDate) {
+                      setRange([start, maxEndDate]);
+                      return;
+                    }
+
+                    setRange([start, end]);
                   }}
                   minDate={new Date()}
                   monthsShown={monthsShown}
                   dateFormat="yyyy.MM.dd"
                   excludeDates={excludeDates}
+                  filterDate={filterDate}
                 />
                 <div className="text-end mt-2">
                   <Button className="btn btn-dark" size="sm" variant="primary" onClick={() => setOpenCalendar(false)}>확인</Button>
@@ -204,11 +293,11 @@ function BookingPanel({
             {/* 인원 선택 */}
             {openGuest && (
               <div className="position-absolute bg-white border rounded p-3 shadow-lg mt-1"
-                style={{ zIndex : 2000, right : 0, minWidth : "15.7rem" }}>
+                style={{ zIndex: 2000, right: 0, minWidth: "15.7rem" }}>
                 {[
-                  { label : "성인", count: adultCount, setCount: setAdultCount, min: 1 },
-                  { label : "어린이", count: childCount, setCount: setChildCount, min: 0 },
-                  { label : "유아", count: infantCount, setCount: setInfantCount, min: 0 },
+                  { label: "성인", count: adultCount, setCount: setAdultCount, min: 1 },
+                  { label: "어린이", count: childCount, setCount: setChildCount, min: 0 },
+                  { label: "유아", count: infantCount, setCount: setInfantCount, min: 0 },
                 ].map((item) => (
                   <div key={item.label} className="d-flex align-items-center justify-content-between mb-2">
                     <span>{item.label}</span>
@@ -248,17 +337,18 @@ function BookingPanel({
         {/* 객실 정보 및 가격 표시 */}
         {selectedRoom && (
           <div className="mb-4 d-flex align-items-start">
-            {/* 썸네일 이미지 컨테이너 */}
             <div className="rounded me-3 bg-light d-flex justify-content-center align-items-center"
               style={{ width: "5rem", height: "5rem" }}>
-              <i className="bi bi-house-door text-muted fs-4"></i>
+                <img src={roomImageUrl} alt={selectedRoom.name} style={{ width: "5rem", height: "5rem", objectFit: "cover", borderRadius: "8px" }}
+      className="fs-4"/>
+
             </div>
 
             <div className="flex-grow-1">
-                <div className="fw-bold mb-1" style={{fontSize : "1.13rem"}}>{selectedRoom.name}</div>
-                <p className="text-muted mb-2" style={{fontSize : "0.8rem"}}>
-                    기본형 / 최대 {selectedRoom.maxGuest}명
-                </p>
+              <div className="fw-bold mb-1" style={{ fontSize: "1.13rem" }}>{selectedRoom.name}</div>
+              <p className="text-muted mb-2" style={{ fontSize: "0.8rem" }}>
+                기본형 / 최대 {selectedRoom.maxGuest}명
+              </p>
 
               <div className="d-flex align-items-center">
                 <span className="fw-bold text-primary" style={{ fontSize: "1.1rem" }}>
@@ -271,15 +361,15 @@ function BookingPanel({
 
         {/* 해당 숙소에 등록된 객실이 존재하지 않는다면 해당 내용 표시 */}
         {rooms.length === 0 && (
-            <div className="mb-4 text-center p-3 border rounded bg-light">
-                등록된 객실이 없습니다
-            </div>
+          <div className="mb-4 text-center p-3 border rounded bg-light">
+            등록된 객실이 없습니다
+          </div>
         )}
 
         {/* 객실 선택 커스텀 드롭다운 */}
         {rooms.length > 1 && showRoomSelect && (
           <div className="mb-4" ref={roomWrapRef}>
-            <p className="fw-bold mb-2" style={{fontSize : "1.0rem"}}>객실 선택</p>
+            <p className="fw-bold mb-2" style={{ fontSize: "1.0rem" }}>객실 선택</p>
             <div className="border rounded position-relative">
               <div className="p-2 d-flex justify-content-between align-items-center cursor-pointer"
                 onClick={() => setOpenRoomDropdown(v => !v)}>
@@ -314,7 +404,7 @@ function BookingPanel({
             </div>
             <div className="d-flex justify-content-between align-items-end mt-3">
               <span className="fs-5 fw-bold">총액</span>
-                            <span className="text-dark fw-bolder" style={{ fontSize: "1.5rem" }}>
+              <span className="text-dark fw-bolder" style={{ fontSize: "1.5rem" }}>
                 ₩{formatCurrency(totalPrice)}
               </span>
             </div>
@@ -322,7 +412,7 @@ function BookingPanel({
         )}
 
         {/* 예약 버튼 */}
-        <Button className="w-100 py-3 mt-2 fw-bold" variant="dark" style={{fontSize : "1.1rem"}}
+        <Button className="w-100 py-3 mt-2 fw-bold" variant="dark" style={{ fontSize: "1.1rem" }}
           onClick={() => {
             if (selectedRoom && checkIn && checkOut && nights > 0) {
               onReserve?.({

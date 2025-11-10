@@ -10,6 +10,8 @@ import { Card, Col, Container, Offcanvas, Row, Spinner } from "react-bootstrap";
 import FloatingReserveBubble from "../components/FloatingReserveBubble";
 import '../css/room.css';
 import AccommodationInfo from "../components/AccommodationInfo";
+import { getImageUrl } from "../../../global/hooks/getImageUrl";
+
 
 function RoomDetail() {
 
@@ -65,6 +67,8 @@ function RoomDetail() {
     featchRoom();
   }, [roomId]);
 
+  const roomImageUrl = getImageUrl("ROOM", Number(roomId));
+
   // RoomDetailDto -> AccommodationRoomListType 변환 (타입 완전 매칭)
   const roomForBooking: AccommodationRoomListType | null = roomDetail
     ? {
@@ -72,7 +76,7 @@ function RoomDetail() {
       name: roomDetail.name,
       price: roomDetail.price,
 
-      // 👇 AccommodationRoomListType 이 요구하는 필수 필드들 채우기
+      // AccommodationRoomListType 이 요구하는 필수 필드들 채우기
       maxAdult: roomDetail.maxAdult ?? 0,
       maxChildren: roomDetail.maxChildren ?? 0,
       maxInfant: roomDetail.maxInfant ?? 0,
@@ -112,7 +116,7 @@ function RoomDetail() {
 
       <Row>
         <Col lg={8}>
-          <h4>{roomDetail.name}</h4>
+          <h4 className="fw-bold">{roomDetail.name}</h4>
           <section className="md-4">
             <div className="room-rule-box">
               <h5>객실 규정</h5>
@@ -125,6 +129,17 @@ function RoomDetail() {
             <div className="room-price">
               ₩{roomDetail.price}
             </div>
+
+            <section className="mt-4">
+              <h3 className="h5 mb-3">공간정보</h3>
+              <ul className="room-rules d-flex flex-wrap gap-5">
+                <li>객실 면적 {roomDetail.area}㎡</li>
+                {roomDetail.singleBed > 0 && <li>싱글베드 {roomDetail.singleBed} 개</li>}
+                {roomDetail.doubleBed > 0 && <li>더블베드 {roomDetail.doubleBed} 개</li>}
+                {roomDetail.queenBed > 0 && <li>퀸베드 {roomDetail.queenBed} 개</li>}
+                {roomDetail.kingBed > 0 && <li>킹베드 {roomDetail.kingBed} 개</li>}
+              </ul>
+            </section>
 
             <section className="mt-4">
               <h3 className="h5 mb-3">편의시설</h3>
@@ -151,6 +166,10 @@ function RoomDetail() {
                 </div>
               </div>
             </section>
+            <hr />
+            <div className="room-description my-4" dangerouslySetInnerHTML={{ __html: roomDetail.description }} />
+            <hr />
+
           </section>
 
           <AccommodationInfo />
@@ -165,6 +184,7 @@ function RoomDetail() {
               showRoomSelect={false}
               disabledDates={blockedDates}
               onReserve={handleReserve}
+              imageUrl={roomImageUrl}
             />
           </div>
         </Col>
@@ -197,6 +217,7 @@ function RoomDetail() {
             handleReserve();
           }}
           disabledDates={blockedDates}
+          imageUrl={roomImageUrl}
         />
       </Offcanvas.Body>
     </Offcanvas>

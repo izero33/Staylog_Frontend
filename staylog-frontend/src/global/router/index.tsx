@@ -40,6 +40,7 @@ import Home2 from "../pages/Home2";
 import AccommodationReviewList from "../../domain/accommodation/pages/AccommodationReviewList";
 import AdminAccommodationRegisterPage from "../../domain/admin/pages/AdminAccommodationRegisterPage";
 import AdminRoomRegisterPage from "../../domain/admin/pages/AdminRoomRegisterPage";
+import AccommodationDetail2 from "../../domain/accommodation/pages/AccommodationDetail2";
 
 
 

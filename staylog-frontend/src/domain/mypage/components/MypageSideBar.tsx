@@ -1,15 +1,13 @@
 // MypageSideBar.tsx
 import { Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-interface SideBarProps {
-   activeMenu: string;
-   setActiveMenu: (key: string) => void;
-}
-
-function MypageSideBar({ activeMenu, setActiveMenu }: SideBarProps) {
+function MypageSideBar() {
    const navigate = useNavigate();
+   const location = useLocation(); // 현재 위치(URL) 정보를 가져옴
 
+   // 현재 URL 경로에서 마지막 부분을 활성 메뉴 키로 사용 (예: /mypage/reviews -> reviews)
+   const activeMenu = location.pathname.split("/").pop() || "member";
 
    const menus = [
       { key: "member", label: "회원 정보" },
@@ -18,29 +16,26 @@ function MypageSideBar({ activeMenu, setActiveMenu }: SideBarProps) {
    ];
 
    const handleClick = (key: string) => {
-   setActiveMenu(key);               // 상태 변경
-   navigate(`/mypage/${key}`);       // URL 변경
+      navigate(`/mypage/${key}`);
    };
 
    return (
       <div className="d-flex flex-column">
          <h5 className="fw-bold text-center py-3 border-bottom mb-0">마이페이지</h5>
-            {menus.map((menu) => (
-               <Button
-                  key={menu.key}
-                  variant={activeMenu === menu.key ? "dark" : "light"}
-                  className={`text-start py-3 px-4 border-bottom rounded-0 ${
-                     activeMenu === menu.key ? "text-white" : "text-dark"
-                  }`}
-                  onClick={() => handleClick(menu.key)}
-               >
-                  {menu.label}
-               </Button>
+         {menus.map((menu) => (
+            <Button
+               key={menu.key}
+               variant={activeMenu === menu.key ? "dark" : "light"}
+               className={`text-start py-3 px-4 border-bottom rounded-0 ${
+                  activeMenu === menu.key ? "text-white" : "text-dark"
+               }`}
+               onClick={() => handleClick(menu.key)}
+            >
+               {menu.label}
+            </Button>
          ))}
       </div>
-
    );
 }
 
 export default MypageSideBar;
-

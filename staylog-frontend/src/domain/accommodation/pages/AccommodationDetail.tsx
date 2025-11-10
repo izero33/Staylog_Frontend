@@ -257,13 +257,17 @@ function AccommodationDetail() {
                             {/* 해당 숙소 리뷰 목록 컴포넌트 */}
                             <div className="accommodationReviewList mb-4" id="reviewList">
                                 <h5 className="mb-0">
-                                    방문자 리뷰 <small style={{ fontSize: "0.8rem", color: "rgba(101, 101, 101, 1)" }}>({data.reviews?.length || 0})</small>
+                                    방문자 리뷰 
+                                    <small style={{ fontSize: "0.8rem", color: "rgba(101, 101, 101, 1)" }}>
+                                        ({data.reviews?.length || 0})
+                                    </small>
                                 </h5>
+
                                 {data.reviews && data.reviews.length > 0 ? (
                                     <ReviewList reviews={data.reviews.slice(0, 7)} accommodationId={Number(accommodationId)} />
                                 ) : (
                                     <div className="placeholder-box mt-3"><p>등록된 리뷰가 없습니다</p></div>
-                                )}  
+                                )}
                             </div>
 
                             {/* 숙소 위치 */}

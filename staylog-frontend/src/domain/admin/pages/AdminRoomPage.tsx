@@ -34,6 +34,9 @@ function AdminRoomPage() {
     const location = useLocation(); // 현재 위치 훅
     const [rooms, setRooms] = useState<AdminRoomListData[]>([]);
 
+    // location.state에서 전달된 숙소 이름 가져오기
+    const accommodationName = location.state?.accommodationName;
+
     // location.state에서 전달된 검색어 상태 초기화
     const [searchParams, setSearchParams] = useState<AdminRoomSearchParams>(
         location.state?.searchParams || {
@@ -161,7 +164,7 @@ function AdminRoomPage() {
                         title="숙소 상세보기로 이동"
                         onClick={() => handleGoToAccommDetail(accommodationId)}
                         style={{ cursor: 'pointer', textDecoration: 'underline' }}>
-                        {rooms[0]?.accommodationName}
+                        {accommodationName}
                     </span> 객실 목록
                 </h3>
                 <button className="btn btn-outline-light text-dark mt-2 fw-bold" style={{ backgroundColor: '#ebebebff' }} onClick={() => handleToAddPage(accommodationId)}>

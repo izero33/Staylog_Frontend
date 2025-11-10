@@ -120,8 +120,8 @@ function AdminAccommodationListPage() {
     };
 
     //객실 목록 페이지 이동 핸들러
-    const handleGoToRooms = (accommodationId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}/rooms`);
+    const handleGoToRooms = (accommodationId: number, accommodationName: string) => {
+        navigate(`/admin/accommodations/${accommodationId}/rooms`,  { state: { accommodationName } });
     };
 
     //숙소 등록 페이지 이동 핸들러
@@ -340,7 +340,7 @@ function AdminAccommodationListPage() {
                                     <button
                                         className="btn btn-sm btn-outline-primary me-1"
                                         title="객실 목록 보기"
-                                        onClick={() => handleGoToRooms(item.accommodationId!)} // 이동 함수 연결
+                                        onClick={() => handleGoToRooms(item.accommodationId!, item.name!)} // 이동 함수 연결
                                     >
                                         <i className="bi bi-list"></i>
                                     </button>

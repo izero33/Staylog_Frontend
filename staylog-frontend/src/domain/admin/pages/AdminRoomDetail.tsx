@@ -251,10 +251,11 @@ function AdminRoomDetail() {
                             />
                         </div>
                     </Card>
-                    <h4 className="mb-3">{data.name}</h4>
-                    <p className="mb-4" dangerouslySetInnerHTML={{ __html: data.description }} />
+                    <h4 className="fw-bold">{data.name}</h4>
 
                     <section className="md-4">
+                        <div className="room-description my-4" dangerouslySetInnerHTML={{ __html: data.description }} />
+
                         <div className="room-rule-box">
                             <h5>객실 규정</h5>
                             <ul className="room-rules">

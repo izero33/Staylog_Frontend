@@ -96,7 +96,7 @@ function AdminAccommodationDetail() {
 
     //객실 목록 페이지 이동 핸들러
     const handleGoToRooms = (accommodationId: number) => {
-        navigate(`/admin/accommodations/${accommodationId}/rooms`);
+        navigate(`/admin/accommodations/${accommodationId}/rooms`, { state: { accommodationName: data.name } });
     };
 
     // 숙소 목록 페이지 이동 핸들러

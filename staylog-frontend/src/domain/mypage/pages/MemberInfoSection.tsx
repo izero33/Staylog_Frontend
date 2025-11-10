@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Form, Button, Image, InputGroup, Fade } from "react-bootstrap";
-import { fetchMemberInfo, updateMemberInfo } from "../api/mypageApi";
+import { fetchMemberInfo, updateMemberInfo, uploadProfileImage } from "../api/mypageApi";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import useGetNicknameFromToken from "../../auth/hooks/useGetNicknameFromToken";
 import type { MemberInfo } from "../types/mypageTypes";
@@ -11,9 +11,7 @@ import duplicateCheck from "../../auth/utils/duplicateCheck";
 import AlertModal from "../components/AlertModal";
 import sendEmail from "../../auth/utils/sendEmail";
 import mailCertify from "../../auth/utils/mailCertify";
-import { uploadProfileImage } from "../api/mypageApi";
 import { REGEX_PASSWORD } from "../../../global/constants/Validation";
-import ImageManager from "../../../global/components/ImageManager";
 
 
 
@@ -74,6 +72,8 @@ function MemberInfoSection() {
         fetchMemberInfo(userId)
             .then((data) => {
             setMember(data);
+            console.log("????" + data.profileImage);
+            
             if (data.birthDate) {
                 setBirthDate (data.birthDate.substring(0, 10));
             }
@@ -633,7 +633,7 @@ function MemberInfoSection() {
                     style={{ width: "130px", height: "130px" }}>
                     <Image 
                         onClick={() => document.getElementById("formFile")?.click()} 
-                        src={previewUrl || member.profileImageUrl || "https://cdn-icons-png.flaticon.com/512/847/847969.png"} alt="profile image" roundedCircle fluid/>
+                        src={previewUrl || member.profileImage || "https://cdn-icons-png.flaticon.com/512/847/847969.png"} alt="profile image" roundedCircle fluid/>
                 </div>
                 <p className="text-muted mt-2 mb-1">프로필 사진</p>
 

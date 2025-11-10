@@ -20,12 +20,13 @@ export const uploadProfileImage = async (file: File, userId: number): Promise<st
   const formData = new FormData();
   formData.append("file", file);
   formData.append("targetId", String(userId)); // 백엔드 @RequestParam("userId")와 일치
-  formData.append("targetType", "PROFILE")
-
-  const res = await api.put("/v1/images", formData, {
+  formData.append("targetType", "PROFILE");
+  
+  const res = await api.post("/v1/profile", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-
+  console.log(res);
+  
   return res; // return res.data.url; 서버에서 반환된 이미지 URL. SuccessResponse<String> 형태로 data 안에 실제 URL 존재
 };
 

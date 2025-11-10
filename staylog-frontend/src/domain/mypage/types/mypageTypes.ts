@@ -7,7 +7,7 @@ export interface MemberInfo {
    name: string; // 실명
    email: string; // 이메일
    phone?: string; // 전화번호 (선택적 필드)
-   profileImageUrl?: string; // 프로필 이미지 URL (선택적 필드로 추가)
+   profileImage?: string; // 프로필 이미지 URL (선택적 필드로 추가)
    birthDate?: string; // 생년월일 (YYYY-MM-DD 형식, 선택적 필드)
    gender?: 'M' | 'F' | 'O'; // 성별 (선택적 필드)
    createdAt: string; // 회원가입일

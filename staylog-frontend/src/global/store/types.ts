@@ -26,6 +26,7 @@ export interface RootState {
    commonCodes: CommonCodeGroupResponse | null; // 공통코드 전역 상태
    notiList: responseNotificationsType[]; // 알림 목록
    notiUnreadCount: number; // 안읽은 알림 수
+   getNotiData: boolean; // 알림 데이터를 요청했는지 유무
 }
 
 // 로그인 시 유저 정보를 store에 저장하는 용도의 액션
@@ -99,6 +100,11 @@ export interface DeleteNotificationAction {
    payload: number
 }
 
+// 특정 유저의 모든 알림 삭제
+export interface DeleteNotificationAllAction {
+   type: 'DELETE_NOTIFICATION_ALL'
+}
+
 
 
 export type AppAction =
@@ -113,5 +119,6 @@ export type AppAction =
    | IncrementUnreadCountAction
    | MarkAllAsReadAction
    | DeleteNotificationAction
+   | DeleteNotificationAllAction
    | MarkOneAsReadAction
    | UpdateNicknameAction; //사람아이콘 왼쪽의 닉네임 업데이트 추가

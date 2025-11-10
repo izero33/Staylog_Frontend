@@ -16,7 +16,7 @@ export default function JournalCard({ board }: { board: any }) {
     <Card
       className="shadow-sm h-100 hover-card border-0"
       style={{ cursor: "pointer", transition: "transform 0.2s ease" }}
-      onClick={() => navigate(`/journal/${board.boardId}`)}
+      onClick={() => navigate(`/board/${board.boardId}`)}
       onMouseEnter={(e) =>
         (e.currentTarget.style.transform = "translateY(-4px)")
       }

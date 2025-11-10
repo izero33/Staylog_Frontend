@@ -180,7 +180,7 @@ function BoardForm() {
             // 게시글 수정 완료 후 이미지 업로드 트리거
             setImageUploadTrigger(prev => prev + 1);
             alert("게시글이 성공적으로 수정되었습니다.");
-            navigate(`/${boardType}/${boardId}`);
+            navigate(`/board/${boardId}`);
             
           } else {
             
@@ -192,7 +192,7 @@ function BoardForm() {
 
             alert("게시글이 성공적으로 등록되었습니다.");
             
-            navigate(`/${boardType}/${res.boardId}`);
+            navigate(`/board/${res.boardId}`);
           }
 
         }catch(err) {

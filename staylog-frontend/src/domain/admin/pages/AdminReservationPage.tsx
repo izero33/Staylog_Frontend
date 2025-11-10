@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { type AdminReservation } from "../types/AdminReservationTypes";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { formatKST } from "../../../global/utils/date";
 import api from "../../../global/api";
 import AdminReservationDetailModal from "../components/AdminReservationDetailModal";
@@ -8,8 +8,9 @@ import AdminStatusPill from "../components/AdminStatusPill";
 import useCommonCodeSelector from "../../common/hooks/useCommonCodeSelector";
 import type { CommonCodeDto } from "../../common/types";
 import Pagination from "../../../global/components/Pagination";
-import '../css/AdminTable.css';
+import "../css/AdminTable.css";
 import type { PageResponse } from "../../../global/types/Paginationtypes";
+import AdminMonthlyStatsChart from "../components/AdminMonthlyStatsChart";
 
 export default function AdminReservationPage() {
   // 페이지 상태
@@ -56,6 +57,11 @@ export default function AdminReservationPage() {
   };
   const [stats, setStats] = useState<AdminMonthlyStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
+
+  // 그래프 모달
+  const [chartOpen, setChartOpen] = useState(false);
+  const openChart = useCallback(() => setChartOpen(true), []);
+  const closeChart = useCallback(() => setChartOpen(false), []);
 
   // 월간 통계 조회
   useEffect(() => {
@@ -122,20 +128,32 @@ export default function AdminReservationPage() {
       {/* 월간 요약 카드 */}
       <div className="row g-3 mt-2">
         {[
-          { label: "이번 달 총 예약", value: stats?.totalCount },
-          { label: "확정", value: stats?.confirmedCount },
-          { label: "취소", value: stats?.canceledCount },
-          { label: "이번 달 매출", value: `${(stats?.monthlyRevenue ?? 0).toLocaleString("ko-KR")}원` },
-        ].map((item, idx) => (
-          <div key={idx} className="col-12 col-sm-6 col-xl-3">
-            <div className="card shadow-sm h-100">
-              <div className="card-body">
-                <div className="text-muted small">{item.label}</div>
-                <div className="fs-4">{statsLoading ? "—" : item.value}</div>
+          { key: "total", label: "이번 달 총 예약", value: stats?.totalCount },
+          { key: "confirmed", label: "확정", value: stats?.confirmedCount },
+          { key: "canceled", label: "취소", value: stats?.canceledCount },
+          { key: "revenue", label: "이번 달 매출", value: `${(stats?.monthlyRevenue ?? 0).toLocaleString("ko-KR")}원` },
+        ].map((item, idx) => {
+          const isRevenue = item.key === "revenue";
+          return (
+            <div key={idx} className="col-12 col-sm-6 col-xl-3">
+              <div
+                className={`card shadow-sm h-100 ${isRevenue ? "border-primary" : ""}`}
+                style={isRevenue ? { cursor: statsLoading ? "default" : "pointer" } : {}}
+                onClick={isRevenue && !statsLoading ? openChart : undefined}
+              >
+                <div className="card-body">
+                  <div className="text-muted small">{item.label}</div>
+                  <div className="fs-4">{statsLoading ? "—" : item.value}</div>
+                  {isRevenue && !statsLoading && (
+                    <div className="text-primary small mt-1">
+                      클릭하여 확정/취소 그래프 보기
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* 요약 정보 */}
@@ -173,7 +191,11 @@ export default function AdminReservationPage() {
               </thead>
               <tbody>
                 {reservations.length === 0 ? (
-                  <tr><td colSpan={8} className="text-center py-5 text-muted">등록된 예약이 없습니다.</td></tr>
+                  <tr>
+                    <td colSpan={8} className="text-center py-5 text-muted">
+                      등록된 예약이 없습니다.
+                    </td>
+                  </tr>
                 ) : (
                   reservations.map((res, index) => {
                     const view = getStatusView(res.status, res.statusName, res.statusColor);
@@ -193,7 +215,9 @@ export default function AdminReservationPage() {
                         <td>{res.finalAmount?.toLocaleString("ko-KR") ?? "-"}원</td>
                         <td>{formatKST(res.checkIn)}</td>
                         <td>{formatKST(res.checkOut)}</td>
-                        <td><AdminStatusPill label={view.label} bgColor={view.color} /></td>
+                        <td>
+                          <AdminStatusPill label={view.label} bgColor={view.color} />
+                        </td>
                       </tr>
                     );
                   })
@@ -218,15 +242,22 @@ export default function AdminReservationPage() {
                         >
                           {res.userName ?? res.guestName ?? "—"}
                         </button>
-                        <div className="text-muted small">{res.accommodationName ?? res.roomName ?? "—"}</div>
+                        <div className="text-muted small">
+                          {res.accommodationName ?? res.roomName ?? "—"}
+                        </div>
                       </div>
-                      <span className="badge" style={{ backgroundColor: view.color, color: "#fff" }}>
+                      <span
+                        className="badge"
+                        style={{ backgroundColor: view.color, color: "#fff" }}
+                      >
                         {view.label}
                       </span>
                     </div>
                     <div className="mt-2 small text-muted">
-                      예약일 {formatKST(res.createdAt)}<br />
-                      체크인 {formatKST(res.checkIn)} / 체크아웃 {formatKST(res.checkOut)}
+                      예약일 {formatKST(res.createdAt)}
+                      <br />
+                      체크인 {formatKST(res.checkIn)} / 체크아웃{" "}
+                      {formatKST(res.checkOut)}
                     </div>
                     <div className="mt-3 fw-semibold text-end">
                       {res.finalAmount?.toLocaleString("ko-KR") ?? "-"}원
@@ -248,6 +279,15 @@ export default function AdminReservationPage() {
         bookingId={targetBookingId}
         onClose={closeDetail}
       />
+
+      {/* 매출 차트 모달 */}
+      <AdminMonthlyStatsChart
+        show={chartOpen}
+        onHide={closeChart}
+        confirmedCount={stats?.confirmedCount ?? 0}
+        canceledCount={stats?.canceledCount ?? 0}
+      />
+
     </div>
   );
 }

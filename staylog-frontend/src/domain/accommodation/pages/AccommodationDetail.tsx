@@ -240,21 +240,8 @@ function AccommodationDetail() {
                             {/* 숙소 상세 소개 */}
                             <div className="accommodationDetail mb-5" id="summary">
                                 <h5 className="mb-3">숙소 소개</h5>
-                                <div className="detailImages">
-                                    <Image
-                                        src="https://placehold.co/100x500/F0F3F7/99AAB5"
-                                        className="mb-3"
-                                        fluid
-                                        style={{ objectFit: "cover", width: "100%", height: "31rem" }}
-                                    />
-                                    <Image
-                                        src="https://placehold.co/100x500/F0F3F7/99AAB5"
-                                        className="mb-3"
-                                        fluid
-                                        style={{ objectFit: "cover", width: "100%", height: "31rem" }}
-                                    />
-                                </div>
-                                <p style={{fontSize : "0.85rem"}}>{data.description}</p>
+                                {/* Quill 에디터로 등록한 가진과 내용을 출력 (html 요소 빼고) */}
+                                <p dangerouslySetInnerHTML={{ __html: data.description }}/>
                             </div>
 
                             {/* 해당 숙소 객실 목록 컴포넌트 */}
@@ -275,7 +262,7 @@ function AccommodationDetail() {
                                 {data.reviews && data.reviews.length > 0 ? (
                                     <ReviewList reviews={data.reviews.slice(0, 7)} accommodationId={Number(accommodationId)} />
                                 ) : (
-                                    <div className="placeholder-box"><p>등록된 리뷰가 없습니다</p></div>
+                                    <div className="placeholder-box mt-3"><p>등록된 리뷰가 없습니다</p></div>
                                 )}  
                             </div>
 

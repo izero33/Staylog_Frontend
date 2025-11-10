@@ -9,7 +9,6 @@ interface RoomListProps {
 
 const RoomList = ({ rooms, onSelect }: RoomListProps) => {
 
-  
   return <>
     <div>
       {rooms.map(room => (

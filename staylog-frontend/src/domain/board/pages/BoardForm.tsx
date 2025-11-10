@@ -11,11 +11,13 @@ import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 
-import QuillEditor from "../components/QuillEditor";
+import QuillEditor from '../../../global/components/QuillEditor';
 
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../global/store/types";
 import RegionModal from "../components/RegionModal";
+import { Col, Row } from "react-bootstrap";
+import ImageManager from "../../../global/components/ImageManager";
 
 
 
@@ -23,20 +25,32 @@ import RegionModal from "../components/RegionModal";
 function BoardForm() {
 
     // 게시판 카테고리 boradType
-    const { boardType, boardId } = useParams<{ boardType: string; boardId: number }>();
+    const { boardType, boardId } = useParams<{ boardType: string; boardId?: string }>();
     
     // boardId 있으면 isEdit 수정모드
     const isEdit = !!boardId;
     console.log(boardType); // "review"
     console.log(boardId);   // "145"
 
+    // USER 상태값 관리
+    const userId = useSelector((state: RootState) => state.userInfo?.userId)
+       
+    // ImageManager 관련 상태
+    const [resetTrigger, setResetTrigger] = useState(0);
+    const [imageUploadTrigger, setImageUploadTrigger] = useState(0);
+    const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
-    
+    const handleImageUploadComplete = () => {
+      alert("이미지 업로드 완료!");
+    };
+  
+    const handleImageUploadError = (errMsg: string) => {
+      console.error("이미지 업로드 오류:", errMsg);
+      setImageUploadError(errMsg);
+    };
 
     // 예약내역 상태값 관리
     const [bookings, setBookings] = useState<any[]>([]);
-
-    // 예약내역 모달 상태값 관리
     const [showModal, setShowModal] = useState<boolean>(false);
 
     const apiBoardType =
@@ -68,8 +82,6 @@ function BoardForm() {
       createdAt: "",          // 작성일
     });
 
-    // USER 상태값 관리
-    const userId = useSelector((state: RootState) => state.userInfo?.userId)
     
     useEffect(() => {
       if (userId == null) return;
@@ -152,6 +164,10 @@ function BoardForm() {
         alert("예약 내역을 선택해주세요.");
         return;
         }
+        if (boardType === "journal" && !selectedRegion) {
+          alert("지역을 선택해주세요.");
+          return;
+        }
         if (boardType === "review" && !dto.rating) {
         alert("별점을 선택해주세요.");
         return;
@@ -161,13 +177,19 @@ function BoardForm() {
         try {
           if (isEdit) {
             await api.put(`/v1/boards/${boardId}`, dto);
+            // 게시글 수정 완료 후 이미지 업로드 트리거
+            setImageUploadTrigger(prev => prev + 1);
             alert("게시글이 성공적으로 수정되었습니다.");
             navigate(`/${boardType}/${boardId}`);
-            return;
+            
           } else {
-
-            console.log("📦 서버로 전송되는 dto:", dto);
+            
             const res = await api.post("/v1/boards", dto);
+            const newBoardId = res.boardId;
+            setDto(prev => ({ ...prev, boardId: newBoardId }));
+            // 이미지 업로드 트리거
+            setImageUploadTrigger(prev => prev + 1);
+
             alert("게시글이 성공적으로 등록되었습니다.");
             
             navigate(`/${boardType}/${res.boardId}`);
@@ -185,117 +207,148 @@ function BoardForm() {
    
 
     return <>
-        <Container className="py-5">
-          <Card className="shadow-sm border-0 rounded-4 p-4">
-            <h3 className="fw-bold text-center mb-4">게시글 작성하기</h3>
+        <Container className="py-1">
+          <Card className="shadow-sm border-0 rounded-4 p-5">
+            <h3 className="fw-bold text-center my-4">게시글 작성하기</h3>
     
             <Form onSubmit={handleSubmit}>
-              {/* 제목 */}
-              <Form.Group className="mb-4">
-                <Form.Label className="fw-semibold">제목</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="제목을 입력하세요..."
-                  value={dto.title}
-                  onChange={handleTitleChange}
-                  className="py-2"
-                />
-              </Form.Group>
-    
-              {/* 예약내역 선택 (리뷰 전용) */}
-              {boardType === "review" && (
-                <Form.Group className="mb-4">
-                  <Form.Label className="fw-semibold">예약 내역</Form.Label>
-                  <div>
-                  {isEdit ? (
-                    <div className="p-2 border rounded-3 bg-light text-muted">
-                      {dto.bookingId
-                        ? `${dto.accommodationName} (${dto.checkIn} ~ ${dto.checkOut})`
-                        : "예약 내역 없음"}
-                    </div>
-                  ) : (
-                    <Button
-                      variant="outline-primary"
-                      className="rounded-3"
-                      onClick={() => setShowModal(true)}
-                    >
-                      {dto.bookingId
-                        ? `${dto.accommodationName} (${dto.checkIn} ~ ${dto.checkOut})`
-                        : "예약 내역 선택"}
-                    </Button>
-                  )}
 
-                  </div>
-    
-                  <BookingModal
-                    show={showModal}
-                    onHide={() => setShowModal(false)}
-                    bookings={bookings}
-                    onSelect={(selectedBooking) => {
-                      setDto((prev) => ({
-                        ...prev,
-                        bookingId: selectedBooking.bookingId,
-                        accommodationId: selectedBooking.accommodationId,
-                        accommodationName: selectedBooking.accommodationName,
-                        regionCode: selectedBooking.regionCode,
-                        checkIn: selectedBooking.checkIn,
-                        checkOut: selectedBooking.checkOut,
-                      }));
-                      setShowModal(false);
-                    }}
+            {/* 제목 + (리뷰: 예약내역 / 저널: 지역선택) */}
+            <Row className="align-items-end my-4">
+              {/* 제목 */}
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">제목</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="제목을 입력하세요..."
+                    value={dto.title}
+                    onChange={handleTitleChange}
+                    className="py-2"
                   />
                 </Form.Group>
-              )}
+              </Col>
 
+              {/* 오른쪽 영역 */}
+              <Col md={6}>
+                {boardType === "review" ? (
+                  // === 리뷰 게시판: 예약내역 ===
+                  <Form.Group>
+                    <Form.Label className="fw-semibold">예약 내역</Form.Label>
+                    {isEdit ? (
+                      <div className="p-2 border rounded-3 bg-light text-muted">
+                        {dto.bookingId
+                          ? `${dto.accommodationName} (${dto.checkIn} ~ ${dto.checkOut})`
+                          : "예약 내역 없음"}
+                      </div>
+                    ) : (
+                      <Button
+                        variant="outline-primary"
+                        className="rounded-3 w-100"
+                        onClick={() => setShowModal(true)}
+                      >
+                        {dto.bookingId
+                          ? `${dto.accommodationName} (${dto.checkIn} ~ ${dto.checkOut})`
+                          : "예약 내역 선택"}
+                      </Button>
+                    )}
 
-              {/* 지역 선택 */}
-              {boardType === "journal" && (
-                <Form.Group>
-                <Form.Label className="fw-semibold">지역 선택</Form.Label>
-                <div>
-                <Button
-                variant="outline-primary"
-                onClick={() => setShowRegionModal(true)}
-                >                    
-                    {selectedRegion === "전체" ? "지역 선택" : selectedRegion}
-                
-                </Button>
-                </div>
-            
-                <RegionModal
-                    show={showRegionModal}
-                    onHide={() => setShowRegionModal(false)}
-                    selectedRegion={selectedRegion}
-                    setSelectedRegion={(regionName, regionCode)=>{
-                        setSelectedRegion(regionName);
-                        setDto(prev =>({
-                            ...prev,
-                            regionCode: regionCode,
-                            regionName: regionName
-
+                    {/* 예약내역 모달 */}
+                    <BookingModal
+                      show={showModal}
+                      onHide={() => setShowModal(false)}
+                      bookings={bookings}
+                      onSelect={(selectedBooking) => {
+                        setDto((prev) => ({
+                          ...prev,
+                          bookingId: selectedBooking.bookingId,
+                          accommodationId: selectedBooking.accommodationId,
+                          accommodationName: selectedBooking.accommodationName,
+                          regionCode: selectedBooking.regionCode,
+                          checkIn: selectedBooking.checkIn,
+                          checkOut: selectedBooking.checkOut,
                         }));
-                    }}
+                        setShowModal(false);
+                      }}
+                    />
+                  </Form.Group>
+                ) : (
+                  // === 저널 게시판: 지역 선택 ===
+                  <Form.Group>
+                    <Form.Label className="fw-semibold">지역 선택</Form.Label>
+                    <Button
+                      variant="outline-primary"
+                      className="rounded-3 w-100"
+                      onClick={() => setShowRegionModal(true)}
+                    >
+                      {selectedRegion === "전체" ? "지역 선택" : selectedRegion}
+                    </Button>
 
-                />
-              </Form.Group>
+                    {/* 지역 모달 */}
+                    <RegionModal
+                      show={showRegionModal}
+                      onHide={() => setShowRegionModal(false)}
+                      selectedRegion={selectedRegion}
+                      setSelectedRegion={(regionName, regionCode) => {
+                        setSelectedRegion(regionName);
+                        setDto((prev) => ({
+                          ...prev,
+                          regionCode,
+                          regionName,
+                        }));
+                      }}
+                    />
+                  </Form.Group>
                 )}
-    
+              </Col>
+            </Row>
+
+
               {/* 내용 */}
               <Form.Group className="mb-4">
-                <Form.Label className="fw-semibold">내용</Form.Label>
-                <div className="border rounded-3 overflow-hidden">
+                <Form.Label className="fw-semibold">내용</Form.Label>                
                   <QuillEditor
+                    key={`board-quill-${isEdit ? boardId : "new"}`}
                     value={dto.content ?? ""}
                     onChange={handleContentChange}
+                    targetType={apiBoardType}
+                    targetId={boardId ? Number(boardId) : 0}
+                    style={{ height: "600px" }}
                   />
-                </div>
-              </Form.Group>
+                </Form.Group>
+                
+                
+                <ImageManager
+                    key={`image-manager-${resetTrigger}`}
+                    targetType={apiBoardType}
+                    targetId={boardId ? Number(boardId) : 0}
+                    isEditMode={true} // 수정 모드 활성화
+                    uploadTrigger={imageUploadTrigger}
+                    onUploadComplete={handleImageUploadComplete}
+                    onUploadError={handleImageUploadError}
+                />
+                {imageUploadError && <p className="text-danger mt-2">{imageUploadError}</p>}
+            
+              
+
     
               {/* 별점 (리뷰 전용) */}
               {boardType === "review" && (
-                <Form.Group className="mb-4">
-                  <Form.Label className="fw-semibold">별점</Form.Label>
-                  <div className="d-flex align-items-center gap-1">
+                <Form.Group className="mb-4 text-center">
+                  <div className="d-flex justify-content-center align-items-center gap-3"
+                    style={{ height: "2.5rem" }}>
+                  <Form.Label className="fw-semibold mb-0"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "0",
+                      transform: "translateY(4px)"
+                    }}
+                  >
+                    별점
+                  </Form.Label>
+
+                    <div className="d-flex align-items-center gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <span
                         key={star}
@@ -308,6 +361,9 @@ function BoardForm() {
                         style={{
                           cursor: "pointer",
                           fontSize: "2rem",
+                          lineHeight: "1",    
+                          display: "flex",
+                          alignItems: "center",                      
                           color:
                             star <= (dto.rating ?? 0)
                               ? "#f8d24f"
@@ -317,24 +373,25 @@ function BoardForm() {
                       >
                         ★
                       </span>
-                    ))}
-                  </div>
+                    ))}    
+                    </div>
+                    </div>         
                 </Form.Group>
+                
               )}
 
-
-                  
+                 
     
-              {/* 버튼 그룹 */}
-              <div className="d-flex justify-content-center mt-4">
-                <Button type="submit" variant="primary" className="px-4 me-4">
+              {/* 등록,취소 버튼 */}
+              <div className="d-flex justify-content-center p-3 gap-3">
+                <Button type="submit" variant="dark" className="w-25 py-2">
                   {isEdit ? "수정" : "등록"}
                 </Button>
                 <Button
                   type="reset"
                   variant="outline-secondary"
-                  className="px-4"
-                  onClick={()=>navigate(`/${boardType}/${boardId}`)}
+                  className="w-25 py-2"
+                  onClick={()=>navigate(`/${boardType}`)}
                 >
                   취소
                 </Button>

@@ -8,6 +8,7 @@ import type { BoardDto } from "../types/boardtypes";
 import Comments from "../components/comment/Comments";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../global/store/types";
+import { Button, Modal } from "react-bootstrap";
 
 
 
@@ -34,9 +35,10 @@ function BoardDetail() {
         const fetchBoard = async() =>{
             try {
                 
-                const apiBoardType =
-                    boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
-                const res = await api.get(`/v1/boards/${boardId}`, {params: userId ? {userId : Number(userId)} : {} });
+                // const apiBoardType =
+                //     boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
+
+                const res = await api.get(`/v1/boards/${boardId}`);
                 console.log("📦 불러온 게시글 상세:", res);
                 
                 setDto(res);
@@ -48,44 +50,8 @@ function BoardDetail() {
         };
 
         fetchBoard();
-    },[boardId, boardType]);
+    },[boardId, boardType, userId]);
 
-    // 게시글 수정 버튼
-    const handleUpdate = async () => {
-
-        const confirmUpdate = window.confirm("게시글을 수정하시겠습니까?");
-
-        if (!confirmUpdate) return; // 취소 누르면 함수 종료
-
-        try {
-
-            navigate(`/form/${boardType}/${boardId}`); // 수정폼으로
-
-        } catch (err) {
-
-            console.error("게시글 수정 실패:", err);
-            alert("게시글 수정 중 오류가 발생했습니다.");
-        }
-    };
-
-
-    // 게시글 삭제 버튼
-    const handleDelete = async () => {
-
-        const confirmDelete = window.confirm("게시글을 삭제하시겠습니까?");
-        if (!confirmDelete) return; // 취소 누르면 함수 종료
-
-        try {
-            await api.delete(`/v1/boards/${boardId}`);
-            alert("게시글이 성공적으로 삭제되었습니다.");
-            navigate(`/${boardType}`); // 삭제 후 목록으로
-        } catch (err) {
-            
-            console.error("게시글 삭제 실패:", err);
-            alert("게시글 삭제 중 오류가 발생했습니다.");
-        }
-    };
-    
     
     // 좋아요 상태값 관리     
     const [liked, setLiked] = useState<boolean>(false);
@@ -147,6 +113,52 @@ function BoardDetail() {
     }
     };
 
+    
+    // 게시글 수정 버튼
+    const handleUpdate = async () => {
+
+        try {
+
+            navigate(`/form/${boardType}/${boardId}`); // 수정폼으로
+
+        } catch (err) {
+
+            console.error("게시글 수정 실패:", err);
+            alert("게시글 수정 중 오류가 발생했습니다.");
+        }
+    };
+
+
+    // 게시글 삭제 버튼
+    const handleDelete = async () => {
+
+        try {
+            await api.delete(`/v1/boards/${boardId}`);
+            alert("게시글이 성공적으로 삭제되었습니다.");
+            navigate(`/${boardType}`); // 삭제 후 목록으로
+        } catch (err) {
+            
+            console.error("게시글 삭제 실패:", err);
+            alert("게시글 삭제 중 오류가 발생했습니다.");
+        }
+    };
+    
+    // 수정,삭제 모달
+    const [modalInfo, setModalInfo] = useState<{
+        isOpen: boolean;
+        type: "update" | "delete" | null;
+    }>({
+        isOpen: false,
+        type: null,
+    });
+
+    const handleClose = () => setModalInfo({ isOpen: false, type: null });
+
+    const handleConfirm = () => {
+        if (modalInfo.type === "update") handleUpdate();
+        else if (modalInfo.type === "delete") handleDelete();
+        handleClose();
+    };
 
 
     return <>
@@ -225,39 +237,66 @@ function BoardDetail() {
     
     
 
-    {/* 게시판목록으로 돌아가기 */}
+    {/* 게시글 수정, 삭제, 목록 버튼 */}
     <div className="d-flex justify-content-end mb-5">
         
     
-    {/* 게시글 수정 */}
+    {/* 게시글 수정, 삭제, 목록 버튼 */}
     { Number(userId) === dto?.userId && (
     
     <div className="d-flex justify-content-end gap-2">
         <button
-            className="btn btn-outline-primary"
-            onClick={handleUpdate}>
+            className="btn btn-outline-secondary"
+            onClick={() => setModalInfo({ isOpen: true, type: "update" })}>
             수정
         </button>
     
         <button
-            className="btn btn-outline-primary"
-            onClick={handleDelete}>
+            className="btn btn-outline-secondary"
+            onClick={() => setModalInfo({ isOpen: true, type: "delete" })}>
             삭제
         </button>
 
+    </div>    
+    )}
         <button
-            className="btn btn-outline-secondary"
+            className="btn btn-outline-secondary ms-2"
             onClick={() => navigate(`/${boardType}`)}>
             목록
         </button>
-    </div>
     
-    )}    
-        
-        
-        
 
-        
+    {/* 수정, 삭제 확인 모달 */}
+    <Modal
+        show={modalInfo.isOpen}
+        onHide={handleClose}
+        centered
+        backdrop="static"
+    >
+
+        <Modal.Body className="text-center py-4">
+            <p className="fw-semibold mb-0">
+            {modalInfo.type === "update"
+                ? "게시글을 수정하시겠습니까?"
+                : "게시글을 삭제하시겠습니까?"}
+            </p>
+        </Modal.Body>
+
+        <Modal.Footer className="d-flex justify-content-center gap-2">
+            <Button
+                variant={modalInfo.type === "delete" ? "danger" : "primary"}
+                onClick={handleConfirm}
+            >
+            {modalInfo.type === "update" ? "수정" : "삭제"}
+            </Button>
+            <Button variant="secondary" onClick={handleClose}>
+                취소
+            </Button>
+        </Modal.Footer>
+    </Modal>
+
+     
+
     </div>
 
     {/* 댓글 */}

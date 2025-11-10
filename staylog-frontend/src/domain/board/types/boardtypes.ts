@@ -18,11 +18,12 @@ export type BoardDto = {
    boardType: string;         // 게시판 타입 (예: 'REVIEW')
    title: string;             // 제목
    content: string;           // 내용
-   rating?: number | 0;    // 평점
-   likesCount?: number;            // 좋아요 수
+   rating?: number | 0;       // 평점
+   likesCount?: number;       // 좋아요 수
    viewsCount?: number;       // 조회수
    createdAt?: string;        // 작성일
 
+   thumbnailUrl?: string;     // 썸네일 이미지
 
 }
 

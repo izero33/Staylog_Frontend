@@ -123,8 +123,8 @@ function AccommodationDetail() {
             // 예약 생성 요청 데이터 구성
             const request: CreateBookingRequest = {
                 roomId: bookingData.roomId,
-                checkIn: formatDateToYYYYMMDD(bookingData.checkIn),
-                checkOut: formatDateToYYYYMMDD(bookingData.checkOut),
+                checkIn: bookingData.checkInStr,
+                checkOut: bookingData.checkOutStr,
                 amount: bookingData.totalPrice,
                 adults: bookingData.adults,
                 children: bookingData.children,

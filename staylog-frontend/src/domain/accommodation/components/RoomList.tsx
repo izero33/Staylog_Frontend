@@ -6,7 +6,7 @@ interface RoomListProps {
     onSelect:(room:AccommodationRoomListType) => void;
 }
 
-const RoomList = ({ rooms, onSelect } : RoomListProps) => {
+const RoomList = ({ rooms, onSelect } : RoomListProps) => {    
     return <>
         <div>
             {rooms.map(room => (

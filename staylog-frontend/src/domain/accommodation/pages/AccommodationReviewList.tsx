@@ -11,6 +11,8 @@ const AccommodationReviewList = () => {
     const { id } = useParams<{ id: string }>();
     // 해당 숙소의 리뷰 목록
     const [reviews, setReviews] = useState<AccommodationReviewListType[]>([]);
+    // 해당 숙소명
+    const [name, setName] = useState("");
     // 해당 숙소가 위치한 지역명
     const [region, setRegion] = useState("");
     // 해당 숙소의 상세 주소
@@ -26,6 +28,7 @@ const AccommodationReviewList = () => {
             try {
                 // 숙소 정보 API
                 const res1 = await api.get(`/v1/accommodations/${id}`);
+                setName(res1.name);
                 setRegion(res1.regionName);
                 setAddress(res1.address);
 
@@ -66,8 +69,8 @@ const AccommodationReviewList = () => {
                             <i className="bi bi-arrow-left-circle-fill" 
                                 style={{ color: "#000", backgroundColor: "transparent", fontSize: "2.0rem" }}></i>
                         </Button>
-                        <h5 className="mb-3" style={{fontWeight : "bold"}}>{region}</h5>
-                        <p>{address}</p>
+                        <h5 className="mb-3" style={{fontWeight : "bold"}}>{name}</h5>
+                        <p>{region}</p>
                     </div>
                 </Col>
 

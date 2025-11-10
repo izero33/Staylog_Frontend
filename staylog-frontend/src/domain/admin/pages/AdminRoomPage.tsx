@@ -164,7 +164,11 @@ function AdminRoomPage() {
                         {rooms[0]?.accommodationName}
                     </span> 객실 목록
                 </h3>
-                <button className="btn btn-outline-light text-dark mt-2 fw-bold" style={{ backgroundColor: '#ebebebff' }} onClick={() => handleToAddPage(accommodationId)}>
+                <button
+                    title="새 객실 등록"
+                    className="btn btn-outline-light text-dark mt-2 fw-bold"
+                    style={{ backgroundColor: '#ebebebff' }} onClick={() => handleToAddPage(accommodationId)}
+                >
                     <i className="bi bi-plus-lg"></i> <span className="d-none ms-2 d-md-inline">새 객실 등록</span>
                 </button>
             </div>

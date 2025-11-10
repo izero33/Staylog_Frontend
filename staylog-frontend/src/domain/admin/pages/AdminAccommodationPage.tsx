@@ -158,7 +158,7 @@ function AdminAccommodationListPage() {
             <div className="d-flex justify-content-between align-items-center">
                 <h3>숙소 관리 페이지</h3>
                 <button className="btn btn-outline-light text-dark mt-2 fw-bold" style={{ backgroundColor: '#ebebebff' }} onClick={handleToAddPage}>
-                    <i className="bi bi-plus-lg me-2"></i> 숙소 등록
+                    <i className="bi bi-plus-lg"></i> <span className="d-none ms-2 d-md-inline">새 숙소 등록</span>
                 </button>
             </div>
 

@@ -12,7 +12,7 @@ import Modal from '../../../global/components/Modal';
 import type { ModalMode } from '../../../global/types';
 import { useModal } from '../../../global/hooks/useModal';
 import { useEffect, useState } from 'react';
-import type { couponType } from '../../mypage/types/couponTypes';
+import type { couponType } from '../../coupon/types/couponTypes';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { BookingDetailResponse } from '../../booking/types';
 import { preparePayment } from '../api';

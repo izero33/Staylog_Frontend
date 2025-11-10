@@ -50,7 +50,7 @@ function AdminCouponPage() {
 
       // 만료일: 오늘 날짜 이후
       const today = new Date().toISOString().split('T')[0];
-      newValidState.expiredAt = couponState.expiredAt >= today;
+      newValidState.expiredAt = couponState.expiredAt >= today + 1;
 
       // 회원 번호: one일 때만 0보다 큰 숫자
       if (couponState.targetType === 'all') {
@@ -238,7 +238,7 @@ function AdminCouponPage() {
                                        <InputGroup>
                                           <Form.Control
                                              type="number"
-                                             placeholder="10"
+                                             placeholder="예: 10"
                                              min="1"
                                              max="100"
                                              required

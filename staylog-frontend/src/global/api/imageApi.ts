@@ -99,3 +99,23 @@ export const updateImageBatch = (request: ImageUpdateRequest, files?: File[]): P
 export const deleteSingleImage = (imageId: number): Promise<void> => {
   return api.delete(`/v1/image/${imageId}`);
 }
+
+/**
+ * 프로필 이미지를 업로드하는 범용 함수.
+ * @param file - 업로드할 이미지 파일
+ * @param targetType - 연결할 대상 타입 "PROFILE"
+ * @param targetId - 연결할 대상 ID
+ * @returns 서버에 저장된 이미지의 전체 URL을 반환하는 Promise
+ */
+export const uploadProfileImage = async (file: File, targetType: string, targetId: number): Promise<string> => {
+  const formData = new FormData();
+  formData.append('files', file);
+  // 파라미터로 받은 targetType과 targetId를 그대로 사용합니다.
+  formData.append('targetType', targetType);
+  formData.append('targetId', String(targetId)); // 백엔드에서 long 타입으로 받으므로 문자열로
+
+  // URL을 직접 반환
+  return await api.post('/v1/profile', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};

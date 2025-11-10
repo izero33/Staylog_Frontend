@@ -8,10 +8,7 @@ export interface AccommodationReviewListType {
     title : string;
     content : string;
     rating : number;
-    reviewCount : number;
     createdAt : string;
-    images?: string[];
-
 }
 export interface AccommodationRoomListType {
     maxAdult: number;

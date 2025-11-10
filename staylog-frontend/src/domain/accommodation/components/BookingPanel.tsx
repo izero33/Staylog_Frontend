@@ -109,6 +109,7 @@ function BookingPanel({
     const date = new Date(d + "T00:00:00");
     return date;
   });
+  
   // 화면 넓이에 따라 1/2개월 자동 전환
   useEffect(() => {
     const recalc = () => {

@@ -12,6 +12,9 @@ export default function JournalCard({ board }: { board: any }) {
 
   const imageUrl = getImageUrl(apiBoardType, board.boardId);
 
+  console.log("🖼️ imageUrl:", imageUrl);
+  console.log("📦 board.boardId:", board.boardId);
+
   return (
     <Card
       className="shadow-sm h-100 hover-card border-0"

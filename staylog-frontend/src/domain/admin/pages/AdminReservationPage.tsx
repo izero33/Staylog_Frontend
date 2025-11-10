@@ -183,6 +183,7 @@ export default function AdminReservationPage() {
                   <th>회원 이름</th>
                   <th>숙소명</th>
                   <th>예약일</th>
+                  <th>결제일</th>
                   <th>금액</th>
                   <th>체크인</th>
                   <th>체크아웃</th>
@@ -212,6 +213,7 @@ export default function AdminReservationPage() {
                         </td>
                         <td>{res.accommodationName ?? res.roomName ?? "—"}</td>
                         <td>{formatKST(res.createdAt)}</td>
+                        <td>{formatKST(res.paidAt)}</td>
                         <td>{res.finalAmount?.toLocaleString("ko-KR") ?? "-"}원</td>
                         <td>{formatKST(res.checkIn)}</td>
                         <td>{formatKST(res.checkOut)}</td>

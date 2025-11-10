@@ -23,6 +23,7 @@ export interface AccommodationRoomListType {
     rmTypeNameEn : string;
     rmTypeName : string;
     price : number;
+    imageUrl?: string; 
 }
 
 export interface AccommodationDetailType {

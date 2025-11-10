@@ -125,18 +125,42 @@ function BookingPanel({
     return null;
   };
 
+  // 오늘(로컬 자정) 계산
+  const todayLocal = useMemo(() => {
+    const t = new Date();
+    return new Date(t.getFullYear(), t.getMonth(), t.getDate()); // 00:00
+  }, []);
+
   // 날짜 선택 가능 여부(블락 + 징검다리)
   const filterDate = (date: Date) => {
-    const s = ymd(date);
-    // 1) 응답의 blocked 날짜는 무조건 비활성화
-    if (blockedSet.has(s)) return false;
+    const s = ymd(date);            // ← toISOString() 금지(UTC로 하루 밀림)
+    const today = new Date();
+    const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    if (+date < +today0) return false;
 
-    // 2) 체크인만 고른 상태면: (체크인보다 이후 && maxEndDate 이내)만 허용
+    // 체크인만 선택된 상태라면: 체크아웃 선택 단계
     if (checkInStr && !checkOutStr) {
       const ci = parseYmd(checkInStr);
       if (+date <= +ci) return false;
-      if (maxEndDate && +date > +maxEndDate) return false;
+
+      const nb = nextBlockedAfter(ci);
+      if (nb) {
+        const sNb = ymd(nb);
+
+        //특수 케이스: 다음 블락 당일은 "체크아웃" 용도로 허용
+        if (s === sNb) return true;
+
+        // nb 이후는 차단
+        if (+date > +nb) return false;
+      }
+
+      // 체크아웃 선택 단계에서는 블락셋이더라도 nb 이전일은 통과
+      // (시작일이 정해져 있으므로 중간 블락은 서버가 애초에 안 주는 전제)
+    } else {
+      // 시작일 선택 단계에서는 블락일은 막는다
+      if (blockedSet.has(s)) return false;
     }
+
     return true;
   };
 
@@ -168,15 +192,18 @@ function BookingPanel({
     if (checkInStr) {
       const ci = parseYmd(checkInStr);
       const nb = nextBlockedAfter(ci);
-      setMaxEndDate(nb ? addDays(nb, -1) : null);
+      setMaxEndDate(nb ?? null);
 
       // 이미 고른 체크아웃이 한계를 넘으면 잘라줌
       if (checkOutStr) {
         const co = parseYmd(checkOutStr);
-        if (nb && +co > +addDays(nb, -1)) {
-          const capped = addDays(nb, -1);
-          setCheckOutStr(ymd(capped));
-          setRange([ci, capped]);
+        if (nb && +co > +nb) {
+          const capped = nb;
+          if (nb && +co > +nb) {
+            const capped = nb;
+            setCheckOutStr(ymd(capped));
+            setRange([ci, capped]);
+          }
         }
       }
     } else {
@@ -269,16 +296,12 @@ function BookingPanel({
                   monthsShown={monthsShown}
                   shouldCloseOnSelect={false}
                   filterDate={filterDate}
+                  minDate={new Date()}
                   onChange={(v) => {
                     const [start, end] = v as [Date | null, Date | null];
 
                     // 선택 시각 상태(시각적)도 갱신해야 달력에 범위가 표시됨
                     setRange([start, end ?? null]);
-
-                    console.log("--- DatePicker onChange ---");
-                    console.log(`raw start: ${start?.toLocaleString()}`);
-                    console.log(`raw end: ${end?.toLocaleString()}`);
-                    console.log("---------------------------");
 
                     if (start && !end) {
                       const startStr = ymd(start);
@@ -287,7 +310,7 @@ function BookingPanel({
 
                       // 다음 블락 전날까지 체크아웃 허용
                       const nb = nextBlockedAfter(start);
-                      //setMaxEndDate(nb ? addDays(nb, -1) : null);
+                      setMaxEndDate(nb ? addDays(nb, -1) : null);
                       return;
                     }
 

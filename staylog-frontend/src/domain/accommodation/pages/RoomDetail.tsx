@@ -1,16 +1,18 @@
 // 기존 import 아래에 AccommodationRoomListType import 추가
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type { AccommodationRoomListType } from "../types/AccommodationType";
 import { useEffect, useState } from "react";
 import useIsMobile from "../hooks/useIsMobile";
 import type { RoomDetailDto } from "../types/RoomDetailDto";
 import api from "../../../global/api";
-import BookingPanel from "../components/BookingPanel";
+import BookingPanel, { type BookingData } from "../components/BookingPanel";
 import { Card, Col, Container, Offcanvas, Row, Spinner } from "react-bootstrap";
 import FloatingReserveBubble from "../components/FloatingReserveBubble";
 import '../css/room.css';
 import AccommodationInfo from "../components/AccommodationInfo";
 import { formatDateToYYYYMMDD } from "../../../global/utils/date";
+import type { CreateBookingRequest } from "../../booking/types";
+import { createBooking } from "../../booking/api";
 
 function RoomDetail() {
 
@@ -20,7 +22,8 @@ function RoomDetail() {
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [openReserve, setOpenReserve] = useState(false);
   const isMobile = useIsMobile(); //모바일 크기일 때 true
-
+  const navigate = useNavigate();
+  
   // 숙소정보
   const featchRoom = () => {
     if (!roomId) {
@@ -60,10 +63,6 @@ function RoomDetail() {
       });
   }, [roomId]);
 
-  const handleReserve = () => {
-    alert("예약하기");
-  };
-
   useEffect(() => {
     featchRoom();
   }, [roomId]);
@@ -98,6 +97,30 @@ function RoomDetail() {
         <Spinner animation="border" /> 로딩 중...
       </div>
     );
+  }
+
+  const handleReserve = async (bookingData: BookingData) => {
+    try {
+      // 예약 생성 요청 데이터 구성
+      const request: CreateBookingRequest = {
+        roomId: bookingData.roomId,
+        checkIn: bookingData.checkInStr,
+        checkOut: bookingData.checkOutStr,
+        amount: bookingData.totalPrice,
+        adults: bookingData.adults,
+        children: bookingData.children,
+        infants: bookingData.infants,
+      };
+
+      // 예약 생성 API 호출
+      const booking = await createBooking(request);
+
+      // 예약 성공 시 결제 페이지로 이동 (예약 정보 전달)
+      navigate('/checkout', { state: { booking } });
+    } catch (err) {
+      console.error('예약 생성 실패:', err);
+      alert('예약 생성에 실패했습니다. 다시 시도해주세요.');
+    }
   }
 
   return <>
@@ -195,10 +218,7 @@ function RoomDetail() {
         <BookingPanel
           name={roomDetail.name}
           rooms={roomForBooking ? [roomForBooking] : []} // 모바일도 동일 처리
-          onReserve={() => {
-            setOpenReserve(false);
-            handleReserve();
-          }}
+          onReserve={handleReserve}
           disabledDates={blockedDates}
         />
       </Offcanvas.Body>

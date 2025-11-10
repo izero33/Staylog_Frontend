@@ -153,13 +153,13 @@ function AccommodationDetail() {
         if (!bookingSelectedRoom) return;
 
         const today = new Date();
-        const sixMonthsLater = new Date();
-        sixMonthsLater.setMonth(today.getMonth() + 6);
+        const to = new Date();
+        to.setMonth(today.getMonth() + 2);
 
         api.get<string[]>(`/v1/${bookingSelectedRoom.roomId}/blocked`, {
             params: {
                 from: formatDateToYYYYMMDD(today),
-                to: formatDateToYYYYMMDD(sixMonthsLater),
+                to: formatDateToYYYYMMDD(to),
             },
         })
             .then(res => setBlockedDates(res))

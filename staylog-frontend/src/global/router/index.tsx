@@ -21,7 +21,7 @@ import AccommodationListPage from "../../domain/accommodation/pages/Accommodatio
 import AdminAccommodationDetail from "../../domain/admin/pages/AdminAccommodationDetail";
 import AdminRoomDetail from "../../domain/admin/pages/AdminRoomDetail";
 import AdminAccommodationUpdate from "../../domain/admin/pages/AdminAccommodationUpdate";
-import MyPage from "../../domain/mypage/pages";
+import MyPage from "../../domain/mypage/pages/MyPageLayout";
 import MemberInfoSection from "../../domain/mypage/pages/MemberInfoSection";
 import ReservationSection from "../../domain/mypage/pages/ReservationSection";
 import ReviewSection from "../../domain/mypage/pages/ReviewSection";

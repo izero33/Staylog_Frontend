@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom";
 export default function JournalCard({ board }: { board: any }) {
   const navigate = useNavigate();
 
-  console.log("📦:", board.boardId, board.imageData);
+  console.log("📦:", board.boardId, board.imageUrl);
 
   const imageUrl =
-    board?.imageData?.imageUrl && board.imageData.imageUrl.trim() !== "" 
-      ? board.imageData.imageUrl
+    board?.imageUrl && board.imageUrl.trim() !== "" 
+      ? board.imageUrl
       : "/default-thumbnail.jpg";
 
 

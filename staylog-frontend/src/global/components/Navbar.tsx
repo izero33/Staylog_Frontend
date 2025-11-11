@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Navbar as BootstrapNavbar, Container, Nav, Form, FormControl } from 'react-bootstrap'; // Navbar를 BootstrapNavbar로 별칭 지정
 import Modal from "./Modal";
 import type { ModalMode } from "../types/ModalMode";
 import NotiCanvas from "../../domain/notification/pages/NotiCanvas";
@@ -93,89 +94,58 @@ function Navbar() {
 
    return (
       <>
-         <nav className="navbar fixed-top navbar-expand-lg border-bottom border-1 border-secondary shadow-sm" style={{ backgroundColor: '#ebebebff' }}>
-            <div className="container-fluid w-75">
-               <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                  <span className="navbar-toggler-icon"></span>
-               </button>
+         <BootstrapNavbar expand="lg" fixed="top" className="border-bottom border-1 border-secondary shadow-sm" style={{ backgroundColor: '#ebebebff' }}>
+            <Container fluid className="w-75">
+               <BootstrapNavbar.Brand as={Link} to="/" className="flex-fill fs-3 fw-normal">STAYLOG</BootstrapNavbar.Brand>
+               <BootstrapNavbar.Toggle aria-controls="responsive-navbar-nav" />
+               <BootstrapNavbar.Collapse id="responsive-navbar-nav">
+                  <Form className="d-flex flex-fill my-2 my-lg-0">
+                     <FormControl
+                        onClick={openSearchModal}
+                        placeholder="Search"
+                        aria-label="Search"
+                        readOnly
+                        style={{ cursor: 'pointer' }}
+                     />
+                  </Form>
 
-               <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                  <Link to="/" className="navbar-brand flex-fill fs-3 fw-normal">STAYLOG</Link>
+                  <Nav className="flex-fill justify-content-center">
+                     <Nav.Link as={NavLink} to="/stay">STAY</Nav.Link>
+                     <Nav.Link as={NavLink} to="/review">COMMUNITY</Nav.Link>
+                     <Nav.Link as={NavLink} to="/journal">JOURNAL</Nav.Link>
+                  </Nav>
 
-                  <form className="d-flex flex-fill" role="search">
-                     <input onClick={openSearchModal} className="form-control me-2 shadow-none" placeholder="Search" aria-label="Search" readOnly style={{ cursor: 'pointer' }} />
-                  </form>
-
-                  <ul className="navbar-nav flex-fill justify-content-center mb-2 mb-lg-0">
-                     <li className="nav-item">
-                        <NavLink to="/stay" className="nav-link" aria-current="page">STAY</NavLink>
-                     </li>
-                     <li className="nav-item">
-                        <NavLink to="/review" className="nav-link">COMMUNITY</NavLink>
-                     </li>
-                     <li className="nav-item">
-                        <NavLink to="/journal" className="nav-link">JOURNAL</NavLink>
-                     </li>
-                  </ul>
-
-                  <ul className="navbar-nav flex-fill justify-content-end mb-2 mb-lg-0 gap-4 align-items-center">
-
-                  {/* 로그인 상태 */}
-                  {nickname ? (
-                     <>
-                        {/* 닉네임 표시 */}
-                        <span className="fw-semibold">{nickname}</span>
-                        {/* 항상 사람 아이콘은 항상 표시 */}
-                        {/* 아이콘 + 마이페이지 드롭다운 통합 */}
-                        {nickname ? (
-                           <li className="nav-item">
+                  <Nav className="flex-fill justify-content-end align-items-center gap-4">
+                     {nickname ? (
+                        <>
+                           <BootstrapNavbar.Text className="fw-semibold">{nickname}</BootstrapNavbar.Text>
+                           <Nav.Item> {/* MypageDropdown을 Nav.Item으로 감쌈 */}
                               <MypageDropdown onClose={() => {}} />
-                           </li>
-                        ) : (
-                           <li className="nav-item">
-                              <i
-                                 className="bi bi-person-circle"
-                                 style={{ fontSize: "32px", cursor: "pointer" }}
-                                 onClick={() => openModal("login")}
-                              ></i>
-                           </li>
-                        )}
-
-                        {/* 알림 아이콘 (로그인 시만 표시하기) */}
-                        <li onClick={openNoti} className="nav-item position-relative" style={{ cursor: 'pointer' }}>
-                           <i className="bi bi-bell-fill" style={{ fontSize: '32px' }}></i>
-                           {notiUnreadCount > 0 && (
-                              <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.75rem', top: '5px' }}>
-                                 {notiUnreadCount > 9 ? '9+' : notiUnreadCount}
-                                 <span className="visually-hidden">unread messages</span>
-                              </span>)}
-                        </li>
-
-                        {/* 로그아웃 버튼 */}
-                        <li className="nav-item">
-                        <button
-                           className="btn btn-outline-dark px-3 py-1"
-                           onClick={handleLogout}
-                        >
-                           LOGOUT
-                        </button>
-                           </li>
+                           </Nav.Item>
+                           <Nav.Item onClick={openNoti} className="position-relative" style={{ cursor: 'pointer' }}>
+                              <i className="bi bi-bell-fill" style={{ fontSize: '32px' }}></i>
+                              {notiUnreadCount > 0 && (
+                                 <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.75rem', top: '5px' }}>
+                                    {notiUnreadCount > 9 ? '9+' : notiUnreadCount}
+                                 </span>
+                              )}
+                           </Nav.Item>
+                           <button
+                              className="btn btn-outline-dark px-3 py-1"
+                              onClick={handleLogout}
+                           >
+                              LOGOUT
+                           </button>
                         </>
                      ) : (
-                        // 로그인 안 했을 때는 사람 아이콘만 표시
-                        <li
-                           className="nav-item"
-                           onClick={() => openModal("login")}
-                           style={{ cursor: 'pointer' }}
-                        >
+                        <Nav.Item onClick={() => openModal("login")} style={{ cursor: 'pointer' }}>
                            <i className="bi bi-person-circle" style={{ fontSize: '32px' }}></i>
-                        </li>
+                        </Nav.Item>
                      )}
-                  </ul>
-
-               </div>
-            </div>
-         </nav >
+                  </Nav>
+               </BootstrapNavbar.Collapse>
+            </Container>
+         </BootstrapNavbar>
 
          {isModalOpen && <Modal
             isOpen={isModalOpen}

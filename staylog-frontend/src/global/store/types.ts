@@ -7,7 +7,7 @@ export interface UserInfo {
    userId: number;
    loginId: string;
    nickname: string;
-   // profileImageUrl: string | null
+   // profileImage: string | null
 }
 
 // 닉네임 업데이트 액션 

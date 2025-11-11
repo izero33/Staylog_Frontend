@@ -72,12 +72,12 @@ function MypageReservationDetailModal({ open, bookingId, onClose }: ReservationM
 
         {/* 모달 */}
         <div className="modal fade show d-block" role="dialog" aria-modal="true">
-            <div className="modal-dialog modal-lg modal-dialog-centered">
+            <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"> {/* modal-lg 제거, modal-dialog-scrollable 추가 */}
             <div className="modal-content">
                 <div className="modal-header">
-                <h4 className="modal-title">
+                <h6 className="modal-title text-wrap">
                     예약 상세 {detail?.bookingNum ? `· ${detail.bookingNum}` : ""}
-                </h4>
+                </h6>
                 <button type="button" className="btn-close" aria-label="Close" onClick={onClose} />
                 </div>
 
@@ -96,7 +96,7 @@ function MypageReservationDetailModal({ open, bookingId, onClose }: ReservationM
                             <h5 className="text-start mb-3 border-bottom pb-2">기본 정보</h5>
                             <dl className="row">
                                 <dt className="text-start col-sm-4 text-muted">예약번호</dt>
-                                <dd className="text-start col-sm-8">{detail.bookingNum ?? "—"}</dd>
+                                <dd className="text-start col-sm-8 text-wrap">{detail.bookingNum ?? "—"}</dd>
 
                                 <dt className="text-start col-sm-4 text-muted">투숙자명</dt>
                                 <dd className="text-start col-sm-8">{detail.guestName ?? "—"}</dd>
@@ -112,6 +112,7 @@ function MypageReservationDetailModal({ open, bookingId, onClose }: ReservationM
                                     >
                                         숙소 상세보기    
                                     </Button>
+                                    <br/>
                                     <span className="mx-1">/</span>
                                     <span>{detail.roomName ?? "-"}</span>
                                     <Button

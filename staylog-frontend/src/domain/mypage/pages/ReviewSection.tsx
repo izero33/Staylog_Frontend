@@ -6,6 +6,7 @@ import { Button, Card, Table } from "react-bootstrap";
 import { formatKST } from "../../../global/utils/date";
 import type { Reviews } from "../types/mypageTypes";
 import { useNavigate } from "react-router-dom";
+import MypagePagination from "../components/MypagePagination";
 
 function ReviewSection() {
     const userId = useGetUserIdFromToken();
@@ -14,11 +15,16 @@ function ReviewSection() {
     const [reviews, setReviews] = useState<Reviews[]>([]);
     const [type, setType] = useState("availableToWrite");
 
+    // --- 페이지네이션 상태 추가 ---
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
     useEffect(() => {
         if (userId) {
             getReviewList(userId, type)
                 .then((res) => {
                     setReviews(res || []);
+                    setCurrentPage(1); // 데이터 변경 시 1페이지로 초기화
                 })
                 .catch((err) => {
                     console.error("리뷰 내역 조회 실패:", err);
@@ -33,19 +39,28 @@ function ReviewSection() {
         setType(newType);
     };
 
+    // --- 페이징 계산 로직 추가 ---
+    const indexOfLast = currentPage * itemsPerPage;
+    const indexOfFirst = indexOfLast - itemsPerPage;
+    const currentItems = reviews.slice(indexOfFirst, indexOfLast);
+
     const renderFilterButtons = () => (
         <div className="d-flex justify-content-center gap-2 mb-4">
             <Button
+                size="sm"
                 variant={type === "availableToWrite" ? "dark" : "outline-secondary"}
                 onClick={() => handleTypeChange("availableToWrite")}
                 style={{ whiteSpace: "nowrap" }}
+                className="text-nowrap"
             >
                 작성 가능한 리뷰
             </Button>
             <Button
+                size="sm"
                 variant={type === "myWrittenReview" ? "dark" : "outline-secondary"}
                 onClick={() => handleTypeChange("myWrittenReview")}
                 style={{ whiteSpace: "nowrap"}}
+                className="text-nowrap"
             >
                 내가 쓴 리뷰
             </Button>
@@ -57,7 +72,7 @@ function ReviewSection() {
         <div className="d-none d-lg-block">
             <Table bordered hover responsive className="align-middle text-center">
                 <thead className="table-light">
-                    <tr className="text-nowrap">
+                    <tr>
                         <th>예약 번호</th>
                         <th>숙소명</th>
                         <th>체크인</th>
@@ -66,15 +81,15 @@ function ReviewSection() {
                     </tr>
                 </thead>
                 <tbody>
-                    {reviews.length > 0 ? (
-                        reviews.map((review) => (
+                    {currentItems.length > 0 ? (
+                        currentItems.map((review) => (
                             <tr key={review.bookingId}>
-                                <td className="text-nowrap">{review.bookingNum}</td>
-                                <td className="text-nowrap">{review.accommodationName}</td>
+                                <td>{review.bookingNum}</td>
+                                <td>{review.accommodationName}</td>
                                 <td>{review.checkIn ? formatKST(review.checkIn).split("T")[0] : 'N/A'}</td>
                                 <td>{review.checkOut ? formatKST(review.checkOut).split("T")[0] : 'N/A'}</td>
-                                <td className="text-nowrap">
-                                    <Button variant="outline-primary" size="sm" onClick={() => navigate('/form/review', { state: { booking: review } })}>
+                                <td>
+                                    <Button variant="outline-primary" size="sm" onClick={() => navigate('/form/review', { state: { booking: review } })} className="text-nowrap">
                                         작성하기
                                     </Button>
                                 </td>
@@ -91,8 +106,8 @@ function ReviewSection() {
     // 모바일 - 작성 가능한 리뷰 (카드)
     const renderAvailableReviewsCards = () => (
         <div className="d-lg-none">
-            {reviews.length > 0 ? (
-                reviews.map((review) => (
+            {currentItems.length > 0 ? (
+                currentItems.map((review) => (
                     <Card key={review.bookingId} className="mb-3">
                         <Card.Header className="fw-bold">{review.bookingNum}</Card.Header>
                         <Card.Body>
@@ -104,7 +119,7 @@ function ReviewSection() {
                                 <div className="d-flex justify-content-between text-sm text-muted">    
                                     <span><strong>체크아웃</strong> {review.checkOut ? formatKST(review.checkOut).split("T")[0] : "—"}</span>
                                 </div>
-                                <Button variant="outline-primary" size="sm" className="w-100 mt-3" onClick={() => navigate('/form/review', { state: { booking: review } })}>
+                                <Button variant="outline-primary" size="sm" className="w-100 mt-3 text-nowrap" onClick={() => navigate('/form/review', { state: { booking: review } })}>
                                     작성하기
                                 </Button>
                             </div>
@@ -132,8 +147,8 @@ function ReviewSection() {
                     </tr>
                 </thead>
                 <tbody>
-                    {reviews.length > 0 ? (
-                        reviews.map((review) => (
+                    {currentItems.length > 0 ? (
+                        currentItems.map((review) => (
                             <tr key={review.reviewId}>
                                 <td>{review.bookingNum}</td>
                                 <td>{review.accommodationName}</td>
@@ -141,7 +156,7 @@ function ReviewSection() {
                                 <td>{review.rating}</td>
                                 <td>{review.createdAt ? formatKST(review.createdAt).split("T")[0] : 'N/A'}</td>
                                 <td>
-                                    <Button variant="outline-primary" size="sm" onClick={() => navigate(`/review/${review.reviewId}`)}>
+                                    <Button variant="outline-primary" size="sm" onClick={() => navigate(`/review/${review.reviewId}`)} className="text-nowrap">
                                         리뷰 보기
                                     </Button>
                                 </td>
@@ -158,8 +173,8 @@ function ReviewSection() {
     // 모바일 - 내가 쓴 리뷰 (카드)
     const renderMyReviewsCards = () => (
         <div className="d-lg-none">
-            {reviews.length > 0 ? (
-                reviews.map((review) => (
+            {currentItems.length > 0 ? (
+                currentItems.map((review) => (
                     <Card key={review.reviewId} className="mb-3">
                         <Card.Header className="d-flex justify-content-between align-items-center">
                             <span className="fw-bold">{review.bookingNum}</span>
@@ -169,7 +184,7 @@ function ReviewSection() {
                             <div className="p-3">
                                 <Card.Title>{review.title}</Card.Title>
                                 <Card.Text className="text-muted">{review.accommodationName}</Card.Text>
-                                <Button variant="outline-primary" size="sm" className="w-100 mt-2" onClick={() => navigate(`/review/${review.reviewId}`)}>
+                                <Button variant="outline-primary" size="sm" className="w-100 mt-2 text-nowrap" onClick={() => navigate(`/review/${review.reviewId}`)}>
                                     리뷰 보기
                                 </Button>
                             </div>
@@ -186,11 +201,9 @@ function ReviewSection() {
     );
 
     return (
-        <Card className="shadow-sm border-0 w-100">
-            {/* <Card.Body className="p-4"> */}
-            <Card.Body className="p-4">
-                {/* <div className="mb-3 text-center"> */}
-                <div className="mb-3 text-center p-4">
+        <Card className="shadow-sm border-0 w-100 mypage-section">
+            <Card.Body className="p-0 p-lg-4">
+                <div className="mb-3 text-center">
                     <h4 className="fw-bold">리뷰 내역</h4>
                     <hr className="mb-4" />
                 </div>
@@ -207,6 +220,13 @@ function ReviewSection() {
                         {renderMyReviewsCards()}
                     </>
                 )}
+
+                <MypagePagination
+                    totalItems={reviews.length}
+                    itemsPerPage={itemsPerPage}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                />
             </Card.Body>
         </Card>
     );

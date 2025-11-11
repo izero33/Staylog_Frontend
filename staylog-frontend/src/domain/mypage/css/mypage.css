@@ -1,4 +1,4 @@
-/* mypage.css */
+/* src/domain/mypage.css */
 .container {
   max-width: 1000px;
 }
@@ -10,6 +10,40 @@ h2 {
 .card {
   border-radius: 12px;
   border: 1px solid #eee;
+}
+
+/* PC (lg) 화면 이상에서만 적용되는 스타일 */
+/* src/domain/mypage.css */
+@media (min-width: 992px) {
+  /* 섹션 전체 기본 폰트 크기 축소 */
+  .mypage-section {
+    font-size: 0.9rem;
+  }
+
+  /* 각 섹션의 제목 폰트 크기 조정 */
+  .mypage-section .h4, .mypage-section h4 {
+    font-size: 1.2rem; /* 1.3rem -> 1.2rem */
+  }
+
+  /* 테이블 폰트 및 패딩 조정 */
+  .mypage-section .table {
+    font-size: 0.9rem; /* 0.95rem -> 0.9rem */
+  }
+
+  .mypage-section .table th,
+  .mypage-section .table td {
+    padding: 0.5rem 0.4rem; /* 0.6rem -> 0.5rem */
+  }
+
+  /* 카드 내부 패딩 조정 */
+  .mypage-section > .card > .card-body {
+    padding: 1.5rem; /* 1.8rem -> 1.5rem */
+  }
+
+  /* 회원정보 입력 폼 레이블 폰트 크기 조정 */
+  .mypage-section .form-label {
+    font-size: 0.85rem; /* 0.9rem -> 0.85rem */
+  }
 }
 
 

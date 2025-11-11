@@ -173,7 +173,7 @@ function Boards() {
               {/* 리뷰 등록 버튼 */}
               {boardType === "review" && userId && (
                 <button
-                  className="btn btn-secondary"
+                  className="btn btn-sm btn-secondary"
                   onClick={() => navigate(`/form/${boardType}`)}
                 >
                   리뷰 등록

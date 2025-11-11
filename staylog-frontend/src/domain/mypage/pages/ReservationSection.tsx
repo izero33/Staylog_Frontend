@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 import { getReservationList } from "../api/mypageApi";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
-import { Button, Card, Pagination, Table, Badge } from "react-bootstrap";
+import { Button, Card, Table, Badge } from "react-bootstrap";
 import { formatKST } from "../../../global/utils/date";
 import MypageReservationDetailModal from "../components/MypageReservationDetailModal";
+import MypagePagination from "../components/MypagePagination";
 
 function ReservationSection() {
     const userId = useGetUserIdFromToken();
@@ -31,7 +32,7 @@ function ReservationSection() {
         getReservationList(userId, status)
             .then((res) => {
                 setReservations(res || []);
-                setCurrentPage(1);
+                setCurrentPage(1); // 데이터 변경 시 1페이지로 초기화
             })
             .catch((err) => {
                 console.error("예약 내역 조회 실패:", err);
@@ -43,18 +44,18 @@ function ReservationSection() {
     const indexOfLast = currentPage * itemsPerPage;
     const indexOfFirst = indexOfLast - itemsPerPage;
     const currentItems = reservations.slice(indexOfFirst, indexOfLast);
-    const totalPages = Math.ceil(reservations.length / itemsPerPage) || 1;
+    // const totalPages = Math.ceil(reservations.length / itemsPerPage) || 1; // MypagePagination에서 계산
 
     // 상태 필터 버튼
     const renderFilterButtons = () => (
-        <div className="d-flex flex-wrap justify-content-center gap-2 mb-4"> {/* flex-wrap 추가 */}
-            <Button variant={status === "upcoming" ? "dark" : "outline-secondary"} onClick={() => setStatus("upcoming")}>
+        <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
+            <Button size="sm" variant={status === "upcoming" ? "dark" : "outline-secondary"} onClick={() => setStatus("upcoming")} className="text-nowrap">
                 다가올 예약
             </Button>
-            <Button variant={status === "completed" ? "dark" : "outline-secondary"} onClick={() => setStatus("completed")}>
+            <Button size="sm" variant={status === "completed" ? "dark" : "outline-secondary"} onClick={() => setStatus("completed")} className="text-nowrap">
                 이용 완료
             </Button>
-            <Button variant={status === "canceled" ? "dark" : "outline-secondary"} onClick={() => setStatus("canceled")}>
+            <Button size="sm" variant={status === "canceled" ? "dark" : "outline-secondary"} onClick={() => setStatus("canceled")} className="text-nowrap">
                 취소 내역
             </Button>
         </div>
@@ -74,8 +75,8 @@ function ReservationSection() {
     const renderTableView = () => (
         <div className="d-none d-lg-block">
             <Table bordered hover responsive className="align-middle text-center">
-                <thead className="table-light">
-                    <tr className="text-nowrap">
+                <thead className="table-light text-nowrap">
+                    <tr>
                         <th>예약 번호</th>
                         <th>투숙자명</th>
                         <th>숙소명 / 객실명</th>
@@ -90,15 +91,15 @@ function ReservationSection() {
                     {currentItems.length > 0 ? (
                         currentItems.map((r) => (
                             <tr key={r.bookingId}>
-                                <td className="text-nowrap">{r.bookingNum || r.bookingId}</td>
-                                <td className="text-nowrap">{r.guestName}</td>
+                                <td className="text-wrap">{r.bookingNum || r.bookingId}</td>
+                                <td>{r.guestName}</td>
                                 <td>{r.accommodationName} / {r.roomName}</td>
-                                <td className="text-nowrap">{r.checkIn ? formatKST(r.checkIn).split("T")[0] : "—"}</td>
-                                <td className="text-nowrap">{r.checkOut ? formatKST(r.checkOut).split("T")[0] : "—"}</td>
+                                <td>{r.checkIn ? formatKST(r.checkIn).split("T")[0] : "—"}</td>
+                                <td>{r.checkOut ? formatKST(r.checkOut).split("T")[0] : "—"}</td>
                                 <td>{r.totalGuestCount}</td>
                                 <td>{getStatusBadge(r.status)}</td>
                                 <td>
-                                    <Button variant="outline-primary" size="sm" onClick={() => openDetail(r.bookingId)}>
+                                    <Button variant="outline-primary" size="sm" onClick={() => openDetail(r.bookingId)} className="text-nowrap">
                                         예약 보기
                                     </Button>
                                 </td>
@@ -119,8 +120,8 @@ function ReservationSection() {
                 currentItems.map((r) => (
                     <Card key={r.bookingId} className="mb-3">
                         <Card.Header className="d-flex justify-content-between align-items-center">
-                            <span className="fw-bold">{r.bookingNum}</span>
-                            {getStatusBadge(r.status)}
+                            <span className="fw-bold text-truncate me-2">{r.bookingNum}</span> {/* text-truncate와 여백 추가 */}
+                            <span className="flex-shrink-0">{getStatusBadge(r.status)}</span> {/* 뱃지가 줄어들지 않도록 flex-shrink-0 추가 */}
                         </Card.Header>
                         <Card.Body>
                             <Card.Title>{r.accommodationName}</Card.Title>
@@ -133,7 +134,7 @@ function ReservationSection() {
                             <div className="d-flex justify-content-between text-sm">    
                                 <span className="text-nowrap"><strong>체크아웃</strong> {r.checkOut ? formatKST(r.checkOut).split("T")[0] : "—"}</span>
                             </div>
-                            <Button variant="outline-dark" size="sm" className="w-100 mt-3" onClick={() => openDetail(r.bookingId)}>
+                            <Button variant="outline-dark" size="sm" className="w-100 mt-3 text-nowrap" onClick={() => openDetail(r.bookingId)}>
                                 상세 보기
                             </Button>
                         </Card.Body>
@@ -147,8 +148,8 @@ function ReservationSection() {
 
     return (
         <>
-            <Card className="shadow-sm border-0 w-100">
-                <Card.Body className="p-4">
+            <Card className="shadow-sm border-0 w-100 mypage-section">
+                <Card.Body className="p-0 p-lg-4">
                     <div className="mb-3 text-center">
                         <h4 className="fw-bold">예약 정보</h4>
                         <hr className="mb-4" />
@@ -159,15 +160,12 @@ function ReservationSection() {
                     {renderTableView()}
                     {renderCardView()}
 
-                    {reservations.length > itemsPerPage && (
-                        <Pagination className="justify-content-center mt-3">
-                            {Array.from({ length: totalPages }, (_, idx) => (
-                                <Pagination.Item key={idx + 1} active={idx + 1 === currentPage} onClick={() => setCurrentPage(idx + 1)}>
-                                    {idx + 1}
-                                </Pagination.Item>
-                            ))}
-                        </Pagination>
-                    )}
+                    <MypagePagination
+                        totalItems={reservations.length}
+                        itemsPerPage={itemsPerPage}
+                        currentPage={currentPage}
+                        onPageChange={setCurrentPage}
+                    />
                 </Card.Body>
             </Card>
             <MypageReservationDetailModal open={detailOpen} bookingId={targetBookingId} onClose={closeDetail} />
@@ -176,3 +174,4 @@ function ReservationSection() {
 }
 
 export default ReservationSection;
+

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Form, Button, Image, InputGroup, Fade } from "react-bootstrap";
-import { fetchMemberInfo, updateMemberInfo } from "../api/mypageApi";
+import { fetchMemberInfo, updateMemberInfo, uploadProfileImage } from "../api/mypageApi";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import useGetNicknameFromToken from "../../auth/hooks/useGetNicknameFromToken";
 import type { MemberInfo } from "../types/mypageTypes";
@@ -11,9 +11,7 @@ import duplicateCheck from "../../auth/utils/duplicateCheck";
 import AlertModal from "../components/AlertModal";
 import sendEmail from "../../auth/utils/sendEmail";
 import mailCertify from "../../auth/utils/mailCertify";
-import { uploadProfileImage } from "../api/mypageApi";
 import { REGEX_PASSWORD } from "../../../global/constants/Validation";
-import ImageManager from "../../../global/components/ImageManager";
 
 
 
@@ -74,6 +72,8 @@ function MemberInfoSection() {
         fetchMemberInfo(userId)
             .then((data) => {
             setMember(data);
+            console.log("????" + data.profileImage);
+            
             if (data.birthDate) {
                 setBirthDate (data.birthDate.substring(0, 10));
             }
@@ -187,7 +187,7 @@ function MemberInfoSection() {
         // alert 이후에 표시될 UI 메시지 설정
         setNicknameMessage(ok ? "사용 가능한 닉네임입니다." : "이미 사용 중입니다.");
         // alert 대신 모달 표시
-        setNicknameModalMsg(ok ? "사용 가능한 닉네임입니다 😊" : "이미 가입된 닉네임입니다 ⚠️");
+        setNicknameModalMsg(ok ? "사용 가능한 닉네임입니다." : "이미 가입된 닉네임입니다.");
         setShowNicknameModal(true);
     };
 
@@ -225,20 +225,6 @@ function MemberInfoSection() {
             alert("이미지 업로드 중 오류가 발생했습니다.");
         }
     };
-
-    // 지은이가 사용한 코드 참고해서 수정해보기
-    // <ImageManager
-    //     key={`image-manager-${resetTrigger}`}
-    //     targetType={apiBoardType}
-    //     targetId={boardId ? Number(boardId) : 0}
-    //     isEditMode={true} // 수정 모드 활성화
-    //     uploadTrigger={imageUploadTrigger}
-    //     onUploadComplete={handleImageUploadComplete}
-    //     onUploadError={handleImageUploadError}
-    // />
-    // {imageUploadError && <p className="text-danger mt-2">{imageUploadError}</p>}
-
-
 
     // 저장 버튼
     const handleSave = async () => {
@@ -300,7 +286,7 @@ function MemberInfoSection() {
     }
 
     return (
-        <Card className="shadow-sm border-0 w-100">
+        <Card className="shadow-sm border-0 w-100 mypage-section">
         <Card.Body className="p-4">
             {/* 상단 섹션 제목 */}
             <div className="mb-3 text-center text-md-center">
@@ -316,7 +302,7 @@ function MemberInfoSection() {
                 <Form>
                 <Form.Group className="mb-3">
                     <Form.Label className="fw-semibold text-start d-block" style={{ marginBottom: "0.4rem" }}>로그인 ID</Form.Label>
-                    <Form.Control type="text" value={member.loginId} disabled />
+                    <Form.Control size="sm" type="text" value={member.loginId} disabled />
                 </Form.Group>
 
                 {/* 이메일 변경 및 인증: 변경하기 및 취소 버튼 -> 인증요청 버튼 -> 인증확인 버튼 */}
@@ -324,10 +310,10 @@ function MemberInfoSection() {
                     <Form.Label className="fw-semibold text-start d-block" style={{ marginBottom: "0.4rem" }}>이메일</Form.Label>
                     {/* 전체 수정모드(editMode)가 아닐 땐 단순 표시만 */}
                     {!editMode ? (
-                        <Form.Control type="email" value={member.email || ""} disabled />
+                        <Form.Control size="sm" type="email" value={member.email || ""} disabled />
                     ) : !editModeEmail ? (
                         // 이메일 수정모드이고, 아직 이메일 변경 시작 전 상태
-                        <InputGroup className="d-flex justify-content-between align-items-center">
+                        <InputGroup size="sm" className="d-flex justify-content-between align-items-center">
                             <Form.Control type="email" value={member.email || ""} disabled />
                             <Button 
                                 variant="outline-secondary" 
@@ -338,19 +324,18 @@ function MemberInfoSection() {
                                     setEmailMessage(""); // 메시지 초기화
                                     setEmailSuccess(null); // 메시지 색상 초기화                  
                                 }}
-                                className="rounded-3 px-3"
+                                className="rounded-3 px-3 text-nowrap"
                                 style={{
                                     whiteSpace: "nowrap", // 글자 줄바꿈 방지
-                                    height: "38px", // Form.Control 기본 높이와 동일
-                                    lineHeight: "1", // 글자가 세로 중앙에 맞게
-                                    // padding: "0 12px" // 좌우 패딩만 유지
+                                    height: "32px", 
+                                    lineHeight: "1", 
                                 }}>변경하기
                             </Button>
                             </InputGroup>
                     ) : (
                         // 이메일 변경 중인 상태
                         <>
-                        <InputGroup className="mt-2">
+                        <InputGroup size="sm" className="mt-2">
                             <Form.Control
                                 type="email"
                                 value={emailInput}
@@ -359,11 +344,11 @@ function MemberInfoSection() {
                                 disabled={isEmailRequested}
                             />
                             {!isEmailRequested && (
-                                <Button variant="dark" className="rounded-3 px-3" onClick={handleEmailRequest}>인증요청</Button>
+                                <Button variant="dark" className="rounded-3 px-3 text-nowrap" onClick={handleEmailRequest}>인증요청</Button>
                             )}
                             <Button
                                 variant="outline-secondary"
-                                className="rounded-3 px-3"
+                                className="rounded-3 px-3 text-nowrap"
                                 onClick={() => {
                                     setEditModeEmail(false);
                                     setIsEmailRequested(false);
@@ -376,28 +361,28 @@ function MemberInfoSection() {
 
                         {/* 이메일 인증코드 입력란 */}
                         {isEmailRequested && !isEmailVerified && (
-                            <div className="mt-2 d-flex gap-2">
+                            <InputGroup size="sm" className="mt-2 d-flex gap-2">
                                 <Form.Control type="text" placeholder="인증코드 입력" value={emailCode} onChange={(e) => setEmailCode(e.target.value)}/>
                                 <Button 
                                     variant="success" 
                                     onClick={handleEmailVerify}
-                                    className="rounded-3 px-3"
+                                    className="rounded-3 px-3 text-nowrap"
                                     disabled={!emailCode.trim()} // 인증코드 입력 없으면 "인증확인" 버튼 비활성화
                                     style={{
-                                        whiteSpace: "nowrap", // 글자 줄바꿈 방지
-                                        height: "38px", // Form.Control 기본 높이와 동일
-                                        lineHeight: "1", // 글자가 세로 중앙에 맞게
-                                        padding: "0 12px"  // 좌우 패딩만 유지
+                                        whiteSpace: "nowrap", 
+                                        height: "32px", 
+                                        lineHeight: "1", 
+                                        padding: "0 12px"
                                     }}>인증확인
                                 </Button>
-                            </div>
+                            </InputGroup>
                         )}
                         {/* 이메일 중복확인 결과 메세지(왼쪽 정렬 + 반응형 고정) */}
                         {isEmailVerified && (
                             <div className="mt-2 text-start w-100">
                                 <p 
                                     className={`fw-semibold mb-0 ${emailSuccess ? "text-success" : "text-danger"}`}
-                                    style={{fontSize: "0.9rem", lineHeight: "1.4", wordBreak: "keep-all",}}
+                                    style={{fontSize: "0.9em", lineHeight: "1.4", wordBreak: "keep-all",}}
                                 >{emailMessage}</p>
                             </div>
                         )}
@@ -411,10 +396,10 @@ function MemberInfoSection() {
                     
                     {/* 전체 수정모드(editMode)가 아닐 땐 단순 표시만 */}
                     {!editMode ? (
-                        <Form.Control type="text" value={member.nickname || ""} disabled />
+                        <Form.Control size="sm" type="text" value={member.nickname || ""} disabled />
                     ) : !editModeNickname ? (
                         // 수정모드이고, 아직 닉네임 변경 시작 전
-                        <InputGroup>
+                        <InputGroup size="sm">
                             <Form.Control type="text" value={member.nickname || ""} disabled />
                             <Button
                                 variant="outline-secondary" 
@@ -425,12 +410,12 @@ function MemberInfoSection() {
                                     setNicknameAvailable(false);
                                     setNicknameMessage("");
                                 }}
-                                className="rounded-3 px-3" 
+                                className="rounded-3 px-3 text-nowrap" 
                                 style={{
-                                    whiteSpace: "nowrap", // 글자 줄바꿈 방지
-                                    height: "38px", // Form.Control 기본 높이와 동일
-                                    lineHeight: "1", // 글자가 세로 중앙에 맞게
-                                    padding: "0 12px"  // 좌우 패딩만 유지
+                                    whiteSpace: "nowrap", 
+                                    height: "32px", 
+                                    lineHeight: "1", 
+                                    padding: "0 12px"
                                 }}
                             >변경하기
                             </Button>
@@ -438,23 +423,23 @@ function MemberInfoSection() {
                     ) : (
                         // 닉네임 변경 중
                         <>
-                        <InputGroup className="mt-2">
+                        <InputGroup size="sm" className="mt-2">
                             <Form.Control
                                 type="text"
                                 value={nicknameInput}
                                 placeholder="새 닉네임 입력"
                                 onChange={(e) => setNicknameInput(e.target.value)}/>
-                            <Button variant="dark" className="rounded-3 px-3" onClick={handleNicknameCheck}>중복확인</Button>
+                            <Button variant="dark" className="rounded-3 px-3 text-nowrap" onClick={handleNicknameCheck}>중복확인</Button>
                             <Button
                                 variant="outline-secondary"
-                                className="rounded-3 px-3"
+                                className="rounded-3 px-3 text-nowrap"
                                 onClick={() => {
                                     setEditModeNickname(false);
                                     setIsNicknameChecked(false);
                                     setNicknameAvailable(false);
                                     setNicknameInput("");
                                 }}
-                                style={{whiteSpace: "nowrap", height: "38px", lineHeight: "1",}}>취소하기
+                                style={{whiteSpace: "nowrap", height: "32px", lineHeight: "1",}}>취소하기
                             </Button>
                         </InputGroup>
                         {/* 닉네임 중복확인 결과 메세지(왼쪽 정렬 + 반응형 고정) */}
@@ -462,7 +447,7 @@ function MemberInfoSection() {
                             <div className="mt-2 text-start w-100">
                                 <p 
                                     className={`fw-semibold mb-0 ${nicknameAvailable ? "text-success" : "text-danger"}`}
-                                    style={{fontSize: "0.9rem", lineHeight: "1.4", wordBreak: "keep-all",}}
+                                    style={{fontSize: "0.9em", lineHeight: "1.4", wordBreak: "keep-all",}}
                                 >{nicknameMessage}
                                 </p>
                             </div>
@@ -473,18 +458,19 @@ function MemberInfoSection() {
 
                 <Form.Group className="mb-3">
                     <Form.Label className="fw-semibold text-start d-block" style={{ marginBottom: "0.4rem" }}>이름</Form.Label>
-                    <Form.Control type="text" name="name" value={member.name || ""} onChange={handleChange} disabled={!editMode}/>
+                    <Form.Control size="sm" type="text" name="name" value={member.name || ""} onChange={handleChange} disabled={!editMode}/>
                 </Form.Group>
 
                 <Form.Group className="mb-3">
                     <Form.Label className="fw-semibold text-start d-block" style={{ marginBottom: "0.4rem" }}>전화번호</Form.Label>
-                    <Form.Control type="text" name="phone" value={member.phone || ""} onChange={handleChange} disabled={!editMode}/>
+                    <Form.Control size="sm" type="text" name="phone" value={member.phone || ""} onChange={handleChange} disabled={!editMode}/>
                 </Form.Group>
 
                 {/** 생년월일 캘린더 형식으로 변경 */}
                 <Form.Group className="mb-3">
                     <Form.Label className="fw-semibold text-start d-block" style={{ marginBottom: "0.4rem" }}>생년월일</Form.Label>
                         <Form.Control 
+                            size="sm"
                             type="date"
                             name="birthDate"
                             value={birthDate} 
@@ -499,12 +485,14 @@ function MemberInfoSection() {
                     <Form.Label className="fw-semibold text-start d-block" style={{ marginBottom: "0.4rem" }}>성별</Form.Label>
                     <div className="d-flex gap-3">
                         <Button
+                            size="sm"
                             variant={member.gender === "M" ? "dark" : "outline-secondary"} // 선택된 성별에 따라 스타일 변경
                             className={`px-4 py-2 border ${!editMode ? "disabled" : ""}`}
                             onClick={() => editMode && setMember({ ...member, gender: "M" })}
                         >남성
                         </Button>
                         <Button
+                            size="sm"
                             variant={member.gender === "F" ? "dark" : "outline-secondary"}
                             className={`px-4 py-2 border ${!editMode ? "disabled" : ""}`}
                             onClick={() => editMode && setMember({ ...member, gender: "F" })}
@@ -520,7 +508,7 @@ function MemberInfoSection() {
                         {!showPasswordInput && (
                             <div className="d-flex justify-content-center gap-2 mb-3">
                                 {/* 비밀번호 변경 버튼 */}
-                                <Button variant="outline-secondary" className="flex-fill" onClick={() => setShowPasswordInput((prev) => !prev)}>비밀번호 변경</Button>
+                                <Button size="sm" variant="outline-secondary" className="flex-fill text-nowrap" onClick={() => setShowPasswordInput((prev) => !prev)}>비밀번호 변경</Button>
                             </div>
                         )}                          
 
@@ -532,6 +520,7 @@ function MemberInfoSection() {
                                     
                                     {/* 새 비밀번호 입력란(필드1) */}
                                     <Form.Control
+                                        size="sm"
                                         type="password"
                                         name="password1"
                                         placeholder="새 비밀번호 입력"
@@ -542,6 +531,7 @@ function MemberInfoSection() {
 
                                     {/* 비밀번호 확인 입력란(필드2) */}    
                                     <Form.Control
+                                        size="sm"
                                         type="password"
                                         name="password2"
                                         placeholder="새 비밀번호 확인"
@@ -555,7 +545,7 @@ function MemberInfoSection() {
 
                                     {/* 유효성 검사 메세지 */}
                                     <Fade in={!passwordValid }>
-                                        <Form.Text className="text-start text-danger d-block">
+                                        <Form.Text className="text-start text-danger d-block" style={{fontSize: "0.9em"}}>
                                             유효하지 않은 비밀번호 입니다.
                                             <br/>대문자+소문자+특수문자 포함 8자 이상 입력하세요.
                                         </Form.Text>
@@ -563,7 +553,7 @@ function MemberInfoSection() {
 
                                     {/* 불일치 결과 메세지 */}
                                     <Fade in={!passwordMatch}>
-                                        <Form.Text className="text-start text-danger d-block">입력하신 비밀번호가 일치하지 않습니다.</Form.Text>
+                                        <Form.Text className="text-start text-danger d-block" style={{fontSize: "0.9em"}}>입력하신 비밀번호가 일치하지 않습니다.</Form.Text>
                                     </Fade>
                                     
                                     {/* 일치 결과 메세지 (비밀번호가 유효성 통과하고, 필드1&필드2 입력값이 일치할 경우 표시) */}
@@ -573,14 +563,15 @@ function MemberInfoSection() {
                                         passwordInput2 !== "" && //비밀번호 입력값(필드2)도 비어있지 않고
                                         passwordMatch // 두 입력값(필드1&필드2)이 일치 할 경우에만 통과
                                     }> 
-                                        <Form.Text className="text-start text-success d-block">입력하신 비밀번호가 일치합니다.</Form.Text>
+                                        <Form.Text className="text-start text-success d-block" style={{fontSize: "0.9em"}}>입력하신 비밀번호가 일치합니다.</Form.Text>
                                     </Fade>
                                     
                                     {/* 비밀번호 변경 취소 버튼 (입력창 하단으로 이동) */}
                                     <div className="d-flex justify-content-center gap-1 mt-3">
                                         <Button
+                                            size="sm"
                                             variant="outline-danger"
-                                            className="flex-fill"
+                                            className="flex-fill text-nowrap"
                                             onClick={() => {
                                                 setShowPasswordInput(false);
                                                 setPasswordInput1("");
@@ -600,11 +591,11 @@ function MemberInfoSection() {
                 {/* 회원정보 페이지 하단의 버튼 */}
                 <div className="d-flex flex-column flex-sm-row gap-4 mt-4">
                     {!editMode ? (
-                        <Button variant="dark" className="flex-fill" onClick={() => setEditMode(true)}>수정하기</Button> 
+                        <Button size="sm" variant="dark" className="flex-fill text-nowrap" onClick={() => setEditMode(true)}>수정하기</Button> 
                     ) : (
                         <>
-                        <Button variant="dark" className="flex-fill" onClick={handleSave}>저장하기</Button>
-                        <Button variant="outline-secondary" className="flex-fill" onClick={() => {
+                        <Button size="sm" variant="dark" className="flex-fill text-nowrap" onClick={handleSave}>저장하기</Button>
+                        <Button size="sm" variant="outline-secondary" className="flex-fill text-nowrap" onClick={() => {
                             // 수정 취소 버튼 클릭 시 상태 초기화
                             setEditMode(false);
                             setEditModeEmail(false);
@@ -633,7 +624,7 @@ function MemberInfoSection() {
                     style={{ width: "130px", height: "130px" }}>
                     <Image 
                         onClick={() => document.getElementById("formFile")?.click()} 
-                        src={previewUrl || member.profileImageUrl || "https://cdn-icons-png.flaticon.com/512/847/847969.png"} alt="profile image" roundedCircle fluid/>
+                        src={previewUrl || member.profileImage || "https://cdn-icons-png.flaticon.com/512/847/847969.png"} alt="profile image" roundedCircle fluid/>
                 </div>
                 <p className="text-muted mt-2 mb-1">프로필 사진</p>
 

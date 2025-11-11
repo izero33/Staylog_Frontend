@@ -11,7 +11,7 @@ export function getImageUrl(targetType: string, targetId:number){
 
     api.get(`/v1/images/${targetType}/${targetId}`)
     .then((res) => {
-        console.log("🖼️ 이미지 응답:", res);
+        console.log("이미지 응답:", res);
       const firstImg = res?.images?.[0]?.imageUrl ?? "";
       setUrl(firstImg);
     })

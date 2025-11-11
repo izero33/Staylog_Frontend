@@ -43,6 +43,7 @@ import AdminRoomRegisterPage from "../../domain/admin/pages/AdminRoomRegisterPag
 
 import CarouselTestPage from "../pages/CarouselTestPage";
 import AdminHomeManagement from "../../domain/admin/pages/AdminHomeManagement";
+import Home3 from "../pages/Home3";
 
 
 
@@ -68,7 +69,7 @@ const routes: RouteObject[] = [
   { path: "/payment/complete", element: <PaymentCompletePage/>}, // 결제 완료 페이지
   { path: "/comments/:boardId", element: <CommentsPage /> },
   { path: "/testEditor", element: <TestEditorPage /> },
-  { path: "/home", element: <Home2 />},
+  { path: "/home", element: <Home3 />},
   { path: "/testCarousel", element: <CarouselTestPage />},
 ];
 

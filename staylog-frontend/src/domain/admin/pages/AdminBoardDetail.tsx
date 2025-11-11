@@ -1,5 +1,5 @@
 
-import { Card, Col, Container, Form, Row, Table } from 'react-bootstrap';
+import { Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
@@ -254,20 +254,22 @@ function AdminBoardDetail() {
                             <div className="d-none d-md-block mt-3">
                                 <Card style={{ maxWidth: '400px' }}>
                                     <Card.Body className="gap-2 d-flex flex-column">
-                                        <Form.Group className="d-flex justify-content-between">
-                                            <Form.Label className='fw-bold'>별점</Form.Label>
-                                            <div className="d-flex align-items-center">
-                                                <Form.Control
-                                                    type="text"
-                                                    name="rating"
-                                                    size="sm"
-                                                    className="text-end"
-                                                    value={data.rating}
-                                                    readOnly
-                                                />
-                                                <span className="ms-2">점</span>
-                                            </div>
-                                        </Form.Group>
+                                        {data.rating !== 0 && data.rating !== null && (
+                                            <Form.Group className="d-flex justify-content-between">
+                                                <Form.Label className='fw-bold'>별점</Form.Label>
+                                                <div className="d-flex align-items-center">
+                                                    <Form.Control
+                                                        type="text"
+                                                        name="rating"
+                                                        size="sm"
+                                                        className="text-end"
+                                                        value={data.rating}
+                                                        readOnly
+                                                    />
+                                                    <span className="ms-2">점</span>
+                                                </div>
+                                            </Form.Group>
+                                        )}
                                         <Form.Group className='d-flex justify-content-between'>
                                             <Form.Label className='fw-bold'>좋아요수</Form.Label>
                                             <div className="d-flex align-items-center">
@@ -314,17 +316,17 @@ function AdminBoardDetail() {
 
             {/* 게시글 내용 */}
             <p className='fs-5 text-center my-4 border-top py-3 border bg-light rounded'>게시글 내용</p>
-
-            <Card className="mb-3 p-2">
-                <ImageCarousel
-                    targetType={data.rating !== 0 && data.rating !== null ? 'REVIEW' : 'BOARD'}
-                    targetId={boardId}
-                    aspectRatio='16:9'
-                    rounded={true}
-                    arrowsOnHover={true}
-                />
-            </Card>
-
+            {data.rating === 0 && (
+                <Card className="mb-3 p-2">
+                    <ImageCarousel
+                        targetType='BOARD_JOURNAL'
+                        targetId={boardId}
+                        aspectRatio='21:9'
+                        rounded={true}
+                        arrowsOnHover={true}
+                    />
+                </Card>
+            )}
             <Card className="mb-3">
                 <Card.Header className="bg-light fw-bold">
                     제목

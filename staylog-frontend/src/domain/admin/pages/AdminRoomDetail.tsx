@@ -1,5 +1,5 @@
 
-import { Col, Container, Card, Form, Row, Table } from 'react-bootstrap';
+import { Col, Container, Card, Form, Row} from 'react-bootstrap';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';

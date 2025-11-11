@@ -90,11 +90,13 @@ function BoardForm() {
       createdAt: "",          // 작성일
     });
 
+    // const [draftId, setDraftId] = useState<number | null>(undefined);
+
     
     useEffect(() => {
       if (userId == null) return;
       setDto(prev => ({ ...prev, userId }));
-    }, [userId]);
+    }, [userId]); 
 
     // 새 글 작성 시: 임시 boardId(draftId) 미리 확보
     useEffect(() => {
@@ -111,7 +113,7 @@ function BoardForm() {
       };
 
       fetchDraftId();
-    }, [isEdit]);
+    }, []);
 
 
     // 수정 모드 => 기존 데이터 로드
@@ -331,8 +333,9 @@ function BoardForm() {
 
 
               {/* 내용 */}
+              {dto.boardId > 0 && (
               <Form.Group className="mb-4">
-                <Form.Label className="fw-semibold">내용</Form.Label>                
+                <Form.Label className="fw-semibold">내용</Form.Label>   
                   <QuillEditor
                     key={`board-quill-${dto.boardId}`}
                     value={dto.content ?? ""}
@@ -341,11 +344,13 @@ function BoardForm() {
                     targetId={dto.boardId}
                     style={{ height: "600px" }}
                   />
+                   
                 </Form.Group>
-                
-                
+              )}
+
+                {dto.boardId > 0 && (
                 <ImageManager
-                    key={`image-manager-${dto.boardId}`}
+                    key={`image-manager-${resetTrigger}`}
                     targetType={apiBoardType}
                     targetId={dto.boardId}
                     isEditMode={true} // 수정 모드 활성화
@@ -353,6 +358,8 @@ function BoardForm() {
                     onUploadComplete={handleImageUploadComplete}
                     onUploadError={handleImageUploadError}
                 />
+                )}
+
                 {imageUploadError && <p className="text-danger mt-2">{imageUploadError}</p>}
             
               

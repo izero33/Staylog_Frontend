@@ -26,8 +26,15 @@ function HomeListSection({
   const [pageOffset, setPageOffset] = useState(offset);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const inFlight = useRef(false);
+  const inFlightRef = useRef(false);
+  const loadingRef = useRef(false);
+  const hasMoreRef = useRef(true);
+
   const navigate = useNavigate();
+
+  useEffect(() => { hasMoreRef.current = hasMore; }, [hasMore]);
+  useEffect(() => { loadingRef.current = loading; }, [loading]);
+
 
   // 별 렌더
   const renderStars = (ratingNum: number = 0) => {
@@ -60,33 +67,27 @@ function HomeListSection({
 
   const fetchPage = useCallback(
     async (nextOffset: number) => {
-      if (loading || inFlight.current || !hasMore) return;
-      inFlight.current = true;
+      if (loadingRef.current || inFlightRef.current || !hasMoreRef.current) return;
+
+      inFlightRef.current = true;
       setLoading(true);
       try {
-        // 백엔드는 한 개의 엔드포인트만 쓰자: /v1/home
-        const params = {
-          regionCode,
-          sort,
-          offset: nextOffset,
-          limit,
-        };
+        const params = { regionCode, sort, offset: nextOffset, limit };
         const data: HomeAccommodationListResponse = await api.get("v1/home", { params });
-        // 첫 페이지면 교체, 그 외엔 이어붙이기
-        setList((prev) => (nextOffset === 0 ? data : [...prev, ...data]));
-        // 다음 페이지 가능 여부
+
+        setList(prev => (nextOffset === 0 ? data : [...prev, ...data]));
+
         if (!Array.isArray(data) || data.length < limit) {
-          setHasMore(false);
+          setHasMore(false); // hasMoreRef는 위 useEffect로 동기화됨
         }
-      } catch (err: any) {
-        // 500 대응: 콘솔만 찍고 더 이상 진행 X
-        console.error("Home list fetch error:", err?.response ?? err);
+      } catch (err) {
+        console.error("Home list fetch error:", err);
       } finally {
         setLoading(false);
-        inFlight.current = false;
+        inFlightRef.current = false;
       }
     },
-    [regionCode, sort, limit, loading, hasMore]
+    [regionCode, sort, limit] // ⬅️ 안정적인 의존성만 남김
   );
 
   // regionCode/sort 바뀌면 리셋 후 1페이지 로드
@@ -101,11 +102,12 @@ function HomeListSection({
     fetchPage(pageOffset);
   }, [pageOffset, fetchPage]);
 
-  // 스와이퍼 끝에 닿았을 때
+  
   const handleReachEnd = () => {
-    if (loading || !hasMore) return;
-    setPageOffset((prev) => prev + limit);
-  };
+    //  스와이퍼 끝에 닿았을 때 다음 페이지 요청 (ref 가드)
+    if (inFlightRef.current || !hasMoreRef.current) return;
+    setPageOffset(prev => prev + limit);
+  }
 
   return (
     <>

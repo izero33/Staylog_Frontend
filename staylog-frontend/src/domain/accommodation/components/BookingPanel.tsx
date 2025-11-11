@@ -123,7 +123,6 @@ function BookingPanel({
   );
 
   // 체크인 이후 "다음 블락 시작일" 찾기
-
   const nextBlockedAfter = (d: Date | null) => {
     if (!d) return null;
     for (const b of blockedDatesLocal) if (+b > +d) return b;
@@ -136,6 +135,15 @@ function BookingPanel({
     return new Date(t.getFullYear(), t.getMonth(), t.getDate()); // 00:00
   }, []);
 
+  // 오늘(로컬 자정)은 이미 todayLocal에 있음
+  const maxSelectableDate = useMemo(() => {
+    // 오늘 날짜 기준으로 3개월 뒤 같은 일자까지 허용
+    const t = todayLocal;
+    const blockMonth = t.getMonth();
+    return new Date(t.getFullYear(), blockMonth + 4, 0);
+  }, [todayLocal]);
+
+  
   // 날짜 선택 가능 여부(블락 + 징검다리)
   const filterDate = (date: Date) => {
     const s = ymd(date);
@@ -305,7 +313,10 @@ function BookingPanel({
                   shouldCloseOnSelect={false}
                   filterDate={filterDate}
                   disabled={calendarDisabled}
-                  minDate={new Date()}
+                  minDate={todayLocal}
+                  maxDate={maxSelectableDate}
+                  showDisabledMonthNavigation
+                  disabledKeyboardNavigation
                   onChange={(v) => {
                     const [start, end] = v as [Date | null, Date | null];
 

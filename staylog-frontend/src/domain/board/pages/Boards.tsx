@@ -9,13 +9,15 @@ import { type BoardDto, type PageInfo } from "../types/boardtypes";
 import "../components/RegionSidebar.css";
 import "./Board.css";
 
-import PaginationBar from "../../../global/components/PaginationBar";
+
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import useGetUserRoleFromToken from "../../auth/hooks/useGetUserRoleFromToken";
 import RegionsSideBar from "../components/RegionSideBar";
 
 import JournalCard from "../components/JournalCard";
 import RegionButton from "../components/RegionButton";
+import Pagination from "../../../global/components/Pagination";
+
 // import { getImageUrl } from "../../../global/hooks/getImageUrl"; // 목록 페이지에서는 불필요
 
 
@@ -45,14 +47,16 @@ function Boards() {
   const [pageInfo, setPageInfo] = useState<PageInfo>({
     boardType: apiBoardType,
     pageNum: 1,
+    pageSize: boardType === "journal" ? 9 : 10,
+    totalCount: 0,
+    totalPage: 0,
     startPage: 1,
     endPage: 5,
-    totalPage: 0,
-    totalCount: 0,
-    pageSize: boardType === "journal" ? 9 : 10,
+    offset: 0,   
     regionCodes: [],
     sort: "latest",
   });
+
 
 
   // boardType 바뀔 때 페이지 초기화 
@@ -79,7 +83,7 @@ function Boards() {
           ? []
           : selectedRegions;
   
-        const res = await api.post(`/v1/boardsList`, {
+        const res = await api.post(`/v1/boardList`, {
           
             boardType: apiBoardType,
             pageNum,
@@ -146,19 +150,17 @@ function Boards() {
       </div>
 
       <Container fluid="lg" className="mt-4">
-        <Row className="align-items-center mb-3 gy-4">
-          {/* 좌측 지역 */}
-          <Col md={2} className="d-none d-md-block">
-            <div className="px-3">
+        <Row>
+          {/* 지역 사이드바 - md 이상에서만 표시 */}
+          <Col md={3} lg={2} className="d-none d-md-block">            
               <RegionsSideBar
                 selectedRegions={selectedRegions}
                 setSelectedRegions={setSelectedRegions}
-              />
-            </div>
+              />            
           </Col>
 
-          {/* 모바일용 지역 선택 (드롭다운/버튼형) */}
-          <Col xs={12} className="d-md-none mb-3">
+          {/* 지역 선택 버튼 - 모바일용 */}
+          <Col xs={12} className="d-md-none mb-2">
             <RegionButton
               selectedRegions={selectedRegions}
               setSelectedRegions={setSelectedRegions}
@@ -166,12 +168,12 @@ function Boards() {
           </Col>
 
           {/* 메인 목록 */}
-          <Col xs={12} md={10} lg={10}>
-            <div className="d-flex justify-content-end gap-3 mb-3">
+          <Col xs={12} md={9} lg={10}>
+            <div className="d-flex justify-content-end gap-2 mb-3">
               {/* 리뷰 등록 버튼 */}
               {boardType === "review" && userId && (
                 <button
-                  className="btn btn-secondary"
+                  className="btn btn-sm btn-secondary"
                   onClick={() => navigate(`/form/${boardType}`)}
                 >
                   리뷰 등록
@@ -181,7 +183,7 @@ function Boards() {
               {/* 저널 등록 버튼 */}
               {boardType === "journal" && role?.toUpperCase().includes("VIP") && (
                 <button
-                  className="btn btn-secondary"
+                  className="btn btn-sm btn-secondary"
                   onClick={() => navigate(`/form/${boardType}`)}
                 >
                   저널 등록
@@ -189,7 +191,7 @@ function Boards() {
               )}
 
               {/* 정렬 */}
-              <Col xs="auto" className="p-0"></Col>
+              
               <Dropdown align="end">
                 <Dropdown.Toggle
                   variant="outline-secondary"
@@ -229,7 +231,7 @@ function Boards() {
               {/* 리뷰 게시글 목록 */}
               {boardType === "review" && (
               <div className="table-responsive-wrapper">
-                <Table className="review-table align-middle text-center m-4">
+                <Table className="review-table align-middle text-center">
                   <thead>
                     <tr>
                       <th>번호</th>
@@ -288,22 +290,23 @@ function Boards() {
 
             {/* 저널 게시글 목록 */}
             {boardType === "journal" && (
-              <Row className="journal-grid px-4">
+              <Row className="journal-grid g-3">
                 {boards.length > 0 ? (
                   boards.map((board) => (
                     <Col key={board.boardId} 
                       xs={12} 
                       sm={6} 
                       lg={4} 
-                      className="d-flex justify-content-center"
                     >
                     <JournalCard board={board} />
                   </Col>
                   ))
                 ) : (
+                  <Col xs={12}>
                   <p className="text-center text-muted mt-4">
                     게시글이 없습니다.
                   </p>
+                  </Col>
                 )}
               </Row>
             )}
@@ -312,9 +315,8 @@ function Boards() {
 
 
             {/* 페이지네이션 */}
-            <div className="d-flex justify-content-center mt-3">
-              <PaginationBar pageState={pageInfo} onMove={fetchBoards} />
-            </div>
+            {pageInfo && <Pagination page={pageInfo} onPageChange={fetchBoards} />}
+            
           </Col>
         </Row> 
       </Container>

@@ -45,7 +45,7 @@ function BoardForm() {
       alert("게시글이 성공적으로 등록/수정되었습니다.");
       // dto.boardId를 사용하여 페이지 이동 (수정 시에는 boardId 사용)
       const finalBoardId = isEdit ? boardId : dto.boardId;
-      navigate(`/${boardType}/${finalBoardId}`);
+      navigate(`/board/${finalBoardId}`);
     };
   
     const handleImageUploadError = (errMsg: string) => {
@@ -54,7 +54,7 @@ function BoardForm() {
       alert(`게시글 내용은 저장되었지만 이미지 업로드에 실패했습니다: ${errMsg}`);
       // 이 경우에도 페이지는 이동시켜주자. 사용자가 직접 이미지를 다시 올릴 수 있도록.
       const finalBoardId = isEdit ? boardId : dto.boardId;
-      navigate(`/${boardType}/${finalBoardId}`);
+      navigate(`/board/${finalBoardId}`);
     };
 
     // 예약내역 상태값 관리

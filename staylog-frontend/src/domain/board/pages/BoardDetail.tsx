@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../global/api";
-import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import type { BoardDto } from "../types/boardtypes";
 import Comments from "../components/comment/Comments";
 import { useSelector } from "react-redux";
@@ -26,8 +25,8 @@ function BoardDetail() {
     const [dto, setDto] = useState<BoardDto | null>(null);
 
 
-    const apiBoardType =
-        boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
+    // const apiBoardType =
+    //     boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
 
     const navigate = useNavigate();
 
@@ -180,20 +179,29 @@ function BoardDetail() {
         <div className="border-top my-3 border-dark"></div>
 
         {/* 작성자, 작성일, 조회수 */}
-        <div className="row justify-content-end mb-2 text-muted small text-end text-md-end">
-            <span className="me-2">작성자: {dto?.userNickName || dto?.userName || dto?.userId}</span>
-            <span className="me-2">작성일: {dto?.createdAt?.split("T")[0]}</span>
-            <span className="me-2">조회수: {dto?.viewsCount ?? 0}</span>
-        </div>  
+        <div className="text-muted small text-end">
+  <span className="meta-item">
+    작성자  {dto?.userNickName || dto?.userName || dto?.userId}
+  </span>
+  <span className="meta-divider">|</span>
+  <span className="meta-item">
+    작성일  {dto?.createdAt?.split("T")[0]}
+  </span>
+  <span className="meta-divider">|</span>
+  <span className="meta-item">
+    조회수  {dto?.viewsCount ?? 0}
+  </span>
+</div>
+
 
 
         {/* 게시글 내용 */}
-        <div dangerouslySetInnerHTML={{ __html: dto?.content || "" }} className="board-content mt-5 mb-5" />
+        <div dangerouslySetInnerHTML={{ __html: dto?.content || "" }} className="board-content mt-3 mb-3" />
 
         {/* 별점 - 리뷰에서만 보기 */}
         {boardType === "review" && (
         <>
-        <div className="d-flex justify-content-center align-items-center mt-5 mb-5">
+        <div className="d-flex justify-content-center align-items-center mt-5 mb-4">
             
             {[1, 2, 3, 4, 5].map((star) => (
             <span
@@ -206,8 +214,8 @@ function BoardDetail() {
             ))}
         </div>
 
-        {/* 숙소 링크 */}
-        <div className="d-flex justify-content-center mb-5">
+        {/* 숙소 링크, 좋아요 버튼 */}
+        <div className="d-flex justify-content-center mb-5 gap-2">
             <button
                 className="btn btn-outline-secondary"
                 onClick={() => {
@@ -217,6 +225,16 @@ function BoardDetail() {
                 }}
             >
                 숙소 보러가기
+            </button>
+        
+
+        {/* 좋아요 */}
+    
+
+            <button
+                className={`btn ${liked ? "btn-danger" : "btn-outline-danger"}`}
+                onClick={handleLike}>
+                {liked ? "❤️" : "🤍"} {likes}
             </button>
         </div>
 
@@ -228,15 +246,7 @@ function BoardDetail() {
 
     
 
-    {/* 좋아요 */}
-    <div className="d-flex justify-content-center mb-3">
-
-        <button
-            className={`btn ${liked ? "btn-danger" : "btn-outline-danger"}`}
-            onClick={handleLike}>
-            {liked ? "❤️" : "🤍"} {likes}
-        </button>
-    </div>
+    
 
 
     <div className="border-top my-4 border-dark"></div>
@@ -253,13 +263,13 @@ function BoardDetail() {
     
     <div className="d-flex justify-content-end gap-2">
         <button
-            className="btn btn-outline-secondary"
+            className="btn btn-sm btn-outline-secondary"
             onClick={() => setModalInfo({ isOpen: true, type: "update" })}>
             수정
         </button>
     
         <button
-            className="btn btn-outline-secondary"
+            className="btn btn-sm btn-outline-secondary"
             onClick={() => setModalInfo({ isOpen: true, type: "delete" })}>
             삭제
         </button>

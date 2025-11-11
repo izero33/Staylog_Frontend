@@ -37,6 +37,24 @@
   font-size: 0.9rem;
 }
 
+.board-content {
+  min-height: 240px;      /* 내용이 짧아도 최소 높이 확보 */
+  padding: 10px;          /* 내부 여백 */
+  
+  
+}
+
+.meta-item {
+  display: inline-block;
+  margin: 0 8px;
+}
+
+.meta-divider {
+  color: #bbb;
+  margin: 0 8px;
+}
+
+
 /* =========================================================
    📊 테이블 공통
    ========================================================= */
@@ -237,4 +255,30 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* =========================================
+   ✨ Review Table 스타일
+   ========================================= */
+
+.review-table th,
+.review-table td {
+  white-space: nowrap;      /* 줄바꿈 방지 */
+  overflow: hidden;         /* 넘치는 글자 숨김 */
+  text-overflow: ellipsis;  /* ... 으로 표시 */
+  max-width: 150px;         /* 셀 너비 제한 (필요시 조절) */
+}
+
+.review-table td a {
+  display: inline-block;    /* 링크에도 동일하게 적용되도록 */
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 반응형일 때 테이블이 전체 너비를 넘으면 스크롤 */
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;        /* 가로 스크롤 추가 */
 }

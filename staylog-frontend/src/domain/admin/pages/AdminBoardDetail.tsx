@@ -1,5 +1,5 @@
 
-import { Container } from 'react-bootstrap';
+import { Card, Col, Container, Form, Row, Table } from 'react-bootstrap';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
@@ -8,6 +8,7 @@ import { formatKST } from '../../../global/utils/date';
 import type { AdminBoard } from '../types/AdminBoardTypes';
 import AdminReservationDetailModal from '../components/AdminReservationDetailModal';
 import '../css/AdminDescriptionImg.css';
+import ImageCarousel from '../../../global/components/ImageCarousel';
 
 /*
     Carousel : 게시글 대표 이미지
@@ -176,48 +177,86 @@ function AdminBoardDetail() {
                 )}
             </div>
 
-            {/* 데스크톱: 테이블 */}
-            <div className="d-none d-md-block">
-                <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
-                    <tbody>
-                        {/* 세로 헤더 (왼쪽이 헤더) */}
-                        <tr>
-                            <th className="bg-light text-center" style={{ width: '25%' }}>작성자</th>
-                            <td>{data.userNickName}</td>
-                        </tr>
+            <Card className="mb-3">
+                <Card.Body>
+                    {/* 작성자 */}
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            작성자
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <Form.Control
+                                plaintext
+                                readOnly
+                                value={data.userNickName}
+                                className="form-control-sm"
+                            />
+                        </Col>
+                    </Form.Group>
 
-                        <tr>
-                            <th className="bg-light text-center">지역</th>
-                            <td>{data.regionName}</td>
-                        </tr>
-                        {/* 숙소명 (리뷰 전용) */}
-                        {data.rating !== 0 && data.rating !== null && (
-                            <tr>
-                                <th className="bg-light text-center">숙소명</th>
-                                <td>{data.accommodationName}</td>
-                            </tr>
-                        )}
+                    {/* 지역 */}
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            지역
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <Form.Control
+                                plaintext
+                                readOnly
+                                value={data.regionName}
+                                className="form-control-sm"
+                            />
+                        </Col>
+                    </Form.Group>
 
-                        {data.bookingId !== 0 && (<tr>
-                            <th className="bg-light text-center">예약번호</th>
-                            <td>
+                    {/* 숙소명 (리뷰 전용) */}
+                    {data.rating !== 0 && data.rating !== null && (
+                        <Form.Group as={Row} className="mb-3">
+                            <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                                숙소명
+                            </Form.Label>
+                            <Col xs={12} md={9} lg={10}>
+                                <Form.Control
+                                    plaintext
+                                    readOnly
+                                    value={data.accommodationName}
+                                    className="form-control-sm"
+                                />
+                            </Col>
+                        </Form.Group>
+                    )}
+
+                    {/* 예약번호 */}
+                    {data.bookingId !== 0 && (
+                        <Form.Group as={Row} className="mb-3">
+                            <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                                예약번호
+                            </Form.Label>
+                            <Col xs={12} md={9} lg={10}>
                                 <button
                                     type="button"
                                     className="btn btn-link p-0 text-decoration-none"
                                     onClick={() => openDetail(data.bookingId)}
                                     title="상세 보기"
-                                >{data.bookingId}</button>
-                            </td>
-                        </tr>)}
+                                >
+                                    {data.bookingId}
+                                </button>
+                            </Col>
+                        </Form.Group>
+                    )}
 
-                        <tr>
-                            <th className="bg-light text-center">반응지표</th>
-                            <td>
-                                <table className="table table-sm mb-0" style={{ width: '33%' }}>
+                    {/* 반응지표 */}
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            반응지표
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <div className="d-none d-md-block mb-2">
+                                <Table bordered size="sm" className="mb-0" style={{ maxWidth: '300px' }}>
                                     <tbody>
                                         {data.rating !== 0 && data.rating !== null && (
                                             <tr>
-                                                <th>별점</th>
+                                                <th style={{ width: '50%' }}>별점</th>
                                                 <td>{data.rating}</td>
                                             </tr>
                                         )}
@@ -230,98 +269,45 @@ function AdminBoardDetail() {
                                             <td>{data.viewsCount}</td>
                                         </tr>
                                     </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th className="bg-light text-center">제목</th>
-                            <td>{data.title}</td>
-                        </tr>
+                                </Table>
+                            </div>
 
-                        {/* 구분선 */}
-                        <tr><td colSpan={2}></td></tr>
+                            <div className="d-flex flex-wrap gap-3 d-md-none">
+                                {data.rating !== 0 && data.rating !== null && (
+                                    <span><i title="별점" className="bi bi-star-fill text-warning"></i> {data.rating}</span>
+                                )}
+                                <span><i title="좋아요수" className="bi bi-heart-fill text-danger"></i> {data.likesCount}</span>
+                                <span><i title="조회수" className="bi bi-eye-fill"></i> {data.viewsCount}</span>
+                            </div>
+                        </Col>
+                    </Form.Group>
+                </Card.Body>
+            </Card>
 
-                        {/* 가로 헤더 (위쪽이 헤더) */}
-                        <tr>
-                            <th colSpan={2} className="bg-light text-center">내용</th>
-                        </tr>
-                        <tr>
-                            <td colSpan={2} className='description-content' dangerouslySetInnerHTML={{ __html: data.content }} />
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            {/* 게시글 내용 */}
+            <p className='fs-5 text-center my-4 border-top py-3 border bg-light rounded'>게시글 내용</p>
 
-            {/* 모바일: 카드 형식 */}
-            <div className="d-md-none">
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h6 className="card-subtitle mb-2 text-muted">작성자</h6>
-                        <p className="card-text">{data.userNickName}</p>
-                    </div>
-                </div>
-
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h6 className="card-subtitle mb-2 text-muted">지역</h6>
-                        <p className="card-text">{data.regionName}</p>
-                    </div>
-                </div>
-
-                {data.rating !== 0 && data.rating !== null && (
-                    <div className="card mb-3">
-                        <div className="card-body">
-                            <h6 className="card-subtitle mb-2 text-muted">숙소명</h6>
-                            <p className="card-text">{data.accommodationName}</p>
-                        </div>
-                    </div>
-                )}
-
-                {data.bookingId !== 0 && (
-                    <div className="card mb-3">
-                        <div className="card-body">
-                            <h6 className="card-subtitle mb-2 text-muted">예약번호</h6>
-                            <button
-                                type="button"
-                                className="btn btn-link p-0 text-decoration-none"
-                                onClick={() => openDetail(data.bookingId)}
-                            >
-                                {data.bookingId}
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h6 className="card-subtitle mb-2 text-muted">반응지표</h6>
-                        <div className="d-flex flex-wrap gap-3">
-                            {data.rating !== 0 && data.rating !== null && (
-                                <span><i title="별점" className="bi bi-star-fill text-warning"></i> {data.rating}</span>
-                            )}
-                            <span><i title="좋아요수" className="bi bi-heart-fill text-danger"></i> {data.likesCount}</span>
-                            <span><i title="조회수" className="bi bi-eye-fill"></i> {data.viewsCount}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 게시글 내용 */}
-                <p className='fs-5 text-center my-4 border-top py-3 border bg-light rounded'>게시글 내용</p>
-
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h6 className="card-subtitle mb-2 text-muted">제목</h6>
-                        <p className="card-text">{data.title}</p>
-                    </div>
-                </div>
-
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h6 className="card-subtitle mb-2 text-muted">내용</h6>
-                        <div className='description-content' dangerouslySetInnerHTML={{ __html: data.content }} />
-                    </div>
-                </div>
-            </div>
+            <Card className="mb-3">
+                <Card.Header className="bg-light fw-bold">
+                    제목
+                </Card.Header>
+                <Card.Body>
+                    <Form.Control
+                        plaintext
+                        readOnly
+                        value={data.title}
+                        className="form-control-sm"
+                    />
+                </Card.Body>
+            </Card>
+            <Card className="mb-3">
+                <Card.Header className="bg-light fw-bold">
+                    내용
+                </Card.Header>
+                <Card.Body>
+                    <div className='description-content' dangerouslySetInnerHTML={{ __html: data.content }} />
+                </Card.Body>
+            </Card>
 
             {/* 예약 상세 모달 */}
             <AdminReservationDetailModal

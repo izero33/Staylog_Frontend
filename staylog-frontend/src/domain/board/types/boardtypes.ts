@@ -1,5 +1,7 @@
 // src/domain/board/types/boardtypes.ts
 
+import type { PageResponse } from "../../../global/types/Paginationtypes";
+
 
 
 export type BoardDto = {
@@ -27,17 +29,12 @@ export type BoardDto = {
 
 }
 
-export type PageInfo = {
+
+export interface PageInfo extends PageResponse {
       boardType: string;
-      pageNum: number;
-      startPage: number;
-      endPage: number;
-      totalPage: number;
-      totalCount: number;
-      pageSize: number;
       regionCodes: string[];
       sort: "latest" | "likes" | "views";
-}
+    }
 
 export type LikesDto = {
       

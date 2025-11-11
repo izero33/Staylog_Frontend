@@ -15,6 +15,7 @@ import useGetUserRoleFromToken from "../../auth/hooks/useGetUserRoleFromToken";
 import RegionsSideBar from "../components/RegionSideBar";
 
 import JournalCard from "../components/JournalCard";
+import RegionButton from "../components/RegionButton";
 // import { getImageUrl } from "../../../global/hooks/getImageUrl"; // 목록 페이지에서는 불필요
 
 
@@ -158,26 +159,10 @@ function Boards() {
 
           {/* 모바일용 지역 선택 (드롭다운/버튼형) */}
           <Col xs={12} className="d-md-none mb-3">
-            <div className="mobile-region-bar px-2">
-              {["전체", "서울", "부산", "제주", "강원", "전주", "속초", "경주"].map((region) => (
-                <button
-                  key={region}
-                  className={`mobile-region-btn ${
-                    selectedRegions.includes(region) ? "selected" : ""
-                  }`}
-                  onClick={() =>
-                    setSelectedRegions(
-                      region === "전체" ? ["전체"] :
-                      selectedRegions.includes(region)
-                        ? selectedRegions.filter((r) => r !== region)
-                        : [...selectedRegions.filter((r) => r !== "전체"), region]
-                    )
-                  }
-                >
-                  {region}
-                </button>
-              ))}
-            </div>
+            <RegionButton
+              selectedRegions={selectedRegions}
+              setSelectedRegions={setSelectedRegions}
+            />
           </Col>
 
           {/* 메인 목록 */}

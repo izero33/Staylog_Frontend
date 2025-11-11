@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Row, Col, Form, Button, Card, Table } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Card} from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../../global/api';
 import axios from 'axios';

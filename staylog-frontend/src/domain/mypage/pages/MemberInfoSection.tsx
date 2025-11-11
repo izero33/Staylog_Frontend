@@ -13,6 +13,7 @@ import sendEmail from "../../auth/utils/sendEmail";
 import mailCertify from "../../auth/utils/mailCertify";
 import { uploadProfileImage } from "../api/mypageApi";
 import { REGEX_PASSWORD } from "../../../global/constants/Validation";
+import ImageManager from "../../../global/components/ImageManager";
 
 
 
@@ -225,6 +226,20 @@ function MemberInfoSection() {
         }
     };
 
+    // 지은이가 사용한 코드 참고해서 수정해보기
+    // <ImageManager
+    //     key={`image-manager-${resetTrigger}`}
+    //     targetType={apiBoardType}
+    //     targetId={boardId ? Number(boardId) : 0}
+    //     isEditMode={true} // 수정 모드 활성화
+    //     uploadTrigger={imageUploadTrigger}
+    //     onUploadComplete={handleImageUploadComplete}
+    //     onUploadError={handleImageUploadError}
+    // />
+    // {imageUploadError && <p className="text-danger mt-2">{imageUploadError}</p>}
+
+
+
     // 저장 버튼
     const handleSave = async () => {
         if (!member || !userId) return;
@@ -238,12 +253,7 @@ function MemberInfoSection() {
         if (editModeNickname && !nicknameAvailable) {
             alert("닉네임 중복확인을 완료해주세요.");
             return;
-        }        
-        // // 생년월일 YYYY-MM-DD 형식으로 조합
-        // const cleanedBirthDate =
-        //     birthYear && birthMonth && birthDay
-        //     ? `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`
-        //     : "";
+        } 
 
         // 조건부로 수정모드인 항목만 반영하도록 payload 구성
         const payload = {
@@ -254,7 +264,7 @@ function MemberInfoSection() {
             birthDate: birthDate || "",
             password: showPasswordInput && passwordInput1 ? passwordInput1 : "", // 비밀번호 변경 사항 반영
         };
-        console.log("📦 update payload:", payload); 
+        console.log("update payload:", payload); 
 
         try {
             // 회원정보 업데이트 API 호출

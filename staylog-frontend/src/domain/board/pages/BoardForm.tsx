@@ -18,6 +18,7 @@ import type { RootState } from "../../../global/store/types";
 import RegionModal from "../components/RegionModal";
 import { Col, Row } from "react-bootstrap";
 import ImageManager from "../../../global/components/ImageManager";
+import { fetchDraftIdForTable } from "../../../global/api/commonApi";
 
 
 
@@ -34,19 +35,26 @@ function BoardForm() {
 
     // USER 상태값 관리
     const userId = useSelector((state: RootState) => state.userInfo?.userId)
-       
+    
     // ImageManager 관련 상태
     const [resetTrigger, setResetTrigger] = useState(0);
     const [imageUploadTrigger, setImageUploadTrigger] = useState(0);
     const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
     const handleImageUploadComplete = () => {
-      alert("이미지 업로드 완료!");
+      alert("게시글이 성공적으로 등록/수정되었습니다.");
+      // dto.boardId를 사용하여 페이지 이동 (수정 시에는 boardId 사용)
+      const finalBoardId = isEdit ? boardId : dto.boardId;
+      navigate(`/${boardType}/${finalBoardId}`);
     };
   
     const handleImageUploadError = (errMsg: string) => {
       console.error("이미지 업로드 오류:", errMsg);
       setImageUploadError(errMsg);
+      alert(`게시글 내용은 저장되었지만 이미지 업로드에 실패했습니다: ${errMsg}`);
+      // 이 경우에도 페이지는 이동시켜주자. 사용자가 직접 이미지를 다시 올릴 수 있도록.
+      const finalBoardId = isEdit ? boardId : dto.boardId;
+      navigate(`/${boardType}/${finalBoardId}`);
     };
 
     // 예약내역 상태값 관리
@@ -87,6 +95,24 @@ function BoardForm() {
       if (userId == null) return;
       setDto(prev => ({ ...prev, userId }));
     }, [userId]);
+
+    // 새 글 작성 시: 임시 boardId(draftId) 미리 확보
+    useEffect(() => {
+      const fetchDraftId = async () => {
+        if (isEdit) return; // 수정 모드에서는 실행 안 함
+
+        try {
+          const draftId = await fetchDraftIdForTable("BOARD"); // 테이블 이름을 'BOARD'로 명시
+          console.log("🆕 임시 boardId 생성됨:", draftId);
+          setDto((prev) => ({ ...prev, boardId: draftId }));
+        } catch (err) {
+          console.error("임시 boardId 생성 실패:", err);
+        }
+      };
+
+      fetchDraftId();
+    }, [isEdit]);
+
 
     // 수정 모드 => 기존 데이터 로드
     useEffect(() => {
@@ -149,7 +175,7 @@ function BoardForm() {
     const handleSubmit = async(e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
 
-       
+      
 
         // 유효성 검사
         if (!dto.title.trim()) {
@@ -176,24 +202,14 @@ function BoardForm() {
           
         try {
           if (isEdit) {
+            // 1. 수정 API 호출
             await api.put(`/v1/boards/${boardId}`, dto);
-            // 게시글 수정 완료 후 이미지 업로드 트리거
-            setImageUploadTrigger(prev => prev + 1);
-            alert("게시글이 성공적으로 수정되었습니다.");
-            navigate(`/${boardType}/${boardId}`);
-            
           } else {
-            
-            const res = await api.post("/v1/boards", dto);
-            const newBoardId = res.boardId;
-            setDto(prev => ({ ...prev, boardId: newBoardId }));
-            // 이미지 업로드 트리거
-            setImageUploadTrigger(prev => prev + 1);
-
-            alert("게시글이 성공적으로 등록되었습니다.");
-            
-            navigate(`/${boardType}/${res.boardId}`);
+            // 1. 생성 API 호출 (백엔드가 dto.boardId를 그대로 사용한다고 가정)
+            await api.post("/v1/boards", dto);
           }
+          // 2. 이미지 업로드 트리거
+          setImageUploadTrigger(prev => prev + 1);
 
         }catch(err) {
             console.error("게시글 저장 실패:", err);
@@ -308,20 +324,20 @@ function BoardForm() {
               <Form.Group className="mb-4">
                 <Form.Label className="fw-semibold">내용</Form.Label>                
                   <QuillEditor
-                    key={`board-quill-${isEdit ? boardId : "new"}`}
+                    key={`board-quill-${dto.boardId}`}
                     value={dto.content ?? ""}
                     onChange={handleContentChange}
                     targetType={apiBoardType}
-                    targetId={boardId ? Number(boardId) : 0}
+                    targetId={dto.boardId}
                     style={{ height: "600px" }}
                   />
                 </Form.Group>
                 
                 
                 <ImageManager
-                    key={`image-manager-${resetTrigger}`}
+                    key={`image-manager-${dto.boardId}`}
                     targetType={apiBoardType}
-                    targetId={boardId ? Number(boardId) : 0}
+                    targetId={dto.boardId}
                     isEditMode={true} // 수정 모드 활성화
                     uploadTrigger={imageUploadTrigger}
                     onUploadComplete={handleImageUploadComplete}

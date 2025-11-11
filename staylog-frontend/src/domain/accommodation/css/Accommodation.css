@@ -146,6 +146,13 @@
     display : block;
 }
 
+.reviewCardImage img {
+    width : 100%;
+    height : auto;
+    object-fit : cover;
+    display : block;
+}
+
 .reviewTitle {
     font-size : 1.2rem; /* 기본 데스크톱 */
 }

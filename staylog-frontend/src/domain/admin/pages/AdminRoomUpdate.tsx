@@ -69,7 +69,7 @@ const AdminRoomUpdate: React.FC = () => {
             console.error('객실 정보 수정 실패:', err);
             alert('객실 정보 수정에 실패했습니다.');
             setIsSubmitting(false);
-        } 
+        }
     }, [data, description, accommodationId, roomId]);
 
     const handleImageUploadComplete = useCallback(() => {
@@ -125,7 +125,7 @@ const AdminRoomUpdate: React.FC = () => {
     return (
         <Container fluid className="p-3 p-md-4">
             <h3 className="mb-3 mb-md-4">{data.name} 수정</h3>
-            
+
             <Form onSubmit={handleSubmit}>
                 <Card className="mb-3">
                     <Card.Body>
@@ -176,11 +176,12 @@ const AdminRoomUpdate: React.FC = () => {
                                 <div className="d-flex align-items-center">
                                     <Form.Control
                                         type="text"
+                                        name='price'
                                         size="sm"
                                         className="text-end"
                                         style={{ maxWidth: '200px' }}
                                         value={data.price}
-                                        onChange={(e) => setData({ ...data, price: Number(e.target.value) })}
+                                        onChange={(e) => setData({ ...data, price: Number(e.target.value) || 0 })}
                                     />
                                     <span className="ms-2">원</span>
                                 </div>
@@ -193,55 +194,52 @@ const AdminRoomUpdate: React.FC = () => {
                                 최대 인원
                             </Form.Label>
                             <Col xs={12} md={9} lg={10}>
-                                <Table bordered size="sm" className="mb-0" style={{ maxWidth: '400px' }}>
-                                    <tbody>
-                                        <tr>
-                                            <th style={{ width: '40%' }}>성인</th>
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    <Form.Control
-                                                        type="text"
-                                                        size="sm"
-                                                        className="text-end"
-                                                        value={data.maxAdult}
-                                                        onChange={(e) => setData({ ...data, maxAdult: Number(e.target.value) })}
-                                                    />
-                                                    <span className="ms-2">명</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>어린이</th>
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    <Form.Control
-                                                        type="text"
-                                                        size="sm"
-                                                        className="text-end"
-                                                        value={data.maxChildren}
-                                                        onChange={(e) => setData({ ...data, maxChildren: Number(e.target.value) })}
-                                                    />
-                                                    <span className="ms-2">명</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>유아</th>
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    <Form.Control
-                                                        type="text"
-                                                        size="sm"
-                                                        className="text-end"
-                                                        value={data.maxInfant}
-                                                        onChange={(e) => setData({ ...data, maxInfant: Number(e.target.value) })}
-                                                    />
-                                                    <span className="ms-2">명</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
+                                <Card style={{ maxWidth: '400px' }}>
+                                    <Card.Body className="gap-2 d-flex flex-column">
+                                        <Form.Group className='d-flex justify-content-between'>
+                                            <Form.Label className='fw-bold'>성인</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='maxAdult'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.maxAdult}
+                                                    onChange={(e) => setData({ ...data, maxAdult: Number(e.target.value) || 0 })}
+                                                />
+                                                <span className="ms-2">명</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>어린이</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='maxChildren'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.maxChildren}
+                                                    onChange={(e) => setData({ ...data, maxChildren: Number(e.target.value) || 0 })}
+                                                />
+                                                <span className="ms-2">명</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>유아</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='maxInfant'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.maxInfant}
+                                                    onChange={(e) => setData({ ...data, maxInfant: Number(e.target.value) || 0 })}
+                                                />
+                                                <span className="ms-2">명</span>
+                                            </div>
+                                        </Form.Group>
+                                    </Card.Body>
+                                </Card>
                             </Col>
                         </Form.Group>
 
@@ -251,70 +249,66 @@ const AdminRoomUpdate: React.FC = () => {
                                 침대
                             </Form.Label>
                             <Col xs={12} md={9} lg={10}>
-                                <Table bordered size="sm" className="mb-0" style={{ maxWidth: '400px' }}>
-                                    <tbody>
-                                        <tr>
-                                            <th style={{ width: '40%' }}>싱글</th>
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    <Form.Control
-                                                        type="text"
-                                                        size="sm"
-                                                        className="text-end"
-                                                        value={data.singleBed}
-                                                        onChange={(e) => setData({ ...data, singleBed: Number(e.target.value) })}
-                                                    />
-                                                    <span className="ms-2">개</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>더블</th>
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    <Form.Control
-                                                        type="text"
-                                                        size="sm"
-                                                        className="text-end"
-                                                        value={data.doubleBed}
-                                                        onChange={(e) => setData({ ...data, doubleBed: Number(e.target.value) })}
-                                                    />
-                                                    <span className="ms-2">개</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>퀸</th>
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    <Form.Control
-                                                        type="text"
-                                                        size="sm"
-                                                        className="text-end"
-                                                        value={data.queenBed}
-                                                        onChange={(e) => setData({ ...data, queenBed: Number(e.target.value) })}
-                                                    />
-                                                    <span className="ms-2">개</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>킹</th>
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    <Form.Control
-                                                        type="text"
-                                                        size="sm"
-                                                        className="text-end"
-                                                        value={data.kingBed}
-                                                        onChange={(e) => setData({ ...data, kingBed: Number(e.target.value) })}
-                                                    />
-                                                    <span className="ms-2">개</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
+                                <Card style={{ maxWidth: '400px' }}>
+                                    <Card.Body className="gap-2 d-flex flex-column">
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>싱글</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='singleBed'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.singleBed}
+                                                    onChange={(e) => setData({ ...data, singleBed: Number(e.target.value) || 0 })}
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className='d-flex justify-content-between'>
+                                            <Form.Label className='fw-bold'>더블</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='doubleBed'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.doubleBed}
+                                                    onChange={(e) => setData({ ...data, doubleBed: Number(e.target.value) || 0 })}
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>퀸</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='queenBed'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.queenBed}
+                                                    onChange={(e) => setData({ ...data, queenBed: Number(e.target.value) || 0 })}
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>킹</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='kingBed'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.kingBed}
+                                                    onChange={(e) => setData({ ...data, kingBed: Number(e.target.value) || 0 })}
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                    </Card.Body>
+                                </Card>
                             </Col>
                         </Form.Group>
 
@@ -331,7 +325,7 @@ const AdminRoomUpdate: React.FC = () => {
                                         className="text-end"
                                         style={{ maxWidth: '200px' }}
                                         value={data.area}
-                                        onChange={(e) => setData({ ...data, area: Number(e.target.value) })}
+                                        onChange={(e) => setData({ ...data, area: Number(e.target.value) || 0 })}
                                     />
                                     <span className="ms-2">m²</span>
                                 </div>
@@ -382,24 +376,24 @@ const AdminRoomUpdate: React.FC = () => {
 
                 {/* 버튼 영역 */}
                 <div className="d-flex flex-column flex-sm-row justify-content-end gap-2">
-                    <Button 
-                        type="submit" 
+                    <Button
+                        type="submit"
                         variant="primary"
                         disabled={isSubmitting}
                         className="order-2 order-sm-0"
                     >
                         {isSubmitting ? '수정 중...' : '수정 완료'}
                     </Button>
-                    <Button 
-                        type="button" 
+                    <Button
+                        type="button"
                         variant="danger"
                         onClick={handleReset}
                         className="order-1 order-sm-1"
                     >
                         초기화
                     </Button>
-                    <Button 
-                        type="button" 
+                    <Button
+                        type="button"
                         variant="secondary"
                         onClick={() => navigate(`/admin/accommodations/${accommodationId}/rooms/${roomId}`)}
                         className="order-0 order-sm-2"

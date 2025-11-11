@@ -241,30 +241,55 @@ function AdminRoomDetail() {
                         </Form.Label>
                         <Col xs={12} md={9} lg={10}>
                             <div className="d-none d-md-block">
-                                <Table bordered size="sm" className="mb-0" style={{ maxWidth: '300px' }}>
-                                    <tbody>
-                                        {data.maxAdult !== 0 && (
-                                            <tr>
-                                                <th style={{ width: '50%' }}>성인</th>
-                                                <td>{data.maxAdult}명</td>
-                                            </tr>
-                                        )}
-                                        {data.maxChildren !== 0 && (
-                                            <tr>
-                                                <th>어린이</th>
-                                                <td>{data.maxChildren}명</td>
-                                            </tr>
-                                        )}
-                                        {data.maxInfant !== 0 && (
-                                            <tr>
-                                                <th>유아</th>
-                                                <td>{data.maxInfant}명</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </Table>
+                                <Card style={{ maxWidth: '400px' }}>
+                                    <Card.Body className="gap-2 d-flex flex-column">
+                                        <Form.Group className='d-flex justify-content-between'>
+                                            <Form.Label className='fw-bold'>성인</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='maxAdult'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.maxAdult}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">명</span>
+                                            </div>
+                                        </Form.Group>
+
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>어린이</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='maxChildren'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.maxChildren}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">명</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>유아</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name='maxInfant'
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.maxInfant}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">명</span>
+                                            </div>
+                                        </Form.Group>
+                                    </Card.Body>
+                                </Card>
                             </div>
-                            <div className="d-flex gap-3 d-md-none">
+                            <div className="d-flex gap-3 d-md-none mt-1">
                                 {data.maxAdult !== 0 && <span>성인 {data.maxAdult}명</span>}
                                 {data.maxChildren !== 0 && <span>어린이 {data.maxChildren}명</span>}
                                 {data.maxInfant !== 0 && <span>유아 {data.maxInfant}명</span>}
@@ -279,36 +304,67 @@ function AdminRoomDetail() {
                         </Form.Label>
                         <Col xs={12} md={9} lg={10}>
                             <div className="d-none d-md-block">
-                            <Table bordered size="sm" className="mb-0" style={{ maxWidth: '300px' }}>
-                                <tbody>
-                                    {data.singleBed !== 0 && (
-                                        <tr>
-                                            <th style={{ width: '50%' }}>싱글</th>
-                                            <td>{data.singleBed}개</td>
-                                        </tr>
-                                    )}
-                                    {data.doubleBed !== 0 && (
-                                        <tr>
-                                            <th>더블</th>
-                                            <td>{data.doubleBed}개</td>
-                                        </tr>
-                                    )}
-                                    {data.queenBed !== 0 && (
-                                        <tr>
-                                            <th>퀸</th>
-                                            <td>{data.queenBed}개</td>
-                                        </tr>
-                                    )}
-                                    {data.kingBed !== 0 && (
-                                        <tr>
-                                            <th>킹</th>
-                                            <td>{data.kingBed}개</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </Table>
+                                <Card style={{ maxWidth: '400px' }}>
+                                    <Card.Body className="gap-2 d-flex flex-column">
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>싱글</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name="singleBed"
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.singleBed}
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className='d-flex justify-content-between'>
+                                            <Form.Label className='fw-bold'>더블</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name="doubleBed"
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.doubleBed}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>퀸</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name="queenBed"
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.queenBed}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>킹</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name="kingBed"
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.kingBed}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                    </Card.Body>
+                                </Card>
                             </div>
-                            <div className="d-flex gap-3 d-md-none">
+                            <div className="d-flex gap-3 d-md-none mt-1">
                                 {data.singleBed !== 0 && <span>싱글 {data.singleBed}개</span>}
                                 {data.doubleBed !== 0 && <span>더블 {data.doubleBed}개</span>}
                                 {data.queenBed !== 0 && <span>퀸 {data.queenBed}개</span>}

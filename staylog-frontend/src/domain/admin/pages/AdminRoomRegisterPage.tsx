@@ -92,12 +92,23 @@ const AdminRoomRegisterPage: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: ['price', 'maxAdult', 'maxChildren', 'maxInfant', 'singleBed', 'doubleBed', 'queenBed', 'kingBed', 'area'].includes(name)
-        ? Number(value)
-        : value
-    }));
+
+    const numberFields = ['price', 'maxAdult', 'maxChildren', 'maxInfant', 'singleBed', 'doubleBed', 'queenBed', 'kingBed', 'area'];
+
+    if (numberFields.includes(name)) {
+      // 빈 문자열이면 0, 숫자로 변환했을 때 NaN이면 0, 아니면 변환된 숫자
+      const numValue = value === '' ? 0 : Number(value);
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: isNaN(numValue) ? 0 : numValue
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -215,59 +226,52 @@ const AdminRoomRegisterPage: React.FC = () => {
                 최대 인원
               </Form.Label>
               <Col xs={12} md={9} lg={10}>
-                <Table bordered size="sm" className="mb-0" style={{ maxWidth: '400px' }}>
-                  <tbody>
-                    <tr>
-                      <th style={{ width: '40%' }}>성인</th>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Form.Control
-                            type="text"
-                            name="maxAdult"
-                            size="sm"
-                            className="text-end"
-                            value={formData.maxAdult}
-                            onChange={handleChange}
-                            required
-                          />
-                          <span className="ms-2">명</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>어린이</th>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Form.Control
-                            type="text"
-                            name="maxChildren"
-                            size="sm"
-                            className="text-end"
-                            value={formData.maxChildren}
-                            onChange={handleChange}
-                          />
-                          <span className="ms-2">명</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>유아</th>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Form.Control
-                            type="text"
-                            name="maxInfant"
-                            size="sm"
-                            className="text-end"
-                            value={formData.maxInfant}
-                            onChange={handleChange}
-                          />
-                          <span className="ms-2">명</span>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
+                <Card style={{ maxWidth: '400px' }}>
+                  <Card.Body className="gap-2 d-flex flex-column">
+                    <Form.Group className='d-flex justify-content-between'>
+                      <Form.Label className='fw-bold'>성인</Form.Label>
+                      <div className="d-flex align-items-center">
+                        <Form.Control
+                          type="text"
+                          name='maxAdult'
+                          size="sm"
+                          className="text-end"
+                          value={formData.maxAdult}
+                          onChange={handleChange}
+                        />
+                        <span className="ms-2">명</span>
+                      </div>
+                    </Form.Group>
+                    <Form.Group className="d-flex justify-content-between">
+                      <Form.Label className='fw-bold'>어린이</Form.Label>
+                      <div className="d-flex align-items-center">
+                        <Form.Control
+                          type="text"
+                          name='maxChildren'
+                          size="sm"
+                          className="text-end"
+                          value={formData.maxChildren}
+                          onChange={handleChange}
+                        />
+                        <span className="ms-2">명</span>
+                      </div>
+                    </Form.Group>
+                    <Form.Group className="d-flex justify-content-between">
+                      <Form.Label className='fw-bold'>유아</Form.Label>
+                      <div className="d-flex align-items-center">
+                        <Form.Control
+                          type="text"
+                          name='maxInfant'
+                          size="sm"
+                          className="text-end"
+                          value={formData.maxInfant}
+                          onChange={handleChange}
+                        />
+                        <span className="ms-2">명</span>
+                      </div>
+                    </Form.Group>
+                  </Card.Body>
+                </Card>
               </Col>
             </Form.Group>
 
@@ -277,74 +281,66 @@ const AdminRoomRegisterPage: React.FC = () => {
                 침대
               </Form.Label>
               <Col xs={12} md={9} lg={10}>
-                <Table bordered size="sm" className="mb-0" style={{ maxWidth: '400px' }}>
-                  <tbody>
-                    <tr>
-                      <th style={{ width: '40%' }}>싱글</th>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Form.Control
-                            type="text"
-                            name="singleBed"
-                            size="sm"
-                            className="text-end"
-                            value={formData.singleBed}
-                            onChange={handleChange}
-                          />
-                          <span className="ms-2">개</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>더블</th>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Form.Control
-                            type="text"
-                            name="doubleBed"
-                            size="sm"
-                            className="text-end"
-                            value={formData.doubleBed}
-                            onChange={handleChange}
-                          />
-                          <span className="ms-2">개</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>퀸</th>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Form.Control
-                            type="text"
-                            name="queenBed"
-                            size="sm"
-                            className="text-end"
-                            value={formData.queenBed}
-                            onChange={handleChange}
-                          />
-                          <span className="ms-2">개</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>킹</th>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Form.Control
-                            type="text"
-                            name="kingBed"
-                            size="sm"
-                            className="text-end"
-                            value={formData.kingBed}
-                            onChange={handleChange}
-                          />
-                          <span className="ms-2">개</span>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
+                <Card style={{ maxWidth: '400px' }}>
+                  <Card.Body className="gap-2 d-flex flex-column">
+                    <Form.Group className="d-flex justify-content-between">
+                      <Form.Label className='fw-bold'>싱글</Form.Label>
+                      <div className="d-flex align-items-center">
+                        <Form.Control
+                          type="text"
+                          name="singleBed"
+                          size="sm"
+                          className="text-end"
+                          value={formData.singleBed}
+                          onChange={handleChange}
+                        />
+                        <span className="ms-2">개</span>
+                      </div>
+                    </Form.Group>
+                    <Form.Group className='d-flex justify-content-between'>
+                      <Form.Label className='fw-bold'>더블</Form.Label>
+                      <div className="d-flex align-items-center">
+                        <Form.Control
+                          type="text"
+                          name="doubleBed"
+                          size="sm"
+                          className="text-end"
+                          value={formData.doubleBed}
+                          onChange={handleChange}
+                        />
+                        <span className="ms-2">개</span>
+                      </div>
+                    </Form.Group>
+                    <Form.Group className="d-flex justify-content-between">
+                      <Form.Label className='fw-bold'>퀸</Form.Label>
+                      <div className="d-flex align-items-center">
+                        <Form.Control
+                          type="text"
+                          name="queenBed"
+                          size="sm"
+                          className="text-end"
+                          value={formData.queenBed}
+                          onChange={handleChange}
+                        />
+                        <span className="ms-2">개</span>
+                      </div>
+                    </Form.Group>
+                    <Form.Group className="d-flex justify-content-between">
+                      <Form.Label className='fw-bold'>킹</Form.Label>
+                      <div className="d-flex align-items-center">
+                        <Form.Control
+                          type="text"
+                          name="kingBed"
+                          size="sm"
+                          className="text-end"
+                          value={formData.kingBed}
+                          onChange={handleChange}
+                        />
+                        <span className="ms-2">개</span>
+                      </div>
+                    </Form.Group>
+                  </Card.Body>
+                </Card>
               </Col>
             </Form.Group>
 

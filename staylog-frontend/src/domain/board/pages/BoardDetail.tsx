@@ -15,7 +15,8 @@ import { Button, Modal } from "react-bootstrap";
 function BoardDetail() {
     
     // 게시글 카테고리, 게시글 번호
-    const { boardType, boardId } = useParams<{ boardType: string; boardId: string }>();
+    const { boardId } = useParams<{ boardId: string }>();
+    const [boardType, setBoardType] = useState<string>()
 
     // USER 상태값 관리
     // const userId = useGetUserIdFromToken();
@@ -25,7 +26,8 @@ function BoardDetail() {
     const [dto, setDto] = useState<BoardDto | null>(null);
 
 
-    // 페이지네이션
+    const apiBoardType =
+        boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
 
     const navigate = useNavigate();
 
@@ -35,14 +37,19 @@ function BoardDetail() {
         const fetchBoard = async() =>{
             try {
                 
-                // const apiBoardType =
-                //     boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
+                
 
                 const res = await api.get(`/v1/boards/${boardId}`);
                 console.log("📦 불러온 게시글 상세:", res);
                 
                 setDto(res);
 
+                if(res.boardType == "BOARD_JOURNAL") {
+
+                setBoardType("journal")
+                } else if(res.boardType == "BOARD_REVIEW") {
+                    setBoardType("review")
+                }
                 
             }catch(err) {
                 console.error("게시글 상세 조회 불가:", err);
@@ -260,7 +267,7 @@ function BoardDetail() {
     </div>    
     )}
         <button
-            className="btn btn-outline-secondary ms-2"
+            className="btn btn-sm btn-outline-secondary ms-2"
             onClick={() => navigate(`/${boardType}`)}>
             목록
         </button>

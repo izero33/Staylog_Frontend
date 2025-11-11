@@ -3,7 +3,8 @@ import api from "../api";
 
 export function getImageUrl(targetType: string, targetId:number){
 
-  const [url, setUrl] = useState("");
+
+  const [url, setUrl] = useState<string | undefined>(undefined);
 
   useEffect(()=>{
     if(!targetType || !targetId) return;

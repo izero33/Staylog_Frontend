@@ -27,14 +27,11 @@ function HomeListSection({
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const inFlightRef = useRef(false);
-  const loadingRef = useRef(false);
   const hasMoreRef = useRef(true);
 
   const navigate = useNavigate();
 
   useEffect(() => { hasMoreRef.current = hasMore; }, [hasMore]);
-  useEffect(() => { loadingRef.current = loading; }, [loading]);
-
 
   // 별 렌더
   const renderStars = (ratingNum: number = 0) => {
@@ -67,8 +64,8 @@ function HomeListSection({
 
   const fetchPage = useCallback(
     async (nextOffset: number) => {
-      if (loadingRef.current || inFlightRef.current || !hasMoreRef.current) return;
-
+      if (inFlightRef.current || !hasMoreRef.current) return;
+      
       inFlightRef.current = true;
       setLoading(true);
       try {
@@ -102,7 +99,7 @@ function HomeListSection({
     fetchPage(pageOffset);
   }, [pageOffset, fetchPage]);
 
-  
+
   const handleReachEnd = () => {
     //  스와이퍼 끝에 닿았을 때 다음 페이지 요청 (ref 가드)
     if (inFlightRef.current || !hasMoreRef.current) return;
@@ -132,6 +129,7 @@ function HomeListSection({
             <Card
               className="home-card border-0"
               onClick={() => navigate(`/accommodations/${item.accommodationId}`)}
+              style={{ cursor: 'pointer' }}
             >
               <AccommodationImage id={item.accommodationId} />
               <Card.Body>

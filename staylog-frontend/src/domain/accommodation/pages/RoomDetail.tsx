@@ -6,7 +6,7 @@ import useIsMobile from "../hooks/useIsMobile";
 import type { RoomDetailDto } from "../types/RoomDetailDto";
 import api from "../../../global/api";
 import BookingPanel, { type BookingData } from "../components/BookingPanel";
-import { Card, Col, Container, Offcanvas, Row, Spinner } from "react-bootstrap";
+import { Col, Container, Offcanvas, Row, Spinner } from "react-bootstrap";
 import FloatingReserveBubble from "../components/FloatingReserveBubble";
 import '../css/room.css';
 import AccommodationInfo from "../components/AccommodationInfo";
@@ -16,6 +16,11 @@ import { formatDateToYYYYMMDD } from "../../../global/utils/date";
 import type { CreateBookingRequest } from "../../booking/types";
 import { createBooking } from "../../booking/api";
 import ImageCarousel from "../../../global/components/ImageCarousel";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../global/store/types";
+import { useModal } from "../../../global/hooks/useModal";
+import type { ModalMode } from "../../../global/types";
+import Modal from '../../../global/components/Modal';
 
 function RoomDetail() {
 
@@ -26,6 +31,11 @@ function RoomDetail() {
   const [openReserve, setOpenReserve] = useState(false);
   const isMobile = useIsMobile(); //모바일 크기일 때 true
   const navigate = useNavigate();
+
+  // 로그인 폼 모달
+  const { isModalOpen, modalMode, openModal, closeModal } = useModal<ModalMode>('login');
+  // 회원의 로그인 여부 (로그인이 되어 있으면 id 를 반환, 아니면 null)
+  const userId = useSelector((state: RootState) => state.userInfo?.userId)
 
   // 숙소정보
   const featchRoom = () => {
@@ -105,6 +115,11 @@ function RoomDetail() {
   }
 
   const handleReserve = async (bookingData: BookingData) => {
+
+    if (!userId) {
+      openModal('login');
+      return;
+    }
     try {
       // 예약 생성 요청 데이터 구성
       const request: CreateBookingRequest = {
@@ -207,9 +222,16 @@ function RoomDetail() {
             <BookingPanel
               name={roomDetail.name}
               rooms={roomForBooking ? [roomForBooking] : []} // 변환 객체 배열 전달
+              onReserve={(bookingData) => {
+                if (!userId) {
+                  openModal('login'); // 로그인 모달 띄워줌
+                  return;
+                }
+
+                handleReserve(bookingData); // 실제 예약 처리
+              }}
               showRoomSelect={false}
               disabledDates={blockedDates}
-              onReserve={handleReserve}
               imageUrl={roomImageUrl}
             />
           </div>
@@ -238,13 +260,24 @@ function RoomDetail() {
         <BookingPanel
           name={roomDetail.name}
           rooms={roomForBooking ? [roomForBooking] : []} // 모바일도 동일 처리
-          onReserve={handleReserve}
+          onReserve={(bookingData) => {
+            if (!userId) {
+              openModal('login'); // 로그인 모달 띄우기
+              return;
+            }
+            setOpenReserve(false); // 모바일에서 예약폼 닫기
+            handleReserve(bookingData); // 실제 예약 처리
+          }}
           disabledDates={blockedDates}
           imageUrl={roomImageUrl}
         />
       </Offcanvas.Body>
     </Offcanvas>
-    <Container></Container>
+    {isModalOpen && <Modal
+      isOpen={isModalOpen}
+      onClose={closeModal}
+      mode={modalMode} />
+    }
   </>
 }
 

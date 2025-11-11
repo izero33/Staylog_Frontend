@@ -50,7 +50,7 @@ import Home3 from "../pages/Home3";
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin, Mypage 라우트 객체는 분리)
 const routes: RouteObject[] = [
   { path: "/index.html", element: <Home /> }, // spring boot 최초 실행 정보 추가
-  { path: "/", element: <Home /> },
+  { path: "/", element: <Home3 /> },
   { path: "/login", element: <LoginForm /> },
   { path: "/:boardType", element: <Boards /> },
   { path: "/form/:boardType", element: <BoardForm /> },
@@ -69,7 +69,7 @@ const routes: RouteObject[] = [
   { path: "/payment/complete", element: <PaymentCompletePage/>}, // 결제 완료 페이지
   { path: "/comments/:boardId", element: <CommentsPage /> },
   { path: "/testEditor", element: <TestEditorPage /> },
-  { path: "/home", element: <Home3 />},
+  //{ path: "/home", element: <Home3 />},
   { path: "/testCarousel", element: <CarouselTestPage />},
 ];
 

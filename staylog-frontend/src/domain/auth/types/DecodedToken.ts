@@ -4,4 +4,5 @@ export interface DecodedToken {
    nickname: string;
    // profileImageUrl: string | null
    exp: number;
+   role: string
 }

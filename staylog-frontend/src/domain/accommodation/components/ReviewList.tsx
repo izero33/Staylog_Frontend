@@ -58,12 +58,12 @@ const ReviewList = ({ reviews, accommodationId }: ReviewListProps) => {
                     <Card.Body>
                         {/* 상단 프로필 + 이름 + 객실타입 */}
                         <div className="d-flex align-items-center">
-                            {review.profileImage ? (
-                                <Image src={review.profileImage} width={40} height={40} roundedCircle />
+                            {review.profileUrl ? (
+                                <Image src={review.profileUrl} width={40} height={40} roundedCircle style={{ objectFit: "cover" }}/>
                             ) : (
-                                <i className="bi bi-person-circle" style={{ fontSize:40, color:"#2e2e2e" }}></i>
+                                <i className="bi bi-person-circle" style={{ fontSize: 40, color: "#2e2e2e" }}></i>
                             )}
-                            <strong style={{ fontSize:"1.0rem", marginLeft:"0.5rem" }}>
+                            <strong style={{ fontSize: "1.0rem", marginLeft: "0.5rem" }}>
                                 {review.nickname}
                             </strong>
                         </div>

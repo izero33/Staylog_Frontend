@@ -4,7 +4,8 @@ export interface AccommodationReviewListType {
     readonly boardId : number;
     readonly userId : number;
     nickname : string;
-    profileImage : string;
+    contentUrl : string | null; // 리뷰 미리보기 대표 이미지
+    profileUrl : string | null; // 프로필 이미지
     title : string;
     content : string;
     rating : number;

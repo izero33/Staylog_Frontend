@@ -1,5 +1,5 @@
 
-import { Container, Carousel } from 'react-bootstrap';
+import { Container, Carousel, Form, Col, Row, Card } from 'react-bootstrap';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
@@ -206,62 +206,67 @@ function AdminAccommodationDetail() {
                 </div>
             </div>
 
-            {/* 데스크톱: 테이블 */}
-            <div className="d-none d-md-block">
-                <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
-                    <tbody>
-                        <tr>
-                            <th className="bg-light text-center" style={{ width: '25%' }}>유형</th>
-                            <td>{data.typeName}</td>
-                        </tr>
-                        <tr>
-                            <th className="bg-light text-center">지역</th>
-                            <td>{data.regionName}</td>
-                        </tr>
-                        <tr>
-                            <th className="bg-light text-center">주소</th>
-                            <td>{data.address}</td>
-                        </tr>
-                        <tr>
-                            <th className="bg-light text-center">체크인 / 체크아웃</th>
-                            <td>
-                                {data.checkInTime} ~ {data.checkOutTime}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            {/* 데스크톱 */}
+            <Card className="mb-3">
+                <Card.Body>
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            유형
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <Form.Control
+                                plaintext
+                                readOnly
+                                value={data.typeName}
+                                className="form-control-sm"
+                            />
+                        </Col>
+                    </Form.Group>
 
-            {/* 모바일: 카드 형식 */}
-            <div className="d-md-none">
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h6 className="card-subtitle mb-2 text-muted">유형</h6>
-                        <p className="card-text">{data.typeName}</p>
-                    </div>
-                </div>
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            지역
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <Form.Control
+                                plaintext
+                                readOnly
+                                value={data.regionName}
+                                className="form-control-sm"
+                            />
+                        </Col>
+                    </Form.Group>
 
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h6 className="card-subtitle mb-2 text-muted">지역</h6>
-                        <p className="card-text">{data.regionName}</p>
-                    </div>
-                </div>
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            주소
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <Form.Control
+                                plaintext
+                                readOnly
+                                value={data.address}
+                                className="form-control-sm"
+                            />
+                        </Col>
+                    </Form.Group>
 
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h6 className="card-subtitle mb-2 text-muted">주소</h6>
-                        <p className="card-text">{data.address}</p>
-                    </div>
-                </div>
+                    <Form.Group as={Row} className="mb-0">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            체크인 / 체크아웃
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <Form.Control
+                                plaintext
+                                readOnly
+                                value={`${data.checkInTime} ~ ${data.checkOutTime}`}
+                                className="form-control-sm"
+                            />
+                        </Col>
+                    </Form.Group>
+                </Card.Body>
+            </Card>
 
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h6 className="card-subtitle mb-2 text-muted">체크인 / 체크아웃</h6>
-                        <p className="card-text">{data.checkInTime} ~ {data.checkOutTime}</p>
-                    </div>
-                </div>
-            </div>
             <p className='fs-5 text-center my-4 border-top py-3 border bg-light rounded'>숙소 페이지 미리 보기</p>
 
             <div className="p-0">

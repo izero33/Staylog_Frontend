@@ -16,6 +16,11 @@ import { createBooking } from '../../booking/api';
 import type { CreateBookingRequest } from '../../booking/types';
 import { formatDateToYYYYMMDD } from '../../../global/utils/date';
 import ImageCarousel from '../../../global/components/ImageCarousel';
+import { useModal } from '../../../global/hooks/useModal';
+import type { ModalMode } from '../../../global/types';
+import Modal from '../../../global/components/Modal';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../global/store/types';
 
 /*
     Carousel : 숙소 대표 이미지
@@ -52,6 +57,10 @@ function AccommodationDetail() {
   const [bookingSelectedRoom, setBookingSelectedRoom] = useState<AccommodationRoomListType | null>(null);
   // 예약폼에서 해당 객실의 예약 불가 날짜
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
+  // 로그인 폼 모달
+  const { isModalOpen, modalMode, openModal, closeModal } = useModal<ModalMode>('login');
+  // 회원의 로그인 여부 (로그인이 되어 있으면 id 를 반환, 아니면 null)
+  const userId = useSelector((state: RootState) => state.userInfo?.userId)
 
   // 숙소 상세데이터를 가져오는 API 호출
   useEffect(() => {
@@ -120,6 +129,11 @@ function AccommodationDetail() {
 
   // 예약하기 버튼 클릭 핸들러
   const handleReserve = async (bookingData: BookingData) => {
+    if (!userId) {
+        openModal('login');
+        return;
+    }
+
     try {
       // 예약 생성 요청 데이터 구성
       const request: CreateBookingRequest = {
@@ -289,7 +303,14 @@ function AccommodationDetail() {
               <BookingPanel
                 name={data.name}
                 rooms={data.rooms || []}
-                onReserve={handleReserve}
+                onReserve={(bookingData) => {
+                  if (!userId) {
+                      openModal('login'); // 로그인 모달 띄워줌
+                      return;
+                  }
+                
+                  handleReserve(bookingData); // 실제 예약 처리
+                }}
                 onClickGuests={() => alert("인원 선택창 열림")}
                 showRoomSelect={true}
                 disabledDates={blockedDates} // 선택된 객실 기준 블락 날짜 전달
@@ -323,8 +344,12 @@ function AccommodationDetail() {
             name={data.name}
             rooms={data.rooms}
             onReserve={(bookingData) => {
-              setOpenReserve(false);
-              handleReserve(bookingData);
+              if (!userId) {
+                openModal('login'); // 로그인 모달 띄우기
+                return;
+              }
+              setOpenReserve(false); // 모바일에서 예약폼 닫기
+              handleReserve(bookingData); // 실제 예약 처리
             }}
             onClickGuests={() => alert("인원 선택창 열림")}
             showRoomSelect={true} // 모바일에도 객실 선택 표시
@@ -333,6 +358,11 @@ function AccommodationDetail() {
         </Offcanvas.Body>
       </Offcanvas>
     )}
+    {isModalOpen && <Modal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            mode={modalMode} />
+         }
   </>
 }
 

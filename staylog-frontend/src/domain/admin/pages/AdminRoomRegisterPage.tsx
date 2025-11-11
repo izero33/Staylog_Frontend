@@ -195,7 +195,7 @@ const AdminRoomRegisterPage: React.FC = () => {
               <Col xs={12} md={9} lg={10}>
                 <div className="d-flex align-items-center">
                   <Form.Control
-                    type="number"
+                    type="text"
                     name="price"
                     size="sm"
                     className="text-end"
@@ -222,7 +222,7 @@ const AdminRoomRegisterPage: React.FC = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <Form.Control
-                            type="number"
+                            type="text"
                             name="maxAdult"
                             size="sm"
                             className="text-end"
@@ -239,7 +239,7 @@ const AdminRoomRegisterPage: React.FC = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <Form.Control
-                            type="number"
+                            type="text"
                             name="maxChildren"
                             size="sm"
                             className="text-end"
@@ -255,7 +255,7 @@ const AdminRoomRegisterPage: React.FC = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <Form.Control
-                            type="number"
+                            type="text"
                             name="maxInfant"
                             size="sm"
                             className="text-end"
@@ -284,7 +284,7 @@ const AdminRoomRegisterPage: React.FC = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <Form.Control
-                            type="number"
+                            type="text"
                             name="singleBed"
                             size="sm"
                             className="text-end"
@@ -300,7 +300,7 @@ const AdminRoomRegisterPage: React.FC = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <Form.Control
-                            type="number"
+                            type="text"
                             name="doubleBed"
                             size="sm"
                             className="text-end"
@@ -316,7 +316,7 @@ const AdminRoomRegisterPage: React.FC = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <Form.Control
-                            type="number"
+                            type="text"
                             name="queenBed"
                             size="sm"
                             className="text-end"
@@ -332,7 +332,7 @@ const AdminRoomRegisterPage: React.FC = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <Form.Control
-                            type="number"
+                            type="text"
                             name="kingBed"
                             size="sm"
                             className="text-end"
@@ -356,7 +356,7 @@ const AdminRoomRegisterPage: React.FC = () => {
               <Col xs={12} md={9} lg={10}>
                 <div className="d-flex align-items-center">
                   <Form.Control
-                    type="number"
+                    type="text"
                     name="area"
                     size="sm"
                     className="text-end"

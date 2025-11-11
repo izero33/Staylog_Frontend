@@ -175,7 +175,7 @@ const AdminRoomUpdate: React.FC = () => {
                             <Col xs={12} md={9} lg={10}>
                                 <div className="d-flex align-items-center">
                                     <Form.Control
-                                        type="number"
+                                        type="text"
                                         size="sm"
                                         className="text-end"
                                         style={{ maxWidth: '200px' }}
@@ -200,7 +200,7 @@ const AdminRoomUpdate: React.FC = () => {
                                             <td>
                                                 <div className="d-flex align-items-center">
                                                     <Form.Control
-                                                        type="number"
+                                                        type="text"
                                                         size="sm"
                                                         className="text-end"
                                                         value={data.maxAdult}
@@ -215,7 +215,7 @@ const AdminRoomUpdate: React.FC = () => {
                                             <td>
                                                 <div className="d-flex align-items-center">
                                                     <Form.Control
-                                                        type="number"
+                                                        type="text"
                                                         size="sm"
                                                         className="text-end"
                                                         value={data.maxChildren}
@@ -230,7 +230,7 @@ const AdminRoomUpdate: React.FC = () => {
                                             <td>
                                                 <div className="d-flex align-items-center">
                                                     <Form.Control
-                                                        type="number"
+                                                        type="text"
                                                         size="sm"
                                                         className="text-end"
                                                         value={data.maxInfant}
@@ -258,7 +258,7 @@ const AdminRoomUpdate: React.FC = () => {
                                             <td>
                                                 <div className="d-flex align-items-center">
                                                     <Form.Control
-                                                        type="number"
+                                                        type="text"
                                                         size="sm"
                                                         className="text-end"
                                                         value={data.singleBed}
@@ -273,7 +273,7 @@ const AdminRoomUpdate: React.FC = () => {
                                             <td>
                                                 <div className="d-flex align-items-center">
                                                     <Form.Control
-                                                        type="number"
+                                                        type="text"
                                                         size="sm"
                                                         className="text-end"
                                                         value={data.doubleBed}
@@ -288,7 +288,7 @@ const AdminRoomUpdate: React.FC = () => {
                                             <td>
                                                 <div className="d-flex align-items-center">
                                                     <Form.Control
-                                                        type="number"
+                                                        type="text"
                                                         size="sm"
                                                         className="text-end"
                                                         value={data.queenBed}
@@ -303,7 +303,7 @@ const AdminRoomUpdate: React.FC = () => {
                                             <td>
                                                 <div className="d-flex align-items-center">
                                                     <Form.Control
-                                                        type="number"
+                                                        type="text"
                                                         size="sm"
                                                         className="text-end"
                                                         value={data.kingBed}
@@ -326,7 +326,7 @@ const AdminRoomUpdate: React.FC = () => {
                             <Col xs={12} md={9} lg={10}>
                                 <div className="d-flex align-items-center">
                                     <Form.Control
-                                        type="number"
+                                        type="text"
                                         size="sm"
                                         className="text-end"
                                         style={{ maxWidth: '200px' }}

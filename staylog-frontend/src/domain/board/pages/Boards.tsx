@@ -147,7 +147,7 @@ function Boards() {
       <Container fluid="lg" className="mt-4">
         <Row className="align-items-center mb-3 gy-4">
           {/* 좌측 지역 */}
-          <Col xs={12} md={3} lg={2}>
+          <Col md={2} className="d-none d-md-block">
             <div className="px-3">
               <RegionsSideBar
                 selectedRegions={selectedRegions}
@@ -156,8 +156,32 @@ function Boards() {
             </div>
           </Col>
 
+          {/* 모바일용 지역 선택 (드롭다운/버튼형) */}
+          <Col xs={12} className="d-md-none mb-3">
+            <div className="mobile-region-bar px-2">
+              {["전체", "서울", "부산", "제주", "강원", "전주", "속초", "경주"].map((region) => (
+                <button
+                  key={region}
+                  className={`mobile-region-btn ${
+                    selectedRegions.includes(region) ? "selected" : ""
+                  }`}
+                  onClick={() =>
+                    setSelectedRegions(
+                      region === "전체" ? ["전체"] :
+                      selectedRegions.includes(region)
+                        ? selectedRegions.filter((r) => r !== region)
+                        : [...selectedRegions.filter((r) => r !== "전체"), region]
+                    )
+                  }
+                >
+                  {region}
+                </button>
+              ))}
+            </div>
+          </Col>
+
           {/* 메인 목록 */}
-          <Col xs={12} md={9} lg={10}>
+          <Col xs={12} md={10} lg={10}>
             <div className="d-flex justify-content-end gap-3 mb-3">
               {/* 리뷰 등록 버튼 */}
               {boardType === "review" && userId && (
@@ -279,10 +303,15 @@ function Boards() {
 
             {/* 저널 게시글 목록 */}
             {boardType === "journal" && (
-              <Row className="g-4 px-4">
+              <Row className="journal-grid px-4">
                 {boards.length > 0 ? (
                   boards.map((board) => (
-                    <Col key={board.boardId} xs={12} sm={6} md={4}>
+                    <Col key={board.boardId} 
+                      xs={12} 
+                      sm={6} 
+                      lg={4} 
+                      className="d-flex justify-content-center"
+                    >
                     <JournalCard board={board} />
                   </Col>
                   ))

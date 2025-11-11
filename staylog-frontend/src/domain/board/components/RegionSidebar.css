@@ -1,82 +1,122 @@
 /* =========================================================
-   🌐 Region Sidebar 스타일 (2열 반응형 + 반응형 대응)
+   🌐 REGION SIDEBAR (PC + MOBILE 반응형 완전 정리본)
    ========================================================= */
 
-   /* region-sidebar.css */
+/* 기본 사이드바 (PC) */
+.region-sidebar {
+  width: 100%;
+  min-width: 150px;
+  max-width: 240px;
+  background-color: #fff;
+  border-radius: 8px;
+  border-right: 1px solid #e5e5e5;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
 
-   .region-sidebar {
-     width: 100%;
-     min-width: 150px;
-     max-width: 240px;
-     background-color: #fff;
-     border-radius: 8px;
-     border-right: 1px solid #e5e5e5;
-     padding: 20px 16px;
-     display: flex;
-     flex-direction: column;
-     align-items: stretch;
-     gap: 12px;
-     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
-   }
-   
-   /* 기본 2열 */
-   .region-list {
-     display: grid;
-     grid-template-columns: repeat(2, 1fr);
-     gap: 10px;
-   }
-   
-   /* 모바일에서는 1열 */
-   @media (max-width: 768px) {
-     .region-list {
-       display: none; /* 버튼 목록 숨김 */
-     }
-   
-     .region-dropdown {
-       display: block; /* 모바일 전용 드롭다운 표시 */
-     }
-   }
-   
-   /* PC에서는 드롭다운 숨김 */
-   .region-dropdown {
-     display: none;
-   }
-   
-   /* 지역 버튼 */
-   .region-item {
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     padding: 10px 0;
-     margin: 2px 0;
-     font-size: 15px;
-     font-weight: 500;
-     color: #333;
-     background-color: #fff;
-     border: 1px solid #ccc;
-     border-radius: 9999px;
-     cursor: pointer;
-     transition: all 0.2s ease;
-   }
-   
-   .region-item:hover {
-     background-color: #f3f3f3;
-     transform: translateY(-1px);
-   }
-   
-   .region-item.selected {
-     background-color: #e7f1ff;
-     color: #0d6efd;
-     font-weight: 600;
-     border-color: #b6d4fe;
-     box-shadow: inset 0 0 0 2px #0d6efd1a;
-   }
-   
+/* 지역 리스트 (기본 2열) */
+.region-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* 지역 버튼 */
+.region-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+  margin: 2px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.region-item:hover {
+  background-color: #f3f3f3;
+  transform: translateY(-1px);
+}
+
+.region-item.selected {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+  font-weight: 600;
+  border-color: #b6d4fe;
+  box-shadow: inset 0 0 0 2px #0d6efd1a;
+}
+
+/* =========================================================
+   📱 MOBILE 전용 버튼바 (4열, 자동 스크롤)
+   ========================================================= */
+.mobile-region-bar {
+  display: none; /* 기본 숨김 */
+}
+
+@media (max-width: 768px) {
+  /* 사이드바 숨김 (모바일에서는 안 보이게) */
+  .region-sidebar {
+    display: none;
+  }
+
+  /* 모바일 버튼바 표시 */
+  .mobile-region-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 8px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+  }
+
+  .mobile-region-btn {
+    font-size: 13px;
+    padding: 6px 0;
+    border-radius: 9999px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-region-btn:hover {
+    background-color: #f5f5f5;
+  }
+
+  .mobile-region-btn.selected {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+    font-weight: 600;
+    border-color: #b6d4fe;
+    box-shadow: inset 0 0 0 2px #0d6efd1a;
+  }
+}
+
+/* =========================================================
+   🧩 반응형 세부 조정
+   ========================================================= */
+
+/* 중간 화면 (992px 이하) */
+@media (max-width: 992px) {
+  .region-sidebar {
+    max-width: 200px;
+    padding: 16px 12px;
+  }
+}
+
 /* =========================================================
    🪄 카드 및 기타 스타일
    ========================================================= */
-
-/* 카드 hover 효과 */
 .hover-card:hover {
   transform: translateY(-4px);
   transition: transform 0.2s ease-in-out;

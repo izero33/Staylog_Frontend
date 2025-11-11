@@ -83,11 +83,13 @@ function BoardForm() {
       createdAt: "",          // 작성일
     });
 
+    // const [draftId, setDraftId] = useState<number | null>(undefined);
+
     
     useEffect(() => {
       if (userId == null) return;
       setDto(prev => ({ ...prev, userId }));
-    }, [userId]);
+    }, [userId]); 
 
     // 새 글 작성 시: 임시 boardId(draftId) 미리 확보
     useEffect(() => {
@@ -95,7 +97,7 @@ function BoardForm() {
         if (isEdit) return; // 수정 모드에서는 실행 안 함
 
         try {
-          const draftId = await fetchDraftIdForTable(apiBoardType); // 예: "board" 테이블용 임시 ID
+          const draftId = await fetchDraftIdForTable("board"); // 예: "board" 테이블용 임시 ID
           console.log("🆕 임시 boardId 생성됨:", draftId);
           setDto((prev) => ({ ...prev, boardId: draftId }));
         } catch (err) {
@@ -104,7 +106,7 @@ function BoardForm() {
       };
 
       fetchDraftId();
-    }, [isEdit]);
+    }, []);
 
 
     // 수정 모드 => 기존 데이터 로드
@@ -324,28 +326,33 @@ function BoardForm() {
 
 
               {/* 내용 */}
+              {dto.boardId > 0 && (
               <Form.Group className="mb-4">
-                <Form.Label className="fw-semibold">내용</Form.Label>                
+                <Form.Label className="fw-semibold">내용</Form.Label>   
                   <QuillEditor
                     key={`board-quill-${isEdit ? boardId : "new"}`}
                     value={dto.content ?? ""}
                     onChange={handleContentChange}
                     targetType={apiBoardType}
-                    targetId={boardId ? Number(boardId) : 0}
+                    targetId={dto.boardId ? Number(dto.boardId) : 0}
                     style={{ height: "600px" }}
                   />
+                   
                 </Form.Group>
-                
-                
+              )}
+
+                {dto.boardId > 0 && (
                 <ImageManager
-                    key={`image-manager-${dto.boardId}`}
+                    key={`image-manager-${resetTrigger}`}
                     targetType={apiBoardType}
-                    targetId={boardId ? Number(boardId) : 0}
+                    targetId={dto.boardId ? Number(dto.boardId) : 0}
                     isEditMode={true} // 수정 모드 활성화
                     uploadTrigger={imageUploadTrigger}
                     onUploadComplete={handleImageUploadComplete}
                     onUploadError={handleImageUploadError}
                 />
+                )}
+
                 {imageUploadError && <p className="text-danger mt-2">{imageUploadError}</p>}
             
               

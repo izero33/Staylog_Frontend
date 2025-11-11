@@ -35,6 +35,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  
 
   // 3. 기존 이미지 로딩 로직
   useEffect(() => {

@@ -202,14 +202,24 @@ function BoardForm() {
           
         try {
           if (isEdit) {
-            // 1. 수정 API 호출
             await api.put(`/v1/boards/${boardId}`, dto);
+            // 게시글 수정 완료 후 이미지 업로드 트리거
+            setImageUploadTrigger(prev => prev + 1);
+            alert("게시글이 성공적으로 수정되었습니다.");
+            navigate(`/board/${boardId}`);
+            
           } else {
-            // 1. 생성 API 호출 (백엔드가 dto.boardId를 그대로 사용한다고 가정)
-            await api.post("/v1/boards", dto);
+            
+            const res = await api.post("/v1/boards", dto);
+            const newBoardId = res.boardId;
+            setDto(prev => ({ ...prev, boardId: newBoardId }));
+            // 이미지 업로드 트리거
+            setImageUploadTrigger(prev => prev + 1);
+
+            alert("게시글이 성공적으로 등록되었습니다.");
+            
+            navigate(`/board/${res.boardId}`);
           }
-          // 2. 이미지 업로드 트리거
-          setImageUploadTrigger(prev => prev + 1);
 
         }catch(err) {
             console.error("게시글 저장 실패:", err);

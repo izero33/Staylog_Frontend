@@ -7,7 +7,8 @@ const ReviewCard = ({ review }: { review: AccommodationReviewListType }) => {
 
     // 게시글 상세보기로 이동
     const handleClick = () => {
-        navigate(`/review/${review.boardId}`);
+        // boardType: review, boardId: review.boardId
+        navigate(`/board/${review.boardId}`);
     };
 
     // HTML 파싱

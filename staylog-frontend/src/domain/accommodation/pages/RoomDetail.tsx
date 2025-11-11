@@ -15,6 +15,7 @@ import { getImageUrl } from "../../../global/hooks/getImageUrl";
 import { formatDateToYYYYMMDD } from "../../../global/utils/date";
 import type { CreateBookingRequest } from "../../booking/types";
 import { createBooking } from "../../booking/api";
+import ImageCarousel from "../../../global/components/ImageCarousel";
 
 function RoomDetail() {
 
@@ -25,7 +26,7 @@ function RoomDetail() {
   const [openReserve, setOpenReserve] = useState(false);
   const isMobile = useIsMobile(); //모바일 크기일 때 true
   const navigate = useNavigate();
-  
+
   // 숙소정보
   const featchRoom = () => {
     if (!roomId) {
@@ -128,18 +129,17 @@ function RoomDetail() {
   }
 
   return <>
+    <div className="ratio mb-3">
+      <ImageCarousel
+        targetType='ROOM'
+        targetId={roomDetail.roomId}
+        aspectRatio='21:9'
+        rounded={true}
+        arrowsOnHover={true}
+      />
+    </div>
+
     <Container className="my-4 accommodationAll">
-      <Card className="mb-4">
-        <div className="hero-wrap">
-          <img
-            src="https://picsum.photos/1200/500"
-            alt="숙소 이미지"
-            className="hero-img"
-          />
-        </div>
-      </Card>
-
-
       <Row>
         <Col lg={8}>
           <h4 className="fw-bold">{roomDetail.name}</h4>

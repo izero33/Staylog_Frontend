@@ -198,12 +198,10 @@ function BookingPanel({
       if (checkOutStr) {
         const co = parseYmd(checkOutStr);
         if (nb && +co > +nb) {
-          const capped = nb;
-          if (nb && +co > +nb) {
             const capped = nb;
             setCheckOutStr(ymd(capped));
             setRange([ci, capped]);
-          }
+     
         }
       }
     } else {
@@ -310,7 +308,7 @@ function BookingPanel({
 
                       // 다음 블락 전날까지 체크아웃 허용
                       const nb = nextBlockedAfter(start);
-                      setMaxEndDate(nb ? addDays(nb, -1) : null);
+                      setMaxEndDate(nb ?? null);
                       return;
                     }
 

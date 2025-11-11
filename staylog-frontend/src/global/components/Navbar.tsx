@@ -115,12 +115,12 @@ function Navbar() {
                      <Nav.Link as={NavLink} to="/stay">STAY</Nav.Link>
                      <Nav.Link as={NavLink} to="/review">COMMUNITY</Nav.Link>
                      <Nav.Link as={NavLink} to="/journal">JOURNAL</Nav.Link>
-                       {isAdmin(role) && (
+                     {isAdmin(role) && (
                            <>
-                             <span className="mx-2 text-secondary">|</span>
-                             <Nav.Link as={NavLink} to="/admin">ADMIN</Nav.Link>
+                           <span className="mx-2 text-secondary">|</span>
+                           <Nav.Link as={NavLink} to="/admin">ADMIN</Nav.Link>
                            </>
-                         )}
+                        )}
                   </Nav>
 
                   <Nav className="flex-fill justify-content-end align-items-center gap-4">

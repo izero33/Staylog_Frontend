@@ -40,7 +40,9 @@ import Home2 from "../pages/Home2";
 import AccommodationReviewList from "../../domain/accommodation/pages/AccommodationReviewList";
 import AdminAccommodationRegisterPage from "../../domain/admin/pages/AdminAccommodationRegisterPage";
 import AdminRoomRegisterPage from "../../domain/admin/pages/AdminRoomRegisterPage";
+
 import CarouselTestPage from "../pages/CarouselTestPage";
+import AdminHomeManagement from "../../domain/admin/pages/AdminHomeManagement";
 
 
 
@@ -89,6 +91,7 @@ const adminRoute: RouteObject = {
       { path: "boards", element: <AdminBoardPage /> },  // /admin/boards
       { path: "boards/:boardId", element: <AdminBoardDetail /> },  // /admin/boards/:boardId
       { path: "coupon", element: <AdminCouponPage /> },  // /admin/coupon
+      { path: "home", element: <AdminHomeManagement /> }, // /admin/home
     ],
 };
 

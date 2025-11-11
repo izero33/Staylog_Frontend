@@ -258,7 +258,7 @@ function Boards() {
                           </td>
                           <td>
                             <NavLink
-                              to={`/review/${board.boardId}`}
+                              to={`/board/${board.boardId}`}
                               className="fw-bold text-dark text-decoration-none"
                             >
                               {board.title}

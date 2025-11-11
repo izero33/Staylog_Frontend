@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { getReservationList } from "../api/mypageApi";
 import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
-import { Button, Card, Col, Pagination, Row, Table, Badge } from "react-bootstrap";
+import { Button, Card, Pagination, Table, Badge } from "react-bootstrap";
 import { formatKST } from "../../../global/utils/date";
 import MypageReservationDetailModal from "../components/MypageReservationDetailModal";
 

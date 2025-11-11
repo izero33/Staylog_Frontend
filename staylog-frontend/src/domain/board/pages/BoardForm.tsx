@@ -42,12 +42,19 @@ function BoardForm() {
     const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
     const handleImageUploadComplete = () => {
-      alert("이미지 업로드 완료!");
+      alert("게시글이 성공적으로 등록/수정되었습니다.");
+      // dto.boardId를 사용하여 페이지 이동 (수정 시에는 boardId 사용)
+      const finalBoardId = isEdit ? boardId : dto.boardId;
+      navigate(`/${boardType}/${finalBoardId}`);
     };
   
     const handleImageUploadError = (errMsg: string) => {
       console.error("이미지 업로드 오류:", errMsg);
       setImageUploadError(errMsg);
+      alert(`게시글 내용은 저장되었지만 이미지 업로드에 실패했습니다: ${errMsg}`);
+      // 이 경우에도 페이지는 이동시켜주자. 사용자가 직접 이미지를 다시 올릴 수 있도록.
+      const finalBoardId = isEdit ? boardId : dto.boardId;
+      navigate(`/${boardType}/${finalBoardId}`);
     };
 
     // 예약내역 상태값 관리
@@ -97,7 +104,7 @@ function BoardForm() {
         if (isEdit) return; // 수정 모드에서는 실행 안 함
 
         try {
-          const draftId = await fetchDraftIdForTable("board"); // 예: "board" 테이블용 임시 ID
+          const draftId = await fetchDraftIdForTable("BOARD"); // 테이블 이름을 'BOARD'로 명시
           console.log("🆕 임시 boardId 생성됨:", draftId);
           setDto((prev) => ({ ...prev, boardId: draftId }));
         } catch (err) {
@@ -170,7 +177,7 @@ function BoardForm() {
     const handleSubmit = async(e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
 
-       
+      
 
         // 유효성 검사
         if (!dto.title.trim()) {
@@ -201,7 +208,7 @@ function BoardForm() {
             // 게시글 수정 완료 후 이미지 업로드 트리거
             setImageUploadTrigger(prev => prev + 1);
             alert("게시글이 성공적으로 수정되었습니다.");
-            navigate(`/${boardType}/${boardId}`);
+            navigate(`/board/${boardId}`);
             
           } else {
             
@@ -213,7 +220,7 @@ function BoardForm() {
 
             alert("게시글이 성공적으로 등록되었습니다.");
             
-            navigate(`/${boardType}/${res.boardId}`);
+            navigate(`/board/${res.boardId}`);
           }
 
         }catch(err) {
@@ -330,11 +337,11 @@ function BoardForm() {
               <Form.Group className="mb-4">
                 <Form.Label className="fw-semibold">내용</Form.Label>   
                   <QuillEditor
-                    key={`board-quill-${isEdit ? boardId : "new"}`}
+                    key={`board-quill-${dto.boardId}`}
                     value={dto.content ?? ""}
                     onChange={handleContentChange}
                     targetType={apiBoardType}
-                    targetId={dto.boardId ? Number(dto.boardId) : 0}
+                    targetId={dto.boardId}
                     style={{ height: "600px" }}
                   />
                    
@@ -345,7 +352,7 @@ function BoardForm() {
                 <ImageManager
                     key={`image-manager-${resetTrigger}`}
                     targetType={apiBoardType}
-                    targetId={dto.boardId ? Number(dto.boardId) : 0}
+                    targetId={dto.boardId}
                     isEditMode={true} // 수정 모드 활성화
                     uploadTrigger={imageUploadTrigger}
                     onUploadComplete={handleImageUploadComplete}

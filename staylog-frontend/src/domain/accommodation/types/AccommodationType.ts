@@ -8,10 +8,7 @@ export interface AccommodationReviewListType {
     title : string;
     content : string;
     rating : number;
-    reviewCount : number;
     createdAt : string;
-    images?: string[];
-
 }
 export interface AccommodationRoomListType {
     maxAdult: number;
@@ -23,6 +20,7 @@ export interface AccommodationRoomListType {
     rmTypeNameEn : string;
     rmTypeName : string;
     price : number;
+    imageUrl?: string; 
 }
 
 export interface AccommodationDetailType {

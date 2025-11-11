@@ -316,7 +316,7 @@ function AdminBoardPage() {
                 <small className="text-end text-muted mt-4 d-flex justify-content-end align-items-center gap-1">
                     전체 {page.totalCount}건 (
                     <input
-                        type="number"
+                        type="text"
                         className="form-control-sm form-control border-1 border-light text-center d-inline-block"
                         value={page.totalPage === 0 ? 0 : page.pageNum}
                         style={{ width: '55px' }}

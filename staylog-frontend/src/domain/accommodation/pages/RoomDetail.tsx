@@ -203,7 +203,7 @@ function RoomDetail() {
 
         {/* 데스크탑(>=lg)에서는 오른쪽 고정, 모바일(<lg)에서는 숨김 */}
         <Col lg={4} className="d-none d-lg-block">
-          <div style={{ position: "sticky", top: 16 }}>
+          <div className="right sticky-top panelTop">
             <BookingPanel
               name={roomDetail.name}
               rooms={roomForBooking ? [roomForBooking] : []} // 변환 객체 배열 전달

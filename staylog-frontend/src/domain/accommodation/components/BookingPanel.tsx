@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
 import type { AccommodationRoomListType } from "../types/AccommodationType";
 import { getImageUrl } from "../../../global/hooks/getImageUrl";
+import "../css/Accommodation.css"
 
 // 예약 정보 타입
 export interface BookingData {
@@ -75,6 +76,10 @@ function BookingPanel({
     rooms.length > 0 ? rooms[0] : null
   );
 
+  //누르는거 못하게
+  const [calendarDisabled, setCalendarDisabled] = useState(false);
+
+
   // 커스텀한 객실 드롭다운 상태
   const [openRoomDropdown, setOpenRoomDropdown] = useState(false);
   const roomWrapRef = useRef<HTMLDivElement>(null);
@@ -133,33 +138,38 @@ function BookingPanel({
 
   // 날짜 선택 가능 여부(블락 + 징검다리)
   const filterDate = (date: Date) => {
-    const s = ymd(date);            // ← toISOString() 금지(UTC로 하루 밀림)
+    const s = ymd(date);
     const today = new Date();
     const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     if (+date < +today0) return false;
 
-    // 체크인만 선택된 상태라면: 체크아웃 선택 단계
+    // 체크인만 선택된 상태: 체크아웃 선택 단계
     if (checkInStr && !checkOutStr) {
       const ci = parseYmd(checkInStr);
-      if (+date <= +ci) return false;
 
+      // 1) 체크인 당일은 "활성" (선택/하이라이트 허용)
+      if (s === ymd(ci)) return true;
+
+      // 2) 체크인 이전 날짜만 막기 (당일은 위에서 이미 true 처리)
+      if (+date < +ci) return false;
+
+      // 3) 다음 블락 계산
       const nb = nextBlockedAfter(ci);
       if (nb) {
         const sNb = ymd(nb);
-
-        //특수 케이스: 다음 블락 당일은 "체크아웃" 용도로 허용
+        // 다음 블락 당일은 체크아웃 용도로 허용
         if (s === sNb) return true;
-
-        // nb 이후는 차단
+        // 블락 이후는 차단
         if (+date > +nb) return false;
       }
 
-      // 체크아웃 선택 단계에서는 블락셋이더라도 nb 이전일은 통과
-      // (시작일이 정해져 있으므로 중간 블락은 서버가 애초에 안 주는 전제)
-    } else {
-      // 시작일 선택 단계에서는 블락일은 막는다
-      if (blockedSet.has(s)) return false;
+      // 그 외는 통과
+      return true;
     }
+
+
+    // 시작일 선택 단계: 블락일은 비활성
+    if (blockedSet.has(s)) return false;
 
     return true;
   };
@@ -198,10 +208,10 @@ function BookingPanel({
       if (checkOutStr) {
         const co = parseYmd(checkOutStr);
         if (nb && +co > +nb) {
-            const capped = nb;
-            setCheckOutStr(ymd(capped));
-            setRange([ci, capped]);
-     
+          const capped = nb;
+          setCheckOutStr(ymd(capped));
+          setRange([ci, capped]);
+
         }
       }
     } else {
@@ -294,6 +304,7 @@ function BookingPanel({
                   monthsShown={monthsShown}
                   shouldCloseOnSelect={false}
                   filterDate={filterDate}
+                  disabled={calendarDisabled}
                   minDate={new Date()}
                   onChange={(v) => {
                     const [start, end] = v as [Date | null, Date | null];
@@ -313,6 +324,13 @@ function BookingPanel({
                     }
 
                     if (start && end) {
+
+                      // ✅ 같은 날로 체크아웃 시도하면 무효화 (확정 막기)
+                      if (ymd(end) === ymd(start)) {
+                        setCheckOutStr(null);
+                        setRange([start, null]);
+                        return;
+                      }
                       // 징검다리 한계 넘으면 컷
                       let cappedEnd = end;
                       if (maxEndDate && +end > +maxEndDate) {

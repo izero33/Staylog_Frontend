@@ -9,18 +9,13 @@ import { type BoardDto, type PageInfo } from "../types/boardtypes";
 import "../components/RegionSidebar.css";
 import "./Board.css";
 
-
-import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
-import useGetUserRoleFromToken from "../../auth/hooks/useGetUserRoleFromToken";
 import RegionsSideBar from "../components/RegionSideBar";
 
 import JournalCard from "../components/JournalCard";
 import RegionButton from "../components/RegionButton";
 import Pagination from "../../../global/components/Pagination";
-
-// import { getImageUrl } from "../../../global/hooks/getImageUrl"; // 목록 페이지에서는 불필요
-
-
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../global/store/types";
 
 
 function Boards() {
@@ -38,8 +33,10 @@ function Boards() {
 
 
   // 유저 정보
-  const userId = useGetUserIdFromToken();
-  const role = useGetUserRoleFromToken();
+   const userId = useSelector((state: RootState) => state.userInfo?.userId)
+  const role = useSelector((state: RootState) => state.userInfo?.role)
+
+  
 
   const navigate = useNavigate();
 
@@ -167,7 +164,7 @@ function Boards() {
             />
           </Col>
 
-          {/* 메인 목록 */}
+          {/* 게시글 등록 버튼 */}
           <Col xs={12} md={9} lg={10}>
             <div className="d-flex justify-content-end gap-2 mb-3">
               {/* 리뷰 등록 버튼 */}
@@ -190,8 +187,7 @@ function Boards() {
                 </button>
               )}
 
-              {/* 정렬 */}
-              
+              {/* 정렬 */}              
               <Dropdown align="end">
                 <Dropdown.Toggle
                   variant="outline-secondary"

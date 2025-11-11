@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../global/api";
-import useGetUserIdFromToken from "../../auth/hooks/useGetUserIdFromToken";
 import type { BoardDto } from "../types/boardtypes";
 import Comments from "../components/comment/Comments";
 import { useSelector } from "react-redux";
@@ -26,8 +25,8 @@ function BoardDetail() {
     const [dto, setDto] = useState<BoardDto | null>(null);
 
 
-    const apiBoardType =
-        boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
+    // const apiBoardType =
+    //     boardType === "journal" ? "BOARD_JOURNAL" : "BOARD_REVIEW";
 
     const navigate = useNavigate();
 
@@ -253,13 +252,13 @@ function BoardDetail() {
     
     <div className="d-flex justify-content-end gap-2">
         <button
-            className="btn btn-outline-secondary"
+            className="btn btn-sm btn-outline-secondary"
             onClick={() => setModalInfo({ isOpen: true, type: "update" })}>
             수정
         </button>
     
         <button
-            className="btn btn-outline-secondary"
+            className="btn btn-sm btn-outline-secondary"
             onClick={() => setModalInfo({ isOpen: true, type: "delete" })}>
             삭제
         </button>

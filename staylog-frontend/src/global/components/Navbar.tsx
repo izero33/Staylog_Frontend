@@ -112,7 +112,6 @@ function Navbar() {
                   </Form>
 
                   <Nav className="flex-fill justify-content-center">
-                     <Nav.Link as={NavLink} to="/stay">STAY</Nav.Link>
                      <Nav.Link as={NavLink} to="/review">COMMUNITY</Nav.Link>
                      <Nav.Link as={NavLink} to="/journal">JOURNAL</Nav.Link>
                      {isAdmin(role) && (

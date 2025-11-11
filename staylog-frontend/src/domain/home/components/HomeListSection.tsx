@@ -142,7 +142,7 @@ function HomeListSection({
                 </Card.Text>
                 <div className="d-flex">
                   <Card.Text as="div" style={{ fontWeight: 700, color: "#202020ff" }}>
-                    <p>{item.minPrice?.toLocaleString()}원 / 박</p>
+                    <p>{item.minPrice?.toLocaleString()}원</p>
                   </Card.Text>
                   <Card.Text as="div">
                     <p className="ms-4">{item.regionName}</p>
@@ -155,10 +155,10 @@ function HomeListSection({
       </Swiper>
 
       {/* 간단 로딩/끝 UI (선택) */}
-      {loading && <div className="text-muted">불러오는 중…</div>}
+      {/* {loading && <div className="text-muted">불러오는 중…</div>}
       {!hasMore && list.length > 0 && (
         <div className="text-muted">마지막 페이지입니다.</div>
-      )}
+      )} */}
     </>
   );
 }

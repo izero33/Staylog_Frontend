@@ -59,3 +59,24 @@
   object-fit:cover;          /* 핵심: 여백 없이 꽉 채우기 */
   object-position:center;    /* 잘리는 기준점 */
 }
+
+/* 설명 영역 안에서 이미지/figure는 항상 블록으로, 옆에 텍스트 안 붙게 */
+.room-description img,
+.room-description figure {
+  display: block;
+  float: none !important;     /* 인라인 float도 무력화 */
+  clear: both;                /* 이전 float 영향 제거 */
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+}
+
+/* 혹시 남아있는 float 정리용 안전장치 */
+.room-description::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* 에디터가 인라인 스타일로 margin/padding을 과하게 줄 경우 대비(선택) */
+/* .room-description * { box-sizing: border-box; } */

@@ -1,0 +1,51 @@
+/* === 완전 금지 (클릭 불가) === */
+.dp-blocked {
+  opacity: 0.45;
+  text-decoration: line-through;
+  pointer-events: none; /* 클릭 막기 */
+}
+
+/* === 체크아웃-전용(다음 블락 당일) 표시 === */
+.dp-checkout-only {
+  outline: 2px dashed #dc3545 !important;
+  outline-offset: -2px;
+  border-radius: 50% !important;
+  position: relative;
+}
+.dp-checkout-only::after {
+  content: "✓";
+  position: absolute;
+  right: 4px;
+  bottom: 2px;
+  font-size: 0.7rem;
+  color: #dc3545;
+}
+
+/* === “눌렀음/범위/미리보기”는 내장 클래스 스타일링 === */
+/* 체크인/체크아웃 당일(눌렀음) */
+.react-datepicker__day--range-start,
+.react-datepicker__day--range-end {
+  border: 2px solid #0d6efd !important;
+  border-radius: 50% !important;
+  font-weight: 700 !important;
+}
+
+/* 확정된 범위 사이 */
+.react-datepicker__day--in-range {
+  background: rgba(13, 110, 253, 0.15) !important;
+  color: inherit !important;
+  border-radius: 0 !important;
+}
+
+/* 체크아웃 선택 중 “미리보기” */
+.react-datepicker__day--in-selecting-range {
+  background: rgba(13, 110, 253, 0.12) !important;
+  border-radius: 0 !important;
+}
+
+/* 마우스로 가리키는 체크아웃 후보(끝점) */
+.react-datepicker__day--selecting-range-end {
+  outline: 2px dashed #0d6efd !important;
+  outline-offset: -2px;
+  border-radius: 50% !important;
+}

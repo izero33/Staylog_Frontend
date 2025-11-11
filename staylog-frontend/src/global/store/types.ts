@@ -7,6 +7,7 @@ export interface UserInfo {
    userId: number;
    loginId: string;
    nickname: string;
+   role:string;
    // profileImage: string | null
 }
 

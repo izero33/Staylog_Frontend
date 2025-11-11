@@ -251,25 +251,53 @@ function AdminBoardDetail() {
                             반응지표
                         </Form.Label>
                         <Col xs={12} md={9} lg={10}>
-                            <div className="d-none d-md-block mb-2">
-                                <Table bordered size="sm" className="mb-0" style={{ maxWidth: '300px' }}>
-                                    <tbody>
-                                        {data.rating !== 0 && data.rating !== null && (
-                                            <tr>
-                                                <th style={{ width: '50%' }}>별점</th>
-                                                <td>{data.rating}</td>
-                                            </tr>
-                                        )}
-                                        <tr>
-                                            <th>좋아요수</th>
-                                            <td>{data.likesCount}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>조회수</th>
-                                            <td>{data.viewsCount}</td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
+                            <div className="d-none d-md-block mt-3">
+                                <Card style={{ maxWidth: '400px' }}>
+                                    <Card.Body className="gap-2 d-flex flex-column">
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>별점</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name="rating"
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.rating}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">점</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className='d-flex justify-content-between'>
+                                            <Form.Label className='fw-bold'>좋아요수</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name="likesCount"
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.likesCount}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>조회수</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name="viewsCount"
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.viewsCount}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                    </Card.Body>
+                                </Card>
                             </div>
 
                             <div className="d-flex flex-wrap gap-3 d-md-none">
@@ -287,17 +315,22 @@ function AdminBoardDetail() {
             {/* 게시글 내용 */}
             <p className='fs-5 text-center my-4 border-top py-3 border bg-light rounded'>게시글 내용</p>
 
+            <Card className="mb-3 p-2">
+                <ImageCarousel
+                    targetType={data.rating !== 0 && data.rating !== null ? 'REVIEW' : 'BOARD'}
+                    targetId={boardId}
+                    aspectRatio='16:9'
+                    rounded={true}
+                    arrowsOnHover={true}
+                />
+            </Card>
+
             <Card className="mb-3">
                 <Card.Header className="bg-light fw-bold">
                     제목
                 </Card.Header>
                 <Card.Body>
-                    <Form.Control
-                        plaintext
-                        readOnly
-                        value={data.title}
-                        className="form-control-sm"
-                    />
+                    <div className='description-content'>{data.title}</div>
                 </Card.Body>
             </Card>
             <Card className="mb-3">

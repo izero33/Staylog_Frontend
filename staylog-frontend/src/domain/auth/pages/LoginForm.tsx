@@ -73,7 +73,7 @@ function LoginForm({ onClose }: LoginFormProps = {}) {
       const loginResponse = await login(formData);
       
       // API 응답에서 토큰과 유저 정보 추출
-      console.log(loginResponse)
+      console.log("role을 찾아서..",loginResponse)
         
       const fullToken = `${loginResponse.tokenType} ${loginResponse.accessToken}`;
       const user: UserInfo = loginResponse.user;

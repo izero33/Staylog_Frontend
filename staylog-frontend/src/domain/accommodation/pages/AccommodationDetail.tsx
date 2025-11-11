@@ -1,4 +1,4 @@
-import { Container, Row, Col, Carousel, Nav, Button, Image, Accordion, Card, Offcanvas, } from 'react-bootstrap';
+import { Container, Row, Col, Offcanvas } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { AccommodationDetailType, AccommodationRoomListType } from '../types/AccommodationType';
 import { useEffect, useState } from 'react';
@@ -15,6 +15,7 @@ import AccommodationInfo from '../components/AccommodationInfo';
 import { createBooking } from '../../booking/api';
 import type { CreateBookingRequest } from '../../booking/types';
 import { formatDateToYYYYMMDD } from '../../../global/utils/date';
+import ImageCarousel from '../../../global/components/ImageCarousel';
 
 /*
     Carousel : 숙소 대표 이미지
@@ -189,15 +190,15 @@ function AccommodationDetail() {
     // 전체 화면 너비 사용 : Container fluid
     return <>
         {/* 숙소 대표 이미지 영역 */}
-        <div className="accommodationImages images-slider ratio ratio-21x9 mb-3">
-            <Carousel className="w-100 h-100">
-                <Carousel.Item>
-                    <img src={img1} alt="숙소 이미지 1" className="carousel-img" />
-                </Carousel.Item>
-                <Carousel.Item>
-                    <img src={img2} alt="숙소 이미지 2" className="carousel-img" />
-                </Carousel.Item>
-            </Carousel>
+        <div className="container mb-4">
+            <ImageCarousel
+                targetType='ACCOMMODATION'
+                targetId={accommodationId}
+                arrowsOnHover={true}
+                indicatorType='numbers-only'
+                aspectRatio='21:9'
+                rounded={true}
+            />
         </div>
 
         <Container className="p-0 accommodationAll">

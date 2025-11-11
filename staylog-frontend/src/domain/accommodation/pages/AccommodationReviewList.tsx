@@ -109,7 +109,7 @@ const AccommodationReviewList = () => {
 
                     {/* 페이지네이션 */}
                     {totalPage > 1 && (
-                       <Pagination
+                        <Pagination
                             page={{
                                 pageNum,               // 현재 페이지
                                 startPage: 1,          // 시작 페이지

@@ -8,6 +8,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import useCommonCodes from "./domain/common/hooks/useCommonCodes";
 import useNotificationInitializer from "./domain/notification/hooks/useNotificationInitializer";
+import Footer from "./global/components/Footer";
 
 function App() {
   const currentOutlet = useOutlet();
@@ -33,6 +34,7 @@ function App() {
       <div className="container" style={{ paddingTop: '82px' }}>
         {currentOutlet}
       </div>
+      <Footer />
     </>
   );
 }

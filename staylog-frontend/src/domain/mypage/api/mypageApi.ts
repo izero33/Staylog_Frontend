@@ -19,9 +19,10 @@ export const updateMemberInfo = async (member: MemberInfo): Promise<void> => {
 export const uploadProfileImage = async (file: File, userId: number): Promise<string> => {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("userId", String(userId)); // 백엔드 @RequestParam("userId")와 일치
+  formData.append("targetId", String(userId)); // 백엔드 @RequestParam("userId")와 일치
+  formData.append("targetType", "PROFILE")
 
-  const res = await api.post("/v1/profile/upload", formData, {
+  const res = await api.put("/v1/images", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 

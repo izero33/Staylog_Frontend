@@ -1,4 +1,3 @@
-import { Carousel } from "react-bootstrap";
 import HomeListSection from "../../domain/home/components/HomeListSection";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ImageCarousel from "../components/ImageCarousel";
@@ -6,117 +5,33 @@ import ImageCarousel from "../components/ImageCarousel";
 function Home3() {
   // 렌더할 섹션 정의 (원하는 만큼 추가 가능)
   const sections = [
-    {
-      title: "여기는 부산, 별점순",
-      regionCode: "REGION_BUSAN",
-      sort: "rating",
-      limit: 6, // 각 섹션 내부에서 가져올 개수 (필요시 9~12로 줄이면 더 가벼움)
-    },
-    {
-      title: "여기는 서울, 리뷰많은 순",
-      regionCode: "REGION_SEOUL",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국 최신순",
-      regionCode: "",
-      sort: "latest",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
-    {
-      title: "전국, 리뷰많은 순",
-      regionCode: "",
-      sort: "review",
-      limit: 6,
-    },
+    // 수도권 / 유명 지역 중심 상단
+    { title: "여기는 서울, 별점순", regionCode: "REGION_SEOUL", sort: "rating", limit: 6 },
+    { title: "여기는 부산, 리뷰 많은 순", regionCode: "REGION_BUSAN", sort: "review", limit: 6 },
+    { title: "전국, 최신 등록 숙소", regionCode: "", sort: "latest", limit: 6 },
+
+    // 인기 여행지 묶어서
+    { title: "여기는 제주, 별점순", regionCode: "REGION_JEJU", sort: "rating", limit: 6 },
+    { title: "여기는 강릉, 리뷰 많은 순", regionCode: "REGION_GANGNEUNG", sort: "review", limit: 6 },
+    { title: "여기는 경주, 최신 등록 순", regionCode: "REGION_GYEONGJU", sort: "latest", limit: 6 },
+
+    // 근교 / 여행지
+    { title: "여기는 전주, 별점순", regionCode: "REGION_JEONJU", sort: "rating", limit: 6 },
+    { title: "여기는 남원, 리뷰 많은 순", regionCode: "REGION_NAMWON", sort: "review", limit: 6 },
+    { title: "여기는 춘천, 최신 등록 순", regionCode: "REGION_CHUNCHEON", sort: "latest", limit: 6 },
+
+    // 광역 대도시
+    { title: "여기는 대전, 별점순", regionCode: "REGION_DAEJEON", sort: "rating", limit: 6 },
+    { title: "여기는 경상, 리뷰 많은 순", regionCode: "REGION_GYEONGSANG", sort: "review", limit: 6 },
+    { title: "여기는 전라, 최신 등록 순", regionCode: "REGION_JEOLLA", sort: "latest", limit: 6 },
   ];
 
   // 처음엔 3개만 보여주고, 스크롤 내려오면 3개씩 증가
   const [visibleCount, setVisibleCount] = useState(3);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const loadingRef = useRef(false);
   const lockRef = useRef(false); // 연속 발화 
 
-
-  const onIntersect = useCallback((entries: IntersectionObserverEntry[]) => {
-
-    const entry = entries[0];
-    if (!entry.isIntersecting) return; //화면에 실제로 들어와야
-    if (loadingRef.current) return; //증가중이면 막기
-    if (visibleCount >= sections.length) return; //더 늘릴거 없으면 막기
-
-    loadingRef.current = true;
-
-    setVisibleCount((prev) => Math.min(prev + 3, sections.length));
-
-    // 이번 교차는 소진: 반드시 한 번 벗어났다 다시 들어올 때만 다음 증가
-    const target = entry.target as Element;
-    observerRef.current?.unobserve(target);
-
-    // 다음 페인트 + 레이아웃 반영 이후에 락 해제 (요청 연쇄 방지)
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        if (sentinelRef.current) observerRef.current?.observe(sentinelRef.current);
-        loadingRef.current = false;
-      }, 200); // 150ms → 300ms
-    });
-  }, [visibleCount, sections.length]);
 
 
 

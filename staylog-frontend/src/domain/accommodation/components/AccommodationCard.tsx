@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { Carousel } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import type { AccommodationListItem } from '../types';
+import type { AccommodationSearchListItem } from '../types/AccommodationType';
+
+
+
+
 
 interface AccommodationCardProps {
-  accommodation: AccommodationListItem;
+  accommodation: AccommodationSearchListItem;
 }
 
 function AccommodationCard({ accommodation }: AccommodationCardProps) {

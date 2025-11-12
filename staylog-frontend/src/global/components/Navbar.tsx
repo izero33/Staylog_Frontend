@@ -21,6 +21,8 @@ function Navbar() {
 
    const notiUnreadCount = useSelector((state: RootState) => state.notiUnreadCount);
 
+   const role = useSelector((state: RootState) => state.userInfo?.role)
+
    /** 로그아웃 api 호출 (refreshToken만 삭제됨, dispath LOGOUT (localstorage의 AccessToken삭제)로 프론트 상태 초기화 */
    const handleLogout = async () => {
       try {
@@ -109,48 +111,53 @@ function Navbar() {
 
                   <ul className="navbar-nav flex-fill justify-content-center mb-2 mb-lg-0">
                      <li className="nav-item">
-                        <NavLink to="/stay" className="nav-link" aria-current="page">STAY</NavLink>
-                     </li>
-                     <li className="nav-item">
                         <NavLink to="/review" className="nav-link">COMMUNITY</NavLink>
                      </li>
                      <li className="nav-item">
                         <NavLink to="/journal" className="nav-link">JOURNAL</NavLink>
                      </li>
+                     {role == "ADMIN" &&
+                     <div className="d-flex align-items-center">
+                        <li>|</li>
+                        <li className="nav-item">
+                           <NavLink to="/admin" className="nav-link">ADMIN</NavLink>
+                        </li>
+                     </div>
+                     }
                   </ul>
 
                   <ul className="navbar-nav flex-fill justify-content-end mb-2 mb-lg-0 gap-4 align-items-center">
 
-                  {/* 로그인 상태 */}
-                  {nickname ? (
-                     <>
-                        {/* 닉네임 표시 */}
-                        <span className="fw-semibold">{nickname}</span>
+                     {/* 로그인 상태 */}
+                     {nickname ? (
+                        <>
+                           {/* 닉네임 표시 */}
+                           <span className="fw-semibold">{nickname}</span>
 
-                        {/* 아이콘 + 마이페이지 드롭다운 통합 */}
-                        <li className="nav-item">
-                           {/* profileImage prop 전달 */}
-                           <MypageDropdown onClose={() => {}} profileImage={profileImage} />
-                        </li>
+                           {/* 아이콘 + 마이페이지 드롭다운 통합 */}
+                           <li className="nav-item">
+                              {/* profileImage prop 전달 */}
+                              <MypageDropdown onClose={() => { }} profileImage={profileImage} />
+                           </li>
 
-                        {/* 알림 아이콘 (로그인 시만 표시하기) */}
-                        <li onClick={openNoti} className="nav-item position-relative" style={{ cursor: 'pointer' }}>
-                           <i className="bi bi-bell-fill" style={{ fontSize: '32px' }}></i>
-                           {notiUnreadCount > 0 && (
-                              <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.75rem', top: '5px' }}>
-                                 {notiUnreadCount > 9 ? '9+' : notiUnreadCount}
-                                 <span className="visually-hidden">unread messages</span>
-                              </span>)}
-                        </li>
+                           {/* 알림 아이콘 (로그인 시만 표시하기) */}
+                           <li onClick={openNoti} className="nav-item position-relative" style={{ cursor: 'pointer' }}>
+                              <i className="bi bi-bell-fill" style={{ fontSize: '32px' }}></i>
+                              {notiUnreadCount > 0 && (
+                                 <span className="position-absolute start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.75rem', top: '5px' }}>
+                                    {notiUnreadCount > 9 ? '9+' : notiUnreadCount}
+                                    <span className="visually-hidden">unread messages</span>
+                                 </span>)}
+                           </li>
 
-                        {/* 로그아웃 버튼 */}
-                        <li className="nav-item">
-                        <button
-                           className="btn btn-outline-dark px-3 py-1"
-                           onClick={handleLogout}
-                        >
-                           LOGOUT
-                        </button>
+                           {/* 로그아웃 버튼 */}
+                           <li className="nav-item">
+                              <button
+                                 className="btn btn-outline-dark px-3 py-1"
+                                 onClick={handleLogout}
+                              >
+                                 LOGOUT
+                              </button>
                            </li>
                         </>
                      ) : (

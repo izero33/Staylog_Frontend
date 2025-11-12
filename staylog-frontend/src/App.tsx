@@ -1,4 +1,4 @@
-import { useOutlet } from "react-router-dom";
+import { useOutlet, useSearchParams } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Navbar from "./global/components/Navbar"
@@ -9,6 +9,9 @@ import 'dayjs/locale/ko';
 import useCommonCodes from "./domain/common/hooks/useCommonCodes";
 import useNotificationInitializer from "./domain/notification/hooks/useNotificationInitializer";
 import BottomTabBar from "./global/components/BottomTabBar";
+// 모달 추가
+import Modal from "./global/components/Modal";
+import { useEffect } from "react";
 
 function App() {
   const currentOutlet = useOutlet();
@@ -26,8 +29,24 @@ function App() {
 
   // 앱 실행 시 SSE 구독 및 unreadCount 조회
   useNotificationInitializer()
+  
+  // 하단 탭바에서 쿠폰 버튼 클릭 시 모달을 제어하기 위한 전역
+  const [params, setParams] = useSearchParams();
+  const modal = params.get("modal"); // "coupon" | "login" | null
+  const isOpen = modal === "coupon" || modal === "login";
+  const mode = (modal === "coupon" ? "coupon" : "login") as "coupon" | "login";
 
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
+  const handleCloseModal = () => {
+    params.delete("modal");
+    setParams(params, { replace: true });
+  };
   return (
     <>
       <Navbar></Navbar>
@@ -35,6 +54,7 @@ function App() {
         {currentOutlet}
       </div>
       <BottomTabBar />
+      <Modal isOpen={isOpen} onClose={handleCloseModal} mode={mode} />
     </>
   );
 }

@@ -30,7 +30,7 @@ export interface UserInfo {
   loginId: string;
   nickname: string;
   profileImage?: string;
-  // role: string;
+  role: string;
 }
 
 /**

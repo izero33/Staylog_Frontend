@@ -51,7 +51,7 @@ function RegionModal({ show, onHide, selectedRegion, setSelectedRegion }: Props)
         
 
         {/* 2열 카드형 레이아웃 */}
-        <Row xs={2} sm={2} md={2} className="g-3">
+        <Row xs={2} sm={2} md={2} className="g-1">
           {regions.map((region) => {
             const isSelected = tempSelection === region.codeName;
             return (
@@ -65,7 +65,7 @@ function RegionModal({ show, onHide, selectedRegion, setSelectedRegion }: Props)
                     cursor: "pointer",
                     borderRadius: "12px",
                     transition: "all 0.25s ease",
-                    transform: isSelected ? "scale(1.04)" : "scale(1)",
+                    transform: isSelected ? "scale(1)" : "scale(1)",
                   }}
                 >
                   <Card.Body className="py-3 fw-semibold d-flex align-items-center justify-content-center gap-2">

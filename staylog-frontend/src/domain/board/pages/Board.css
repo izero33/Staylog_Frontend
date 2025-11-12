@@ -37,6 +37,24 @@
   font-size: 0.9rem;
 }
 
+.board-content {
+  min-height: 240px;      /* 내용이 짧아도 최소 높이 확보 */
+  padding: 10px;          /* 내부 여백 */
+  
+  
+}
+
+.meta-item {
+  display: inline-block;
+  margin: 0 8px;
+}
+
+.meta-divider {
+  color: #bbb;
+  margin: 0 8px;
+}
+
+
 /* =========================================================
    📊 테이블 공통
    ========================================================= */
@@ -155,4 +173,112 @@
   .pagination-custom {
     flex-wrap: wrap;
   }
+}
+/* =========================================
+   ✨ JournalCard Hover 스타일
+   Stayfolio 감성 버전
+   ========================================= */
+
+.journal-card {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.journal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* 이미지 컨테이너 */
+.image-container {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+
+/* 이미지 자체 */
+.journal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* hover 시 이미지 어두워지고 약간 확대 */
+.journal-card:hover .journal-image {
+  transform: scale(1.05);
+  filter: brightness(60%) blur(1px);
+}
+
+/* 오버레이 */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* hover 시 오버레이 부드럽게 등장 */
+.journal-card:hover .overlay {
+  opacity: 1;
+}
+
+/* 오버레이 안 내용 */
+.overlay-content {
+  text-align: center;
+  color: #a6a6a6;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+/* 하트, 눈 사이 간격 */
+.overlay-content i {
+  font-size: 1.3rem;
+  vertical-align: middle;
+}
+
+/* 등장 애니메이션 */
+@keyframes fadeIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =========================================
+   ✨ Review Table 스타일
+   ========================================= */
+
+.review-table th,
+.review-table td {
+  white-space: nowrap;      /* 줄바꿈 방지 */
+  overflow: hidden;         /* 넘치는 글자 숨김 */
+  text-overflow: ellipsis;  /* ... 으로 표시 */
+  max-width: 150px;         /* 셀 너비 제한 (필요시 조절) */
+}
+
+.review-table td a {
+  display: inline-block;    /* 링크에도 동일하게 적용되도록 */
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 반응형일 때 테이블이 전체 너비를 넘으면 스크롤 */
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;        /* 가로 스크롤 추가 */
 }

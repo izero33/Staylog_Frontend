@@ -8,6 +8,7 @@ export interface UserInfo {
    loginId: string;
    nickname: string;
    profileImage: string | null | undefined
+   role:string;
 }
 
 // 닉네임 업데이트 액션 

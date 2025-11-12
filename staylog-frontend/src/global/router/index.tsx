@@ -40,19 +40,22 @@ import Home2 from "../pages/Home2";
 import AccommodationReviewList from "../../domain/accommodation/pages/AccommodationReviewList";
 import AdminAccommodationRegisterPage from "../../domain/admin/pages/AdminAccommodationRegisterPage";
 import AdminRoomRegisterPage from "../../domain/admin/pages/AdminRoomRegisterPage";
+
 import CarouselTestPage from "../pages/CarouselTestPage";
+import AdminHomeManagement from "../../domain/admin/pages/AdminHomeManagement";
+import Home3 from "../pages/Home3";
 
 
 
 // routes 배열: 중첩되지 않는 최상위 경로만 포함 (Admin, Mypage 라우트 객체는 분리)
 const routes: RouteObject[] = [
   { path: "/index.html", element: <Home /> }, // spring boot 최초 실행 정보 추가
-  { path: "/", element: <Home /> },
+  { path: "/", element: <Home3 /> },
   { path: "/login", element: <LoginForm /> },
   { path: "/:boardType", element: <Boards /> },
   { path: "/form/:boardType", element: <BoardForm /> },
   { path: "/form/:boardType/:boardId", element: <BoardForm /> },
-  { path: "/:boardType/:boardId", element: <BoardDetail /> },
+  { path: "/board/:boardId", element: <BoardDetail /> },
   { path: "/signup", element: <SignupForm /> },
   { path: "/accommodations", element: <AccommodationListPage /> }, // 숙소 리스트 페이지
   { path: "/accommodations/:id", element: <AccommodationDetail />},
@@ -66,7 +69,7 @@ const routes: RouteObject[] = [
   { path: "/payment/complete", element: <PaymentCompletePage/>}, // 결제 완료 페이지
   { path: "/comments/:boardId", element: <CommentsPage /> },
   { path: "/testEditor", element: <TestEditorPage /> },
-  { path: "/home", element: <Home2 />},
+  //{ path: "/home", element: <Home3 />},
   { path: "/testCarousel", element: <CarouselTestPage />},
 ];
 
@@ -89,6 +92,7 @@ const adminRoute: RouteObject = {
       { path: "boards", element: <AdminBoardPage /> },  // /admin/boards
       { path: "boards/:boardId", element: <AdminBoardDetail /> },  // /admin/boards/:boardId
       { path: "coupon", element: <AdminCouponPage /> },  // /admin/coupon
+      { path: "home", element: <AdminHomeManagement /> }, // /admin/home
     ],
 };
 

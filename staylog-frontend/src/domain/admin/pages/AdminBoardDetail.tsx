@@ -1,5 +1,5 @@
 
-import { Container } from 'react-bootstrap';
+import { Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../global/api';
@@ -7,7 +7,8 @@ import axios from 'axios';
 import { formatKST } from '../../../global/utils/date';
 import type { AdminBoard } from '../types/AdminBoardTypes';
 import AdminReservationDetailModal from '../components/AdminReservationDetailModal';
-import '../css/AdminDetailPageTable.css';
+import '../css/AdminDescriptionImg.css';
+import ImageCarousel from '../../../global/components/ImageCarousel';
 
 /*
     Carousel : 게시글 대표 이미지
@@ -106,7 +107,7 @@ function AdminBoardDetail() {
     const handleGoToList = () => {
         if (location.state?.from) {
             // 저장된 검색 상태와 함께 목록으로 돌아가기
-            navigate(location.state.from, {
+            navigate('/admin/boards', {
                 state: {
                     searchParams: location.state.searchParams,
                     inputKeyword: location.state.inputKeyword
@@ -132,100 +133,216 @@ function AdminBoardDetail() {
     // 전체 화면 너비 사용 : Container fluid
     return <>
         <Container fluid className="p-0">
+            {/* 헤더 */}
             <h3>{data.boardId}번 게시글 상세
                 <span className={`ms-2 badge ${data.deleted === 'N' ? 'bg-success' : 'bg-secondary'}`} style={{ fontSize: '0.8rem' }}>
                     {data.deleted === 'N' ? '공개' : '숨김'}
                 </span>
             </h3>
-            <div className="text-muted mt-3">
-                <span className='me-2'>등록일 : {formatKST(data.createdAt)}</span>
-                <span>수정일 : {formatKST(data.updatedAt)}</span>
+            <div className="text-muted mb-3">
+                <div className="d-flex flex-column flex-md-row gap-1 gap-md-2">
+                    <span>등록일: {formatKST(data.createdAt)}</span>
+                    <span>수정일: {data.updatedAt ? formatKST(data.updatedAt) : '-'}</span>
+                </div>
             </div>
 
-            <div className="mt-5 justify-content-end d-flex gap-2">
-                {data.deleted === 'N' ? (
-                    <button title="숨김처리" className="btn btn-sm btn-danger text-white" onClick={() => updateBoardStatus(data.boardId!, 'Y')}>숨김 처리</button>
-                ) : (
-                    <button title="공개처리" className="btn btn-sm btn-success" onClick={() => updateBoardStatus(data.boardId!, 'N')}>공개 처리</button>
-                )}
+            {/* 버튼 그룹 */}
+            <div className="d-flex flex-md-row justify-content-between gap-2 mt-4 mt-md-5 mb-4">
                 <button
-                    className="btn btn-sm btn-outline-primary"
-                    title="게시글 목록으로 이동"
-                    onClick={handleGoToList} // 이동 함수 연결
+                    title="게시글 목록으로 돌아가기"
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={handleGoToList}
                 >
-                    <i className="bi bi-arrow-left ms-1"></i> 게시글 목록
+                    <i className="bi bi-arrow-left"></i>
+                    <span className="d-none d-sm-inline ms-1">뒤로가기</span>
                 </button>
+                {data.deleted === 'N' ? (
+                    <button
+                        title="게시글 숨김"
+                        className="btn btn-sm btn-danger text-white"
+                        onClick={() => updateBoardStatus(data.boardId!, 'Y')}
+                    >
+                        <i className="bi bi-eye-slash"></i>
+                        <span className="d-none d-sm-inline ms-1">숨김</span>
+                    </button>
+                ) : (
+                    <button
+                        title="게시글 공개"
+                        className="btn btn-sm btn-success"
+                        onClick={() => updateBoardStatus(data.boardId!, 'N')}
+                    >
+                        <i className="bi bi-eye"></i>
+                        <span className="d-none d-sm-inline ms-1">공개</span>
+                    </button>
+                )}
             </div>
 
-            <table className="table table-bordered mt-2" style={{ tableLayout: 'fixed', width: '100%' }}>
-                <tbody>
-                    {/* 세로 헤더 (왼쪽이 헤더) */}
-                    <tr>
-                        <th className="bg-light text-center" style={{ width: '25%' }}>작성자</th>
-                        <td>{data.userNickName}</td>
-                    </tr>
-                    <tr>
-                        <th className="bg-light text-center">지역</th>
-                        <td>{data.regionName}</td>
-                    </tr>
-                    <tr>
-                        <th className="bg-light text-center">숙소명</th>
-                        <td>{data.accommodationName}</td>
-                    </tr>
-                    {data.bookingId !== 0 && (<tr>
-                        <th className="bg-light text-center">예약번호</th>
-                        <td>
-                            <button
-                                type="button"
-                                className="btn btn-link p-0 text-decoration-none"
-                                onClick={() => openDetail(data.bookingId)}
-                                title="상세 보기"
-                            >{data.bookingId}</button>
-                        </td>
-                    </tr>)}
+            <Card className="mb-3">
+                <Card.Body>
+                    {/* 작성자 */}
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            작성자
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <Form.Control
+                                plaintext
+                                readOnly
+                                value={data.userNickName}
+                                className="form-control-sm"
+                            />
+                        </Col>
+                    </Form.Group>
 
-                    <tr>
-                        <th className="bg-light text-center">반응지표</th>
-                        <td>
-                            <table className="table table-sm mb-0" style={{ width: '20%' }}>
-                                <tbody>
-                                    {data.rating !== 0 && data.rating !== null && (
-                                        <tr>
-                                            <th>별점</th>
-                                            <td>{data.rating}</td>
-                                        </tr>
-                                    )}
-                                    <tr>
-                                        <th>좋아요수</th>
-                                        <td>{data.likesCount}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>조회수</th>
-                                        <td>{data.viewsCount}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th className="bg-light text-center">제목</th>
-                        <td>{data.title}</td>
-                    </tr>
+                    {/* 지역 */}
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            지역
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <Form.Control
+                                plaintext
+                                readOnly
+                                value={data.regionName}
+                                className="form-control-sm"
+                            />
+                        </Col>
+                    </Form.Group>
 
-                    {/* 구분선 */}
-                    <tr>
-                        <td colSpan={2}></td>
-                    </tr>
+                    {/* 숙소명 (리뷰 전용) */}
+                    {data.rating !== 0 && data.rating !== null && (
+                        <Form.Group as={Row} className="mb-3">
+                            <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                                숙소명
+                            </Form.Label>
+                            <Col xs={12} md={9} lg={10}>
+                                <Form.Control
+                                    plaintext
+                                    readOnly
+                                    value={data.accommodationName}
+                                    className="form-control-sm"
+                                />
+                            </Col>
+                        </Form.Group>
+                    )}
 
-                    {/* 가로 헤더 (위쪽이 헤더) */}
-                    <tr>
-                        <th colSpan={2} className="bg-light text-center">내용</th>
-                    </tr>
-                    <tr>
-                        <td colSpan={2} dangerouslySetInnerHTML={{ __html: data.content }} />
-                    </tr>
-                </tbody>
-            </table>
+                    {/* 예약번호 */}
+                    {data.bookingId !== 0 && (
+                        <Form.Group as={Row} className="mb-3">
+                            <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                                예약번호
+                            </Form.Label>
+                            <Col xs={12} md={9} lg={10}>
+                                <button
+                                    type="button"
+                                    className="btn btn-link p-0 text-decoration-none"
+                                    onClick={() => openDetail(data.bookingId)}
+                                    title="상세 보기"
+                                >
+                                    {data.bookingId}
+                                </button>
+                            </Col>
+                        </Form.Group>
+                    )}
+
+                    {/* 반응지표 */}
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column xs={12} md={3} lg={2} className="fw-bold">
+                            반응지표
+                        </Form.Label>
+                        <Col xs={12} md={9} lg={10}>
+                            <div className="d-none d-md-block mt-3">
+                                <Card style={{ maxWidth: '400px' }}>
+                                    <Card.Body className="gap-2 d-flex flex-column">
+                                        {data.rating !== 0 && data.rating !== null && (
+                                            <Form.Group className="d-flex justify-content-between">
+                                                <Form.Label className='fw-bold'>별점</Form.Label>
+                                                <div className="d-flex align-items-center">
+                                                    <Form.Control
+                                                        type="text"
+                                                        name="rating"
+                                                        size="sm"
+                                                        className="text-end"
+                                                        value={data.rating}
+                                                        readOnly
+                                                    />
+                                                    <span className="ms-2">점</span>
+                                                </div>
+                                            </Form.Group>
+                                        )}
+                                        <Form.Group className='d-flex justify-content-between'>
+                                            <Form.Label className='fw-bold'>좋아요수</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name="likesCount"
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.likesCount}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                        <Form.Group className="d-flex justify-content-between">
+                                            <Form.Label className='fw-bold'>조회수</Form.Label>
+                                            <div className="d-flex align-items-center">
+                                                <Form.Control
+                                                    type="text"
+                                                    name="viewsCount"
+                                                    size="sm"
+                                                    className="text-end"
+                                                    value={data.viewsCount}
+                                                    readOnly
+                                                />
+                                                <span className="ms-2">개</span>
+                                            </div>
+                                        </Form.Group>
+                                    </Card.Body>
+                                </Card>
+                            </div>
+
+                            <div className="d-flex flex-wrap gap-3 d-md-none">
+                                {data.rating !== 0 && data.rating !== null && (
+                                    <span><i title="별점" className="bi bi-star-fill text-warning"></i> {data.rating}</span>
+                                )}
+                                <span><i title="좋아요수" className="bi bi-heart-fill text-danger"></i> {data.likesCount}</span>
+                                <span><i title="조회수" className="bi bi-eye-fill"></i> {data.viewsCount}</span>
+                            </div>
+                        </Col>
+                    </Form.Group>
+                </Card.Body>
+            </Card>
+
+            {/* 게시글 내용 */}
+            <p className='fs-5 text-center my-4 border-top py-3 border bg-light rounded'>게시글 내용</p>
+            {data.rating === 0 && (
+                <Card className="mb-3 p-2">
+                    <ImageCarousel
+                        targetType='BOARD_JOURNAL'
+                        targetId={boardId}
+                        aspectRatio='21:9'
+                        rounded={true}
+                        arrowsOnHover={true}
+                    />
+                </Card>
+            )}
+            <Card className="mb-3">
+                <Card.Header className="bg-light fw-bold">
+                    제목
+                </Card.Header>
+                <Card.Body>
+                    <div className='description-content'>{data.title}</div>
+                </Card.Body>
+            </Card>
+            <Card className="mb-3">
+                <Card.Header className="bg-light fw-bold">
+                    내용
+                </Card.Header>
+                <Card.Body>
+                    <div className='description-content' dangerouslySetInnerHTML={{ __html: data.content }} />
+                </Card.Body>
+            </Card>
 
             {/* 예약 상세 모달 */}
             <AdminReservationDetailModal

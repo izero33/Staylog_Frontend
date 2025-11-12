@@ -156,7 +156,7 @@ function ReviewSection() {
                                 <td>{review.rating}</td>
                                 <td>{review.createdAt ? formatKST(review.createdAt).split("T")[0] : 'N/A'}</td>
                                 <td>
-                                    <Button variant="outline-primary" size="sm" onClick={() => navigate(`/review/${review.reviewId}`)} className="text-nowrap">
+                                    <Button variant="outline-primary" size="sm" onClick={() => navigate(`/board/${review.reviewId}`)} className="text-nowrap">
                                         리뷰 보기
                                     </Button>
                                 </td>

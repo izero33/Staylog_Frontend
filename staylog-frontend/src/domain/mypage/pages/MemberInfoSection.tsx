@@ -634,7 +634,7 @@ function MemberInfoSection() {
                     className="border rounded-circle mx-auto d-flex justify-content-center align-items-center bg-light overflow-hidden"
                     style={{ width: "130px", height: "130px" }}>
                     <Image 
-                        onClick={() => document.getElementById("formFile")?.click()} 
+                        onClick={() => document.getElementById("formFile")?.click()} style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         src={previewUrl || member.profileImage || "https://cdn-icons-png.flaticon.com/512/847/847969.png"} alt="profile image" roundedCircle fluid/>
                 </div>
                 <p className="text-muted mt-2 mb-1">프로필 사진</p>

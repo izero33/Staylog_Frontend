@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
@@ -61,9 +61,6 @@ function BookingPanel({
   // 체크인 체크아웃 날짜 상태
   const [[checkIn, checkOut], setRange] = useState<[Date | null, Date | null]>([null, null]);
 
-  //화면의 가로폭에 따라 1개월 보일지 2개월 보일지 결정
-  const [monthsShown, setMonthsShown] = useState(2);
-
   // 인원 수 상태 (성인, 어린이, 유아 순서)
   const [adultCount, setAdultCount] = useState(1);
   const [childCount, setChildCount] = useState(0);
@@ -75,10 +72,6 @@ function BookingPanel({
   const [selectedRoom, setSelectedRoom] = useState<AccommodationRoomListType | null>(
     rooms.length > 0 ? rooms[0] : null
   );
-
-  //누르는거 못하게
-  const [calendarDisabled, setCalendarDisabled] = useState(false);
-
 
   // 커스텀한 객실 드롭다운 상태
   const [openRoomDropdown, setOpenRoomDropdown] = useState(false);
@@ -96,12 +89,8 @@ function BookingPanel({
 
   // --- 유틸 추가 ---
 
-  const toLocalMidnight = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-
   const ymd = (d: Date) =>
     `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}-${String(d.getDate()).padStart(2, '0')}`;
-
-  const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 
   const parseYmd = (s: string) => {
     const [y, m, d] = s.split('-').map(Number);
@@ -123,7 +112,6 @@ function BookingPanel({
   );
 
   // 체크인 이후 "다음 블락 시작일" 찾기
-
   const nextBlockedAfter = (d: Date | null) => {
     if (!d) return null;
     for (const b of blockedDatesLocal) if (+b > +d) return b;
@@ -135,6 +123,12 @@ function BookingPanel({
     const t = new Date();
     return new Date(t.getFullYear(), t.getMonth(), t.getDate()); // 00:00
   }, []);
+
+  const tomorrow = new Date(todayLocal); tomorrow.setDate(tomorrow.getDate() + 1);
+
+  // 3) 보여줄 달 수를 상태로 (중복 선언 금지! 기존 monthsShown 선언 있으면 제거)
+  const [monthsShown, setMonthsShown] = useState<number>(2);
+
 
   // 날짜 선택 가능 여부(블락 + 징검다리)
   const filterDate = (date: Date) => {
@@ -241,12 +235,6 @@ function BookingPanel({
 
   /*블락 징검다리 제한 */
 
-  const parseYmdNoShift = (s: string) => {
-    const [y, m, d] = s.split('-').map(Number);
-    return new Date(y, m - 1, d, 12, 0, 0, 0); // 로컬 정오
-  };
-
-
   // 화면 넓이에 따라 1/2개월 자동 전환
   useEffect(() => {
     const recalc = () => {
@@ -267,6 +255,14 @@ function BookingPanel({
   //   const w = el.offsetWidth || window.innerWidth;
   //   setMonthsShown(w < 1100 ? 1 : 2);
   // }, [openCalendar]);
+
+
+  //오늘 기준 3개월의 '마지막 날' (예: 11월이라면 2월 말일)
+  const endOf3Months = useMemo(() => {
+    const y = todayLocal.getFullYear();
+    const m = todayLocal.getMonth();
+    return new Date(y, m + 4, 0); // (m+4, 0) == 3개월 뒤가 포함된 달의 말일
+  }, [todayLocal]);
 
   return <>
     <Card className="bg-white">
@@ -299,13 +295,15 @@ function BookingPanel({
                   inline
                   locale={ko}
                   selectsRange
+                  monthsShown={monthsShown}
                   startDate={checkIn}
                   endDate={checkOut}
-                  monthsShown={monthsShown}
                   shouldCloseOnSelect={false}
                   filterDate={filterDate}
-                  disabled={calendarDisabled}
-                  minDate={new Date()}
+                  minDate={tomorrow}
+                  maxDate={endOf3Months}
+                  disabledKeyboardNavigation
+
                   onChange={(v) => {
                     const [start, end] = v as [Date | null, Date | null];
 
@@ -470,27 +468,6 @@ function BookingPanel({
             </div>
           </div>
         )}
-
-        {/* 예약 버튼 */}
-        {/* <Button className="w-100 py-3 mt-2 fw-bold" variant="dark" style={{ fontSize: "1.1rem" }}
-          onClick={() => {
-            if (selectedRoom && checkInStr && checkOutStr && nights > 0) {
-              onReserve?.({
-                roomId: selectedRoom.roomId,
-                checkInStr: checkInStr!,   // 혹은 API에 바로 문자열 전달
-                checkOutStr: checkOutStr,
-                adults: adultCount,
-                children: childCount,
-                infants: infantCount,
-                totalPrice,
-                nights,
-                
-              });
-            }
-          }}
-          disabled={!selectedRoom || nights === 0}>
-          예약하기
-        </Button> */}
         <Button className="w-100 py-3 mt-2 fw-bold" variant="dark" style={{ fontSize: "1.1rem" }}
           onClick={() => {
             if (selectedRoom && checkInStr && checkOutStr && nights > 0) {

@@ -12,6 +12,8 @@ import BottomTabBar from "./global/components/BottomTabBar";
 // 모달 추가
 import Modal from "./global/components/Modal";
 import { useEffect } from "react";
+import Footer from "./global/components/Footer";
+
 
 function App() {
   const currentOutlet = useOutlet();
@@ -55,6 +57,7 @@ function App() {
       </div>
       <BottomTabBar />
       <Modal isOpen={isOpen} onClose={handleCloseModal} mode={mode} />
+      <Footer />
     </>
   );
 }

@@ -137,7 +137,7 @@ function ReviewSection() {
         <div className="d-none d-lg-block">
             <Table bordered hover responsive className="align-middle text-center">
                 <thead className="table-light">
-                    <tr>
+                    <tr className="text-nowrap">
                         <th>예약 번호</th>
                         <th>숙소명</th>
                         <th>제목</th>
@@ -156,7 +156,7 @@ function ReviewSection() {
                                 <td>{review.rating}</td>
                                 <td>{review.createdAt ? formatKST(review.createdAt).split("T")[0] : 'N/A'}</td>
                                 <td>
-                                    <Button variant="outline-primary" size="sm" onClick={() => navigate(`/review/${review.reviewId}`)} className="text-nowrap">
+                                    <Button variant="outline-primary" size="sm" onClick={() => navigate(`/board/${review.reviewId}`)} className="text-nowrap">
                                         리뷰 보기
                                     </Button>
                                 </td>

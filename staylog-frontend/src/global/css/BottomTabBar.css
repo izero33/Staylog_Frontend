@@ -40,9 +40,6 @@
   line-height: 1;
 }
 
-.sl-tab.active, .sl-tab:global(.active) {
-  color: #0a84ff;
-}
 
 @media (max-width: 360px) {
   .sl-tab i { font-size: 18px; }

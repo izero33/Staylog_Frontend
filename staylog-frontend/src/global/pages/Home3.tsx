@@ -6,16 +6,16 @@ function Home3() {
   // 렌더할 섹션 정의 (원하는 만큼 추가 가능)
   const sections = [
     // 수도권 / 유명 지역 중심 상단
-    { title: "전국, 최신 등록 숙소", regionCode: "", sort: "latest", limit: 6 },
-    { title: "트렌드의 시작, 서울 | 별점순", regionCode: "REGION_SEOUL", sort: "rating", limit: 6 },
+    { title: "전국 | 최신 등록 숙소", regionCode: "", sort: "latest", limit: 6 },
+    { title: "전국 | 별점순", regionCode: "", sort: "rating", limit: 6 },
+    { title: "푸른 자연 속 힐링, 강원 | 리뷰 많은 순", regionCode: "REGION_GANGWON", sort: "review", limit: 6 },
+    { title: "쉼이 필요할 때, 제주 | 별점순", regionCode: "REGION_JEJU", sort: "rating", limit: 6 },
     { title: "바다 낭만 가득, 부산 | 리뷰 많은 순", regionCode: "REGION_BUSAN", sort: "review", limit: 6 },
+    { title: "트렌드의 시작, 서울 | 별점순", regionCode: "REGION_SEOUL", sort: "rating", limit: 6 }
 
     // 인기 여행지 묶어서
-    { title: "쉼이 필요할 때, 제주 | 별점순", regionCode: "REGION_JEJU", sort: "rating", limit: 6 },
-    { title: "푸른 자연 속 힐링, 강원 | 리뷰 많은 순", regionCode: "REGION_GANGWON", sort: "review", limit: 6 },
 
     // 근교 / 여행지
-    { title: "천년의 시간이 머문, 경북 | 별점순", regionCode: "REGION_JEONJU", sort: "rating", limit: 6 }
   ];
 
   // 처음엔 3개만 보여주고, 스크롤 내려오면 3개씩 증가

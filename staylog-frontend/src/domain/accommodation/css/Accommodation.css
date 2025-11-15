@@ -1,0 +1,203 @@
+.accommodationAll {
+    /* 최대 너비 제한 */
+    max-width : 75rem;
+    /* 화면 가운데 정렬 */
+    margin : 0 auto;
+    font-size : 0.85rem;
+    line-height : 1.2; /* 줄 간격 여유 */
+    color : #3d3d3d;
+}
+
+.accommodationDetail img {
+    width : 100%;
+    height : auto;
+    border-radius : 0.3rem;
+    display : block;
+    object-fit : cover;
+}
+
+/*메뉴 탭 커스텀*/
+.menuTab {
+    display : flex;
+    justify-content : space-between;
+    padding : 0 0;
+    cursor : pointer;
+    font-size : 1.1rem;
+    font-weight : 500;
+    /* 스크롤 시 상단에 고정 */
+    position : sticky;
+    top : 4rem;
+    /* 상단 네비바 높이 여백 */
+    width : 100%;
+    /* 부모 폭에 맞추기 */
+    background-color : #fff;
+    /* 배경 겹치는 걸 방지 */
+    z-index : 100;
+}
+
+.menuTab .navItem {
+    font-size : 1.0rem;
+    flex-grow : 1;
+    text-align : center;
+    position : relative;
+    padding : 0.6rem 0 0.6rem;
+    border-bottom : 1px solid #ccc;
+    /* 전체 탭의 회색 밑줄을 각 항목에 추가 */
+    color : #141414;
+    /* 비활성화된 색상 */
+    transition : color 0.3s;
+}
+
+/*탭에 커서를 가져갔을 때*/
+.menuTab .navItem:hover {
+    color : #6c6c6c;
+}
+
+.menuTab .navItem.active {
+    font-weight : 700;
+    padding-bottom : 0.6rem;
+    border-bottom : 3px solid #000000;
+    /* 얇은 회색 밑줄을 덮어쓰기 */
+}
+
+/* 안내 사항 아코디언 */
+.customAccordion .accordion-item {
+    border : none;
+    /* 테투리 제거 */
+    border-bottom : 1px solid #ddd;
+}
+
+/* 아코디언 버튼 스타일 */
+.customAccordion .accordion-button {
+    background : transparent;
+    /* 배경색 제거 */
+    box-shadow : none;
+    /* 클릭 시 생기는 그림자 제거 */
+    font-weight : 500;
+    /* 글씨 약간 굵게 */
+    padding : 1rem 0;
+    /* 위아래 여백만 남겨서 넓게 보이게 */
+    font-weight : 400;
+    font-size : 1.0rem;
+}
+
+/* 아코디언이 열렸을 때 */
+.customAccordion .accordion-button:not(.collapsed) {
+    color : #000;
+    /* 텍스트 색 진하게 */
+    background : transparent;
+    /* 배경 그대로 투명 유지 */
+    font-weight : 700;
+}
+
+/* 아코디언 본문 내용 */
+.customAccordion .accordion-body {
+    padding : 1rem 0 1rem;
+    /* 위쪽 살짝, 아래쪽 넉넉한 여백 */
+    color : #282828;
+    /* 본문 글씨 색 살짝 흐린 검정 */
+    font-size : 0.97rem;
+    /* 글씨 크기 약간 작게 */
+}
+
+/* 오른쪽 예약폼 높이 84px 여유 공간*/
+.panelTop {
+    /* !important를 사용해 Bootstrap 기본 top:0을 강제로 덮어쓰기 */
+    top : 5rem !important;
+}
+
+/* 오른쪽 예약폼 객실 목록 선택할 때 커서 가져간 곳에 색상 변경*/
+.roomSelect:hover {
+    background-color : #e4e4e4;
+}
+
+/* 데스크톱 화면 크기 버전 고정 크기 */
+.right.sticky-top {
+    position : sticky;
+    top : 5rem;
+    width : 100%;
+    /* Col 폭에 맞게 */
+    max-width : 100%;
+}
+
+/* 모바일 화면에서 sticky 위치 조정 */
+@media (max-width: 1199px) {
+    .menuTab {
+        top : 3.5rem;
+        /* 모바일 네비바 높이에 맞춤 */
+        width : 100%;
+        padding : 8px 0;
+    }
+}
+
+/* 숙소 대표 이미지 비율 반응형 */
+.accommodationImages {
+    width : 100%;
+    overflow : hidden;
+    border-radius : 0.5rem;
+}
+
+.carousel-img {
+    width : 100%;
+    height : 100%;
+    /* 부모 ratio 영역 꽉 채움 */
+    object-fit : cover;
+    /* 영역에 맞게 자르면서 꽉 채움 */
+    display : block;
+}
+
+.reviewCardImage img {
+    width : 100%;
+    height : auto;
+    object-fit : cover;
+    display : block;
+}
+
+.reviewTitle {
+    font-size : 1.2rem; /* 기본 데스크톱 */
+}
+
+.reviewCardContent {
+    overflow : hidden;
+    display : -webkit-box;
+    -webkit-line-clamp : 6;
+    -webkit-box-orient : vertical;
+    color : #585858ff;
+    font-size : 0.9rem;
+}
+
+/* 숙소의 전체 리뷰 페이지 모바일 전용 */
+@media (max-width : 768px) {
+
+    /* 이미지 높이 제한 */
+    .reviewCardImage {
+        aspect-ratio : 1 / 1 !important;
+        height : auto !important;
+    }
+
+    .reviewTitle {
+        font-size : 1.0rem;
+    }
+
+    /* 글 내용 줄 수 제한 */
+    .reviewCardContent {
+        font-size : 0.8rem;
+        -webkit-line-clamp : 2 !important;
+    }
+}
+
+/* 기본 데스크톱 유지 */
+.fixLeft {
+    position : sticky;
+    top : 6.6rem;
+    align-self : flex-start;
+}
+
+/* 숙소의 전체 리뷰 페이지의 왼쪽 영역 화면이 좁아지는 순간 */
+@media (max-width: 991px) {
+    .fixLeft {
+        position : static; /* 고정 해제 */
+        top : auto;
+        margin-bottom : 1.5rem; /* 아래쪽 여백 추가 */
+    }
+}

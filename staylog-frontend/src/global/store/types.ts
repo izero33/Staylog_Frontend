@@ -73,6 +73,12 @@ export interface SetNotiListAction {
    payload: responseNotificationsType[];
 }
 
+// 다음 알림 리스트 추가 조회
+export interface AppendNotiListAction {
+   type: 'APPEND_NOTIFICATION_LIST';
+   payload: responseNotificationsType[];
+}
+
 // 새 알림 1개를 목록에 추가
 export interface PushNotificationAction {
    type: 'PUSH_NOTIFICATION';
@@ -121,6 +127,7 @@ export type AppAction =
    | SetTokenAction
    | SetCommonCodesAction
    | SetNotiListAction
+   | AppendNotiListAction
    | PushNotificationAction
    | SetUnreadCountAction
    | IncrementUnreadCountAction

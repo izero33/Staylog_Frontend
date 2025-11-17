@@ -28,14 +28,16 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
       // 변경된 닉네임만 즉시 업데이트 (마이페이지 수정 시)
       case 'UPDATE_NICKNAME':
          if (!state.userInfo) return state; // userInfo가 null이면 아무 작업 안함
-         return { ...state, userInfo: { ...state.userInfo, nickname: action.payload, }
+         return {
+            ...state, userInfo: { ...state.userInfo, nickname: action.payload, }
          };
       // 프로필 이미지만 즉시 업데이트
       case 'UPDATE_PROFILE_IMAGE':
          if (!state.userInfo) return state;
-         return { ...state, userInfo: { ...state.userInfo, profileImage: action.payload }
-      };
-      
+         return {
+            ...state, userInfo: { ...state.userInfo, profileImage: action.payload }
+         };
+
       case 'SET_TOKEN':
          return { ...state, token: action.payload };
       case 'SET_COMMON_CODES':
@@ -48,18 +50,25 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
          }
          localStorage.removeItem("token");
          return { ...initState };
-      
 
-      
+
+
       // ==================================
       // 알림 로직
-      
+
       // 알림 리스트 조회
       case 'SET_NOTIFICATION_LIST':
          return {
             ...state,
             notiList: action.payload,
             getNotiData: true // 조회 유무를 true로 변경하여 리소스 절약
+         };
+
+      // 다음 알림 리스트 추가 조회
+      case 'APPEND_NOTIFICATION_LIST':
+         return {
+            ...state,
+            notiList: [...state.notiList, ...action.payload]
          };
 
       // 새 알림 1개를 목록에 추가
@@ -130,14 +139,14 @@ function reducer(state: RootState = initState, action: AppAction): RootState {
          };
       }
 
-      case 'DELETE_NOTIFICATION_ALL' :
+      case 'DELETE_NOTIFICATION_ALL':
          return {
             ...state,
             notiList: initState.notiList,
             notiUnreadCount: 0
          };
 
-      
+
       default:
          return state;
    }
